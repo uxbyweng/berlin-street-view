@@ -1,49 +1,48 @@
 {
-    "name": "street-lens",
-    "version": "1.0.0",
-    "description": "A mobile-first web application to create, manage, and discover spots in a simple, visual way. Users can add entries with text, images, and location data, browse existing spots, and later explore them on an interactive map.",
-    "main": "index.js",
-    "private": true,
-    "scripts": {
-        "dev": "next dev",
-        "build": "next build",
-        "start": "next start",
-        "lint": "eslint .",
-        "lint:fix": "eslint . --fix",
-        "format": "prettier . --write",
-        "format:check": "prettier . --check"
-    },
-    "engines": {
-        "node": ">=20.9.0"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/uxbyweng/street-lens.git"
-    },
-    "keywords": [],
-    "author": "Karsten Weng",
-    "license": "ISC",
-    "type": "commonjs",
-    "bugs": {
-        "url": "https://github.com/uxbyweng/street-lens/issues"
-    },
-    "homepage": "https://github.com/uxbyweng/street-lens#readme",
-    "dependencies": {
-        "next": "^16.1.6",
-        "react": "^19.2.4",
-        "react-dom": "^19.2.4"
-    },
-    "devDependencies": {
-        "@tailwindcss/postcss": "^4.2.1",
-        "@types/node": "^25.3.5",
-        "@types/react": "^19.2.14",
-        "@types/react-dom": "^19.2.3",
-        "eslint": "^9.39.4",
-        "eslint-config-next": "^16.1.6",
-        "eslint-config-prettier": "^10.1.8",
-        "postcss": "^8.5.8",
-        "prettier": "^3.8.1",
-        "tailwindcss": "^4.2.1",
-        "typescript": "^5.9.3"
-    }
+  "name": "street-lens",
+  "version": "0.1.0",
+  "description": "A mobile-first web application to create, manage, and discover spots in a simple, visual way. Users can add entries with text, images, and location data, browse existing spots, and later explore them on an interactive map.",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check"
+  },
+  "engines": {
+    "node": ">=20.9.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/uxbyweng/street-lens.git"
+  },
+  "keywords": [],
+  "author": "Karsten Weng",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/uxbyweng/street-lens/issues"
+  },
+  "homepage": "https://github.com/uxbyweng/street-lens#readme",
+  "dependencies": {
+    "next": "^16.1.6",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.2.1",
+    "@types/node": "^25.3.5",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "eslint": "^9.39.4",
+    "eslint-config-next": "^16.1.6",
+    "eslint-config-prettier": "^10.1.8",
+    "postcss": "^8.5.8",
+    "prettier": "^3.8.1",
+    "tailwindcss": "^4.2.1",
+    "typescript": "^5.9.3"
+  }
 }
