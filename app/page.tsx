@@ -1,15 +1,22 @@
+import { Button } from "@/components/ui/button";
+import { AppShell } from "@/components/layout/app-shell";
+
 export default function Home() {
   return (
-    <main className="p-6">
-      <div className="mx-auto max-w-md rounded-2xl border p-6">
-        <h1 className="text-xl font-semibold">StreetLens</h1>
-        <p className="mt-2 text-sm text-zinc-600">
-          Placeholder for the capstone MVP.
+    <AppShell>
+      <section className="mx-auto max-w-2xl rounded-2xl border p-6">
+        <h1 className="text-2xl font-semibold tracking-tight">
+          StreetArt Atlas
+        </h1>
+        <p className="mt-3 text-sm text-muted-foreground">
+          A mobile-first app to collect, manage, and discover urban spots with
+          images, notes, and location data.
         </p>
-        <button className="mt-4 rounded-md border px-4 py-2">
-          Start exploring
-        </button>
-      </div>
-    </main>
+
+        <div className="mt-6">
+          <Button>Start exploring</Button>
+        </div>
+      </section>
+    </AppShell>
   );
 }
