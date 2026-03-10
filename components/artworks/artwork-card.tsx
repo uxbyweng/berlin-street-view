@@ -1,7 +1,5 @@
 import Image from "next/image";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Field, FieldLabel } from "@/components/ui/field";
 import {
   Card,
   CardDescription,
@@ -13,9 +11,15 @@ import type { Artwork } from "@/types/artwork";
 
 type ArtworkCardProps = {
   artwork: Artwork;
+  variant?: "preview" | "detail";
 };
 
-export function ArtworkCard({ artwork }: ArtworkCardProps) {
+export function ArtworkCard({
+  artwork,
+  variant = "preview",
+}: ArtworkCardProps) {
+  const isDetail = variant === "detail";
+
   return (
     <Card className="mx-auto w-full max-w-sm overflow-hidden pt-0">
       <Image
@@ -33,44 +37,30 @@ export function ArtworkCard({ artwork }: ArtworkCardProps) {
           <CardDescription>{artwork.author}</CardDescription>
         ) : null}
 
-        <CardDescription>{artwork.description}</CardDescription>
+        {isDetail ? (
+          <CardDescription>{artwork.description}</CardDescription>
+        ) : null}
 
-        <Field>
-          <FieldLabel htmlFor={`latitude-${artwork._id}`}>Latitude</FieldLabel>
-          <Input
-            id={`latitude-${artwork._id}`}
-            disabled
-            readOnly
-            value={artwork.latitude?.toString() ?? ""}
-          />
-        </Field>
+        {isDetail && artwork.latitude && artwork.longitude ? (
+          <div className="text-sm text-muted-foreground">
+            <p>Latitude: {artwork.latitude}</p>
+            <p>Longitude: {artwork.longitude}</p>
+          </div>
+        ) : null}
 
-        <Field>
-          <FieldLabel htmlFor={`longitude-${artwork._id}`}>
-            Longitude
-          </FieldLabel>
-          <Input
-            id={`longitude-${artwork._id}`}
-            disabled
-            readOnly
-            value={artwork.longitude?.toString() ?? ""}
-          />
-        </Field>
-
-        <Field>
-          <FieldLabel htmlFor={`tags-${artwork._id}`}>Tags</FieldLabel>
-          <Input
-            id={`tags-${artwork._id}`}
-            disabled
-            readOnly
-            value={artwork.tags?.join(", ") ?? ""}
-          />
-        </Field>
+        {isDetail && artwork.tags?.length ? (
+          <p className="text-sm text-muted-foreground">
+            {artwork.tags.join(", ")}
+          </p>
+        ) : null}
       </CardHeader>
 
-      <CardFooter>
-        <Button className="w-full">View details</Button>
-      </CardFooter>
+      {/* Button auf Detailansicht ausblenden */}
+      {!isDetail ? (
+        <CardFooter>
+          <Button className="w-full">View details</Button>
+        </CardFooter>
+      ) : null}
     </Card>
   );
 }
