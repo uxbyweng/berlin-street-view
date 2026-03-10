@@ -1,5 +1,4 @@
 export type Artwork = {
-export type Artwork = {
   _id: string;
   title: string;
   author?: string;
