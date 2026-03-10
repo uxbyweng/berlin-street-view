@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
-import { Artwork } from "@/lib/models/artwork";
+import { Artwork } from "@/models/artwork";
 
 export async function GET() {
   try {
@@ -9,7 +9,7 @@ export async function GET() {
 
     return NextResponse.json({ ok: true, data: artwork });
   } catch (error) {
-    console.error("GET /api/artwork error:", error);
+    console.error("GET /api/artworks error:", error);
 
     return NextResponse.json(
       { ok: false, message: "Failed to fetch artwork" },
@@ -36,7 +36,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ ok: true, data: newArtwork }, { status: 201 });
   } catch (error) {
-    console.error("POST /api/artwork error:", error);
+    console.error("POST /api/artworks error:", error);
 
     return NextResponse.json(
       { ok: false, message: "Failed to create artwork" },
