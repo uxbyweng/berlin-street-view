@@ -1,8 +1,10 @@
 import { AppShell } from "@/components/layout/app-shell";
 import { ArtworkList } from "@/components/artworks/artwork-list";
-import { mockArtworks } from "@/lib/mock-artworks";
+import { getLatestArtworks } from "@/lib/data/artworks";
 
-export default function Home() {
+export default async function HomePage() {
+  const latestArtworks = await getLatestArtworks(3);
+
   return (
     <AppShell>
       <section className="mx-auto rounded-2xl border p-6">
@@ -16,11 +18,8 @@ export default function Home() {
         </p>
       </section>
 
-      <section className="mx-auto mt-8 grid max-w-6xl gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {/* {mockArtworks.map((artwork) => (
-          <ArtworkCard key={artwork._id} artwork={artwork} variant="preview" />
-        ))} */}
-        <ArtworkList artworks={mockArtworks} />
+      <section className="mx-auto mt-8 max-w-6xl">
+        <ArtworkList artworks={latestArtworks} />
       </section>
     </AppShell>
   );

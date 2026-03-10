@@ -28,7 +28,7 @@ export const mockArtworks: Artwork[] = [
     updatedAt: "2026-03-09T09:30:00.000Z",
   },
   {
-    _id: "2",
+    _id: "3",
     title: "The jungle in my head",
     author: "Millo",
     description:

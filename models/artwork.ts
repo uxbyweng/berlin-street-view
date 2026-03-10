@@ -9,7 +9,6 @@ const artworkSchema = new Schema(
     },
     author: {
       type: String,
-      required: true,
       trim: true,
     },
     description: {
@@ -19,23 +18,13 @@ const artworkSchema = new Schema(
     },
     imageUrl: {
       type: String,
-      required: false,
       trim: true,
     },
-    locationName: {
-      type: String,
-      required: true,
-      trim: true,
+    latitude: {
+      type: Number,
     },
-    coordinates: {
-      lat: {
-        type: Number,
-        required: false,
-      },
-      lng: {
-        type: Number,
-        required: false,
-      },
+    longitude: {
+      type: Number,
     },
     tags: {
       type: [String],
