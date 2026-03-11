@@ -2,8 +2,18 @@ import { AppShell } from "@/components/layout/app-shell";
 import { ArtworkList } from "@/components/artworks/artwork-list";
 import { getArtworks } from "@/lib/data/artworks";
 
-export default async function ArtworksPage() {
+type ArtworksPageProps = {
+  searchParams: Promise<{
+    success?: string;
+  }>;
+};
+
+export default async function ArtworksPage({
+  searchParams,
+}: ArtworksPageProps) {
   const artworks = await getArtworks();
+  const params = await searchParams;
+  const showSuccessMessage = params.success === "created";
 
   return (
     <AppShell>
@@ -14,6 +24,12 @@ export default async function ArtworksPage() {
           artworks.
         </p>
       </section>
+
+      {showSuccessMessage ? (
+        <div className="mt-4 rounded-2xl border border-green-200 bg-green-50 p-4 text-sm text-green-800">
+          Artwork successfully added.
+        </div>
+      ) : null}
 
       <section className="mx-auto mt-8 max-w-6xl">
         <ArtworkList artworks={artworks} />
