@@ -171,7 +171,7 @@ export function NewArtworkForm() {
       toast.success("Artwork created successfully.");
 
       form.reset();
-      router.push("/artworks");
+      router.push("/artworks?success=created");
       router.refresh();
     } catch (error) {
       console.error(error);
