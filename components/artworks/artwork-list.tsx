@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { TextLink } from "@/components/ui/text-link";
 import { ArtworkCard } from "@/components/artworks/artwork-card";
 import type { Artwork } from "@/types/artwork";
 
@@ -11,9 +11,9 @@ export function ArtworkList({ artworks = [] }: ArtworkListProps) {
     return (
       <section className="space-y-3">
         <p>No artworks yet. Start by adding one.</p>
-        <Link href="/artworks/new" className="underline">
+        <TextLink href="/artworks/new" className="underline">
           Add a new artwork
-        </Link>
+        </TextLink>
       </section>
     );
   }
@@ -23,8 +23,8 @@ export function ArtworkList({ artworks = [] }: ArtworkListProps) {
       {artworks.map((artwork) => (
         <li key={artwork._id}>
           <ArtworkCard
+            key={artwork._id}
             artwork={artwork}
-            variant="preview"
             href={`/artworks/${artwork._id}`}
           />
         </li>
