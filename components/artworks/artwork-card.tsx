@@ -3,7 +3,6 @@ import Link from "next/link";
 import {
   Card,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -18,9 +17,9 @@ type ArtworkCardProps = {
 export function ArtworkCard({
   artwork,
   href,
-  variant = "preview",
+  variant = "detail",
 }: ArtworkCardProps) {
-  const isDetail = variant === "detail";
+  const isDetail = variant === "preview";
 
   const cardContent = (
     <>
@@ -43,16 +42,16 @@ export function ArtworkCard({
               </CardTitle>
 
               {artwork.author ? (
-                <CardDescription className="text-white/90">
+                <CardDescription className="text-white/80">
                   {artwork.author}
                 </CardDescription>
               ) : null}
 
-              {artwork.latitude && artwork.longitude ? (
-                <div className="text-sm text-white/80">
-                  <p>Latitude: {artwork.latitude}</p>
-                  <p>Longitude: {artwork.longitude}</p>
-                </div>
+              {artwork.latitude != null && artwork.longitude != null ? (
+                <p className="text-xs text-white/80">
+                  📍 {artwork.latitude.toFixed(4)},{" "}
+                  {artwork.longitude.toFixed(4)}
+                </p>
               ) : null}
             </div>
           </>
@@ -68,23 +67,40 @@ export function ArtworkCard({
           ) : null}
 
           {artwork.description ? (
-            <CardDescription>{artwork.description}</CardDescription>
-          ) : null}
-
-          {artwork.latitude && artwork.longitude ? (
-            <div className="text-sm text-muted-foreground">
-              <p>Latitude: {artwork.latitude}</p>
-              <p>Longitude: {artwork.longitude}</p>
-            </div>
-          ) : null}
-
-          {artwork.tags?.length ? (
-            <p className="text-sm text-muted-foreground">
-              {artwork.tags.join(", ")}
+            <p className="py-2 text-sm text-foreground">
+              {artwork.description}
             </p>
           ) : null}
 
-          <CardFooter>Username</CardFooter>
+          {artwork.latitude != null && artwork.longitude != null ? (
+            <p className="text-xs text-muted-foreground">
+              Location:{" "}
+              <a
+                className="text-blue-700 underline underline-offset-2"
+                href={`https://www.google.com/maps?q=${artwork.latitude},${artwork.longitude}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {artwork.latitude.toFixed(4)}, {artwork.longitude.toFixed(4)}
+              </a>
+            </p>
+          ) : null}
+
+          {artwork.tags?.length ? (
+            <p className="text-xs text-muted-foreground">
+              Keywords: {artwork.tags.join(", ")}
+            </p>
+          ) : null}
+
+          <p className="text-xs text-muted-foreground">
+            User:{" "}
+            <Link
+              href="/users/maxi1973"
+              className="text-primary underline underline-offset-2"
+            >
+              @maxi1973
+            </Link>
+          </p>
         </CardHeader>
       ) : null}
     </>
@@ -93,7 +109,7 @@ export function ArtworkCard({
   //  Verlinkung der Card nur im 'preview' mode
   if (!isDetail && href) {
     return (
-      <Card className="mx-auto flex h-full w-full max-w-sm flex-col overflow-hidden pt-0 py-0 transition hover:shadow-md">
+      <Card className="mx-auto flex h-full w-full max-w-sm flex-col overflow-hidden py-0 transition hover:shadow-md">
         <Link
           href={href}
           className="flex h-full flex-col focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
