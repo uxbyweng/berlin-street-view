@@ -10,10 +10,18 @@ type ArtworkDetailPageProps = {
   }>;
 };
 
+// Delay, um 'Loading' state zu testen
+// function delay(ms: number) {
+//   return new Promise((resolve) => setTimeout(resolve, ms));
+// }
+
 export default async function ArtworkDetailPage({
   params,
 }: ArtworkDetailPageProps) {
   const { id } = await params;
+
+  // Throw 'Error', um 'Error' state zu testen
+  // throw new Error("Test error for artwork detail page");
 
   const artworks = await getArtworks();
   const artwork = artworks.find((item) => item._id === id);

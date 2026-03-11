@@ -16,6 +16,12 @@ type ArtworkDetailProps = {
 
 export function ArtworkDetail({ artwork }: ArtworkDetailProps) {
   const hasCoordinates = artwork.latitude != null && artwork.longitude != null;
+  const hasCreatedAt = artwork.createdAt != null;
+  const hasUpdatedAt = artwork.updatedAt != null;
+
+  function formatDate(dateString: string) {
+    return new Date(dateString).toLocaleString("en-GB");
+  }
 
   return (
     <Card className="mx-auto flex w-full max-w-3xl flex-col overflow-hidden pt-0">
@@ -73,6 +79,7 @@ export function ArtworkDetail({ artwork }: ArtworkDetailProps) {
           </div>
         ) : null}
 
+        {/* // PLACEHOLDER -> User Handling kommt später -> tbd. */}
         <div className="space-y-1 text-sm text-muted-foreground">
           <p className="font-medium text-foreground">User</p>
           <TextLink href="/users/maxi1973">@maxi1973</TextLink>
@@ -92,6 +99,20 @@ export function ArtworkDetail({ artwork }: ArtworkDetailProps) {
                 </Link>
               ))}
             </div>
+          </div>
+        ) : null}
+
+        {hasCreatedAt ? (
+          <div className="space-y-1 text-sm text-muted-foreground">
+            <p className="font-medium text-foreground">Date created</p>
+            <p className="text-xs">{formatDate(artwork.createdAt!)}</p>
+          </div>
+        ) : null}
+
+        {hasUpdatedAt ? (
+          <div className="space-y-1 text-sm text-muted-foreground">
+            <p className="font-medium text-foreground">Last updated</p>
+            <p className="text-xs">{formatDate(artwork.updatedAt!)}</p>
           </div>
         ) : null}
       </CardHeader>
