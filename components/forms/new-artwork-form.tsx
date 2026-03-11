@@ -58,36 +58,35 @@ const artworkFormSchema = z.object({
       return isAbsoluteUrl || isRelativePath;
     }, "Please enter a valid image URL or relative path."),
   latitude: z
-    .union([z.coerce.number(), z.nan()])
-    .optional()
-    .transform((value) => (Number.isNaN(value) ? undefined : value))
-    .refine(
-      (value) => value === undefined || (value >= -90 && value <= 90),
-      "Latitude must be between -90 and 90."
-    ),
-  longitude: z
-    .union([z.coerce.number(), z.nan()])
-    .optional()
-    .transform((value) => (Number.isNaN(value) ? undefined : value))
-    .refine(
-      (value) => value === undefined || (value >= -180 && value <= 180),
-      "Longitude must be between -180 and 180."
-    ),
-  tags: z
     .string()
     .optional()
-    .transform((value) =>
-      value
-        ? value
-            .split(",")
-            .map((tag) => tag.trim())
-            .filter(Boolean)
-        : []
-    ),
+    .refine((value) => {
+      if (!value) return true;
+      const number = Number(value);
+      return !Number.isNaN(number) && number >= -90 && number <= 90;
+    }, "Latitude must be between -90 and 90."),
+  longitude: z
+    .string()
+    .optional()
+    .refine((value) => {
+      if (!value) return true;
+      const number = Number(value);
+      return !Number.isNaN(number) && number >= -180 && number <= 180;
+    }, "Longitude must be between -180 and 180."),
+  tags: z.string().optional(),
 });
 
-type ArtworkFormValues = z.input<typeof artworkFormSchema>;
-type ArtworkPayload = z.output<typeof artworkFormSchema>;
+type ArtworkFormValues = z.infer<typeof artworkFormSchema>;
+
+type ArtworkPayload = {
+  title: string;
+  author: string;
+  description: string;
+  imageUrl?: string;
+  latitude?: number;
+  longitude?: number;
+  tags: string[];
+};
 
 function MapPlaceholder({
   latitude,
@@ -144,15 +143,35 @@ export function NewArtworkForm() {
     },
   });
 
-  const watchedLatitude = form.watch("latitude");
-  const watchedLongitude = form.watch("longitude");
+  const watchedLatitudeValue = form.watch("latitude");
+  const watchedLongitudeValue = form.watch("longitude");
 
-  async function onSubmit(values: ArtworkPayload) {
+  const watchedLatitude =
+    watchedLatitudeValue && !Number.isNaN(Number(watchedLatitudeValue))
+      ? Number(watchedLatitudeValue)
+      : undefined;
+
+  const watchedLongitude =
+    watchedLongitudeValue && !Number.isNaN(Number(watchedLongitudeValue))
+      ? Number(watchedLongitudeValue)
+      : undefined;
+
+  async function onSubmit(values: ArtworkFormValues) {
     setIsSubmitting(true);
 
     const payload: ArtworkPayload = {
-      ...values,
+      title: values.title,
+      author: values.author,
+      description: values.description,
       imageUrl: values.imageUrl || undefined,
+      latitude: values.latitude ? Number(values.latitude) : undefined,
+      longitude: values.longitude ? Number(values.longitude) : undefined,
+      tags: values.tags
+        ? values.tags
+            .split(",")
+            .map((tag) => tag.trim())
+            .filter(Boolean)
+        : [],
     };
 
     try {
@@ -172,7 +191,6 @@ export function NewArtworkForm() {
 
       form.reset();
       router.push("/artworks?success=created");
-      router.refresh();
     } catch (error) {
       console.error(error);
       toast.error("Artwork could not be created.");
@@ -346,8 +364,12 @@ export function NewArtworkForm() {
                 latitude={watchedLatitude}
                 longitude={watchedLongitude}
                 onPickLocation={(lat, lng) => {
-                  form.setValue("latitude", lat, { shouldValidate: true });
-                  form.setValue("longitude", lng, { shouldValidate: true });
+                  form.setValue("latitude", String(lat), {
+                    shouldValidate: true,
+                  });
+                  form.setValue("longitude", String(lng), {
+                    shouldValidate: true,
+                  });
                 }}
               />
             )}
