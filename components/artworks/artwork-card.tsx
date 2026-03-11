@@ -24,41 +24,69 @@ export function ArtworkCard({
   const isDetail = variant === "detail";
 
   return (
-    <Card className="mx-auto w-full max-w-sm overflow-hidden pt-0">
-      <Image
-        src={artwork.imageUrl ?? "/images/artwork-placeholder.jpg"}
-        alt={`${artwork.title}${artwork.author ? ` - ${artwork.author}` : ""}`}
-        width={800}
-        height={450}
-        className="aspect-video w-full object-cover"
-      />
+    <Card className="mx-auto flex h-full w-full max-w-sm flex-col overflow-hidden pt-0">
+      <div className="relative">
+        <Image
+          src={artwork.imageUrl ?? "/images/artwork-placeholder.jpg"}
+          alt={`${artwork.title}${artwork.author ? ` - ${artwork.author}` : ""}`}
+          width={800}
+          height={450}
+          className="aspect-video w-full object-cover"
+        />
 
-      <CardHeader>
-        <CardTitle>{artwork.title}</CardTitle>
+        {!isDetail ? (
+          <>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
 
-        {artwork.author ? (
-          <CardDescription>{artwork.author}</CardDescription>
+            <div className="absolute inset-x-0 bottom-0 p-4 text-white">
+              <CardTitle className="line-clamp-2 text-lg text-white">
+                {artwork.title}
+              </CardTitle>
+
+              {artwork.author ? (
+                <CardDescription className="text-white/90">
+                  {artwork.author}
+                </CardDescription>
+              ) : null}
+
+              {artwork.latitude && artwork.longitude ? (
+                <div className="text-sm text-white/80">
+                  <p>Latitude: {artwork.latitude}</p>
+                  <p>Longitude: {artwork.longitude}</p>
+                </div>
+              ) : null}
+            </div>
+          </>
         ) : null}
+      </div>
 
-        {isDetail ? (
-          <CardDescription>{artwork.description}</CardDescription>
-        ) : null}
+      {isDetail ? (
+        <CardHeader>
+          <CardTitle>{artwork.title}</CardTitle>
 
-        {isDetail && artwork.latitude && artwork.longitude ? (
-          <div className="text-sm text-muted-foreground">
-            <p>Latitude: {artwork.latitude}</p>
-            <p>Longitude: {artwork.longitude}</p>
-          </div>
-        ) : null}
+          {artwork.author ? (
+            <CardDescription>{artwork.author}</CardDescription>
+          ) : null}
 
-        {isDetail && artwork.tags?.length ? (
-          <p className="text-sm text-muted-foreground">
-            {artwork.tags.join(", ")}
-          </p>
-        ) : null}
-      </CardHeader>
+          {artwork.description ? (
+            <CardDescription>{artwork.description}</CardDescription>
+          ) : null}
 
-      {/* Button auf Detailansicht ausblenden */}
+          {artwork.latitude && artwork.longitude ? (
+            <div className="text-sm text-muted-foreground">
+              <p>Latitude: {artwork.latitude}</p>
+              <p>Longitude: {artwork.longitude}</p>
+            </div>
+          ) : null}
+
+          {artwork.tags?.length ? (
+            <p className="text-sm text-muted-foreground">
+              {artwork.tags.join(", ")}
+            </p>
+          ) : null}
+        </CardHeader>
+      ) : null}
+
       {!isDetail && href ? (
         <CardFooter>
           <Button asChild className="w-full">
