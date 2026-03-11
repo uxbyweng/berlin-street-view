@@ -17,9 +17,9 @@ type ArtworkCardProps = {
 export function ArtworkCard({
   artwork,
   href,
-  variant = "detail",
+  variant = "preview",
 }: ArtworkCardProps) {
-  const isDetail = variant === "preview";
+  const isDetail = variant === "detail";
 
   const cardContent = (
     <>
@@ -86,12 +86,6 @@ export function ArtworkCard({
             </p>
           ) : null}
 
-          {artwork.tags?.length ? (
-            <p className="text-xs text-muted-foreground">
-              Keywords: {artwork.tags.join(", ")}
-            </p>
-          ) : null}
-
           <p className="text-xs text-muted-foreground">
             User:{" "}
             <Link
@@ -101,6 +95,22 @@ export function ArtworkCard({
               @maxi1973
             </Link>
           </p>
+
+          {artwork.tags?.length ? (
+            <div className="space-y-2 pt-2">
+              <div className="flex flex-wrap gap-2">
+                {artwork.tags.map((tag) => (
+                  <Link
+                    key={tag}
+                    href={`/artworks?tag=${encodeURIComponent(tag)}`}
+                    className="inline-flex items-center rounded-full border px-3 py-1 text-xs text-muted-foreground transition hover:bg-muted hover:text-foreground"
+                  >
+                    #{tag}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          ) : null}
         </CardHeader>
       ) : null}
     </>
