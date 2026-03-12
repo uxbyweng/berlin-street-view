@@ -70,6 +70,12 @@ export async function getLatestArtworks(limit = 3): Promise<Artwork[]> {
     .sort({ createdAt: -1 })
     .limit(limit)
     .lean();
+  //   console.log(
+  //     artworks.map((artwork) => ({
+  //       title: artwork.title,
+  //       createdAt: artwork.createdAt,
+  //     }))
+  //   );
 
   return artworks.map(serializeArtwork);
 }

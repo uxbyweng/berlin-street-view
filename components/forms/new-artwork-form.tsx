@@ -11,7 +11,6 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -38,8 +37,8 @@ const artworkFormSchema = z.object({
     .max(100, "Title must be at most 100 characters."),
   author: z
     .string()
-    .min(2, "Author must be at least 2 characters.")
-    .max(100, "Author must be at most 100 characters."),
+    .min(2, "Artist must be at least 2 characters.")
+    .max(100, "Artist must be at most 100 characters."),
   description: z
     .string()
     .min(10, "Description must be at least 10 characters.")
@@ -202,10 +201,7 @@ export function NewArtworkForm() {
   return (
     <Card className="w-full max-w-2xl">
       <CardHeader>
-        <CardTitle>Add new artwork</CardTitle>
-        <CardDescription>
-          Save a new artwork to your collection.
-        </CardDescription>
+        <CardTitle>Artwork details</CardTitle>
       </CardHeader>
 
       <CardContent>
@@ -223,7 +219,9 @@ export function NewArtworkForm() {
                     aria-invalid={fieldState.invalid}
                     placeholder="e.g. Girl with Balloon"
                   />
-                  <FieldDescription>Enter the artwork title.</FieldDescription>
+                  <FieldDescription>
+                    Give the artwork a clear title.
+                  </FieldDescription>
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
                   )}
@@ -236,7 +234,7 @@ export function NewArtworkForm() {
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor={field.name}>Author</FieldLabel>
+                  <FieldLabel htmlFor={field.name}>Artist</FieldLabel>
                   <Input
                     {...field}
                     id={field.name}
@@ -244,7 +242,7 @@ export function NewArtworkForm() {
                     placeholder="e.g. Banksy"
                   />
                   <FieldDescription>
-                    Enter the artist or creator name.
+                    Enter the name of the artist or creator.
                   </FieldDescription>
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
