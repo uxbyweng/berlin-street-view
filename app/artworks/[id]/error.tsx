@@ -19,7 +19,8 @@ export default function ArtworkDetailErrorPage({
           role="alert"
           className="mt-4 rounded-2xl border border-destructive/20 bg-destructive/10 p-4 text-sm text-destructive"
         >
-          Error loading artwork. Please try again.
+          Something went wrong while loading the artwork details. Please try
+          again.
         </p>
 
         <button
