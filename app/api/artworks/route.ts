@@ -26,7 +26,7 @@ export async function POST(request: Request) {
 
     const newArtwork = await Artwork.create({
       title: body.title,
-      author: body.author,
+      artist: body.artist,
       description: body.description,
       imageUrl: body.imageUrl ?? "",
       latitude: body.latitude ?? undefined,

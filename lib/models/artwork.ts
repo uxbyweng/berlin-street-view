@@ -13,7 +13,7 @@ const artworkSchema = new Schema(
       required: true,
       trim: true,
     },
-    author: {
+    artist: {
       type: String,
       trim: true,
     },

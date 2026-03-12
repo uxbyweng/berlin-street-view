@@ -1,6 +1,6 @@
 export type ArtworkBase = {
   title: string;
-  author?: string;
+  artist?: string;
   description: string;
   imageUrl?: string;
   latitude?: number;

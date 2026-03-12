@@ -35,7 +35,7 @@ const artworkFormSchema = z.object({
     .string()
     .min(2, "Title must be at least 2 characters.")
     .max(100, "Title must be at most 100 characters."),
-  author: z
+  artist: z
     .string()
     .min(2, "Artist must be at least 2 characters.")
     .max(100, "Artist must be at most 100 characters."),
@@ -79,7 +79,7 @@ type ArtworkFormValues = z.infer<typeof artworkFormSchema>;
 
 type ArtworkPayload = {
   title: string;
-  author: string;
+  artist: string;
   description: string;
   imageUrl?: string;
   latitude?: number;
@@ -133,7 +133,7 @@ export function NewArtworkForm() {
     resolver: zodResolver(artworkFormSchema),
     defaultValues: {
       title: "",
-      author: "",
+      artist: "",
       description: "",
       imageUrl: "",
       latitude: undefined,
@@ -160,7 +160,7 @@ export function NewArtworkForm() {
 
     const payload: ArtworkPayload = {
       title: values.title,
-      author: values.author,
+      artist: values.artist,
       description: values.description,
       imageUrl: values.imageUrl || undefined,
       latitude: values.latitude ? Number(values.latitude) : undefined,
@@ -230,7 +230,7 @@ export function NewArtworkForm() {
             />
 
             <Controller
-              name="author"
+              name="artist"
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>

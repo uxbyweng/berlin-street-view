@@ -34,7 +34,7 @@ function serializeArtwork(doc: any): Artwork {
   return {
     _id: doc._id.toString(),
     title: doc.title,
-    author: doc.author,
+    artist: doc.artist,
     description: doc.description,
     imageUrl: doc.imageUrl,
     latitude: doc.latitude,
