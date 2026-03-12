@@ -8,6 +8,11 @@ export const metadata: Metadata = {
     template: "%s | STREETLENS",
   },
   description: "Discover and document urban artworks and places.",
+  manifest: "/site.webmanifest",
+  applicationName: "STREETLENS",
+  appleWebApp: {
+    title: "STREETLENS",
+  },
 };
 
 export default function RootLayout({
