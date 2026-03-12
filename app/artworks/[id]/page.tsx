@@ -1,7 +1,5 @@
 import { notFound } from "next/navigation";
-
 import { ArtworkDetail } from "@/components/artworks/artwork-detail";
-import { AppShell } from "@/components/layout/app-shell";
 import { getArtworks } from "@/lib/data/artworks";
 
 type ArtworkDetailPageProps = {
@@ -30,9 +28,5 @@ export default async function ArtworkDetailPage({
     notFound();
   }
 
-  return (
-    <AppShell>
-      <ArtworkDetail artwork={artwork} />
-    </AppShell>
-  );
+  return <ArtworkDetail artwork={artwork} />;
 }
