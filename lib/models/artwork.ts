@@ -15,6 +15,7 @@ const artworkSchema = new Schema(
     },
     artist: {
       type: String,
+      required: true,
       trim: true,
     },
     description: {
