@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { TextLink } from "@/components/ui/text-link";
+import { DeleteArtworkButton } from "@/components/artworks/delete-artwork-button";
 
 import {
   Card,
@@ -51,10 +52,15 @@ export function ArtworkDetail({ artwork }: ArtworkDetailProps) {
 
           <Link
             href={`/artworks/${artwork._id}/edit`}
-            className="inline-flex shrink-0 items-center rounded-md border px-3 py-2 text-sm transition hover:bg-muted"
+            className="inline-flex items-center rounded-md border px-3 py-2 text-sm transition hover:bg-muted"
           >
             Edit
           </Link>
+
+          <DeleteArtworkButton
+            artworkId={artwork._id}
+            artworkTitle={artwork.title}
+          />
         </div>
 
         {artwork.description ? (
