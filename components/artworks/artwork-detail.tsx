@@ -36,16 +36,25 @@ export function ArtworkDetail({ artwork }: ArtworkDetailProps) {
       </div>
 
       <CardHeader className="space-y-6">
-        <div className="space-y-1">
-          <CardTitle className="text-2xl sm:text-3xl">
-            {artwork.title}
-          </CardTitle>
+        <div className="flex items-start justify-between gap-4">
+          <div className="space-y-1">
+            <CardTitle className="text-2xl sm:text-3xl">
+              {artwork.title}
+            </CardTitle>
 
-          {artwork.artist ? (
-            <CardDescription className="text-sm sm:text-base">
-              {artwork.artist}
-            </CardDescription>
-          ) : null}
+            {artwork.artist ? (
+              <CardDescription className="text-sm sm:text-base">
+                {artwork.artist}
+              </CardDescription>
+            ) : null}
+          </div>
+
+          <Link
+            href={`/artworks/${artwork._id}/edit`}
+            className="inline-flex shrink-0 items-center rounded-md border px-3 py-2 text-sm transition hover:bg-muted"
+          >
+            Edit
+          </Link>
         </div>
 
         {artwork.description ? (
