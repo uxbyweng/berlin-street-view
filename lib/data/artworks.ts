@@ -94,3 +94,28 @@ export const getArtworkById = cache(
     return serializeArtwork(artwork);
   }
 );
+export const getArtworkMetadataById = cache(
+  async (
+    id: string
+  ): Promise<Pick<
+    Artwork,
+    "_id" | "title" | "artist" | "description"
+  > | null> => {
+    await connectDB();
+
+    const artwork = await ArtworkModel.findById(id)
+      .select("title artist description")
+      .lean();
+
+    if (!artwork) {
+      return null;
+    }
+
+    return {
+      _id: artwork._id.toString(),
+      title: artwork.title,
+      artist: artwork.artist,
+      description: artwork.description,
+    };
+  }
+);
