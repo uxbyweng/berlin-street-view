@@ -16,8 +16,10 @@ export default async function ArtworksPage() {
       <PageIntro
         title="Artwork List"
         subtitle="Overview of all available artworks to quickly discover interesting artworks."
-        buttonText="Add artwork"
-        buttonHref="/artworks/new"
+        action={{
+          label: "Add artwork",
+          href: "/artworks/new",
+        }}
       />
 
       <section className="mx-auto mt-8 max-w-6xl">
