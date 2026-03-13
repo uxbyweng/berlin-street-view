@@ -1,4 +1,5 @@
 import { cache } from "react";
+import { Types } from "mongoose";
 import { connectDB } from "@/lib/db/mongodb";
 import { Artwork as ArtworkModel } from "@/lib/models/artwork";
 import type { Artwork } from "@/types/artwork";
@@ -83,6 +84,10 @@ export async function getLatestArtworks(limit = 3): Promise<Artwork[]> {
 
 export const getArtworkById = cache(
   async (id: string): Promise<Artwork | null> => {
+    if (!Types.ObjectId.isValid(id)) {
+      return null;
+    }
+
     await connectDB();
 
     const artwork = await ArtworkModel.findById(id).lean();
@@ -94,6 +99,7 @@ export const getArtworkById = cache(
     return serializeArtwork(artwork);
   }
 );
+
 export const getArtworkMetadataById = cache(
   async (
     id: string
@@ -101,6 +107,10 @@ export const getArtworkMetadataById = cache(
     Artwork,
     "_id" | "title" | "artist" | "description"
   > | null> => {
+    if (!Types.ObjectId.isValid(id)) {
+      return null;
+    }
+
     await connectDB();
 
     const artwork = await ArtworkModel.findById(id)
