@@ -23,14 +23,13 @@ export default function ArtworkDetailErrorPage({
           again.
         </p>
 
-        <button
-          type="button"
-          onClick={() => reset()}
-          className="mt-4 rounded-full border px-4 py-2 text-sm font-medium"
-        >
-          Try again
-        </button>
-      </section>
-    </>
+      <button
+        type="button"
+        onClick={() => reset()}
+        className="mt-4 rounded-full border px-4 py-2 text-sm font-medium"
+      >
+        Try again
+      </button>
+    </section>
   );
 }
