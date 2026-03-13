@@ -129,6 +129,10 @@ export function ArtworkForm({
 }: ArtworkFormProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [isUploadingImage, setIsUploadingImage] = React.useState(false);
+  const [selectedFileName, setSelectedFileName] = React.useState<string | null>(
+    null
+  );
 
   const defaultValues: ArtworkFormValues = {
     title: initialValues?.title ?? "",
@@ -239,6 +243,52 @@ export function ArtworkForm({
     }
   }
 
+  async function handleImageUpload(file: File) {
+    setIsUploadingImage(true);
+
+    try {
+      const uploadFormData = new FormData();
+      uploadFormData.append("image", file);
+
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: uploadFormData,
+      });
+
+      const result = await response.json().catch(() => null);
+
+      if (!response.ok) {
+        throw new Error(result?.message || "Image upload failed.");
+      }
+
+      const secureUrl = result?.data?.secureUrl;
+
+      if (!secureUrl) {
+        throw new Error("No uploaded image URL returned.");
+      }
+
+      form.setValue("imageUrl", secureUrl, {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
+
+      toast.success("Image uploaded successfully.", {
+        className: "!bg-green-200 !text-green-700 !border-green-500 mt-15",
+      });
+    } catch (error) {
+      console.error(error);
+
+      const message =
+        error instanceof Error ? error.message : "Image upload failed.";
+
+      toast.error(message, {
+        className: "!bg-red-200 !text-red-700 !border-red-500",
+      });
+    } finally {
+      setIsUploadingImage(false);
+    }
+  }
+
   return (
     <Card className="w-full max-w-2xl">
       <CardHeader>
@@ -345,10 +395,52 @@ export function ArtworkForm({
             />
 
             <Field>
-              <FieldLabel>Image upload</FieldLabel>
-              <div className="rounded-xl border border-dashed p-6 text-sm text-muted-foreground">
-                Upload placeholder — file upload and EXIF extraction can be
-                added in a later step.
+              <FieldLabel htmlFor="artwork-image-upload">
+                Image upload
+              </FieldLabel>
+
+              <div className="space-y-3 rounded-xl border border-dashed p-4">
+                <Input
+                  id="artwork-image-upload"
+                  type="file"
+                  accept="image/*"
+                  disabled={isUploadingImage || isSubmitting}
+                  onChange={async (event) => {
+                    const file = event.target.files?.[0];
+
+                    if (!file) {
+                      return;
+                    }
+
+                    setSelectedFileName(file.name);
+                    await handleImageUpload(file);
+
+                    event.target.value = "";
+                  }}
+                />
+
+                <FieldDescription>
+                  Upload an image file to Cloudinary. The uploaded image URL
+                  will be used automatically.
+                </FieldDescription>
+
+                {selectedFileName ? (
+                  <p className="text-sm text-muted-foreground">
+                    Selected file: {selectedFileName}
+                  </p>
+                ) : null}
+
+                {isUploadingImage ? (
+                  <p className="text-sm text-muted-foreground">
+                    Uploading image...
+                  </p>
+                ) : null}
+
+                {form.watch("imageUrl") ? (
+                  <p className="text-sm text-muted-foreground break-all">
+                    Current image URL: {form.watch("imageUrl")}
+                  </p>
+                ) : null}
               </div>
             </Field>
 

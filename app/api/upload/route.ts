@@ -90,9 +90,9 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error("POST /api/upload error:", error);
 
-    return NextResponse.json(
-      { ok: false, message: "Image upload failed." },
-      { status: 500 }
-    );
+    // const message =
+    //   error instanceof Error ? error.message : "Image upload failed.";
+
+    // return NextResponse.json({ ok: false, message }, { status: 500 });
   }
 }
