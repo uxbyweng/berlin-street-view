@@ -36,6 +36,13 @@ export function ArtworkDetail({ artwork }: ArtworkDetailProps) {
         />
       </div>
 
+      <div className="px-6 py-0">
+        <DeleteArtworkButton
+          artworkId={artwork._id}
+          artworkTitle={artwork.title}
+        />
+      </div>
+
       <CardHeader className="space-y-6">
         <div className="flex items-start justify-between gap-4">
           <div className="space-y-1">
@@ -49,18 +56,6 @@ export function ArtworkDetail({ artwork }: ArtworkDetailProps) {
               </CardDescription>
             ) : null}
           </div>
-
-          <Link
-            href={`/artworks/${artwork._id}/edit`}
-            className="inline-flex items-center rounded-md border px-3 py-2 text-sm transition hover:bg-muted"
-          >
-            Edit
-          </Link>
-
-          <DeleteArtworkButton
-            artworkId={artwork._id}
-            artworkTitle={artwork.title}
-          />
         </div>
 
         {artwork.description ? (

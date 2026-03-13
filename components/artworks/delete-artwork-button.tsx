@@ -1,31 +1,23 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { IconPencil, IconTrash } from "@tabler/icons-react";
 
 type DeleteArtworkButtonProps = {
   artworkId: string;
   artworkTitle: string;
 };
 
-export function DeleteArtworkButton({
-  artworkId,
-  artworkTitle,
-}: DeleteArtworkButtonProps) {
+export function DeleteArtworkButton({ artworkId }: DeleteArtworkButtonProps) {
   const router = useRouter();
+  const [isConfirming, setIsConfirming] = React.useState(false);
   const [isDeleting, setIsDeleting] = React.useState(false);
 
   async function handleDelete() {
-    const confirmed = window.confirm(
-      `Do you really want to delete "${artworkTitle}"? This action cannot be undone.`
-    );
-
-    if (!confirmed) {
-      return;
-    }
-
     setIsDeleting(true);
 
     try {
@@ -56,19 +48,63 @@ export function DeleteArtworkButton({
       toast.error(message, {
         className: "!bg-red-200 !text-red-700 !border-red-500",
       });
+
+      setIsConfirming(false);
     } finally {
       setIsDeleting(false);
     }
   }
 
+  if (isConfirming) {
+    return (
+      <div className="flex flex-wrap items-center justify-end gap-3 rounded-lg border bg-muted/40 px-4 py-3">
+        <p className="text-sm font-medium text-foreground">
+          Do you really want to delete this artwork?
+        </p>
+
+        <div className="flex gap-3">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setIsConfirming(false)}
+            disabled={isDeleting}
+            size="xs"
+          >
+            Cancel
+          </Button>
+
+          <Button
+            type="button"
+            variant="destructive"
+            onClick={handleDelete}
+            disabled={isDeleting}
+            size="xs"
+          >
+            {isDeleting ? "Deleting..." : "OK"}
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <Button
-      type="button"
-      variant="destructive"
-      onClick={handleDelete}
-      disabled={isDeleting}
-    >
-      {isDeleting ? "Deleting..." : "Delete"}
-    </Button>
+    <div className="flex justify-end gap-3">
+      <Button asChild type="button" variant="outline" size="xs">
+        <Link href={`/artworks/${artworkId}/edit`}>
+          <IconPencil className="size-4" />
+          Edit
+        </Link>
+      </Button>
+
+      <Button
+        type="button"
+        variant="destructive"
+        onClick={() => setIsConfirming(true)}
+        size="xs"
+      >
+        <IconTrash className="size-4" />
+        Delete
+      </Button>
+    </div>
   );
 }
