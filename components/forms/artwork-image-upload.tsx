@@ -4,6 +4,7 @@ import * as React from "react";
 import Image from "next/image";
 import { useDropzone } from "react-dropzone";
 import { Button } from "@/components/ui/button";
+import { IconUpload } from "@tabler/icons-react";
 
 type UploadStatusVariant = "default" | "success" | "warning";
 
@@ -127,12 +128,12 @@ export function ArtworkImageUpload({
       <input {...getInputProps()} />
 
       <div className="flex aspect-video flex-col items-center justify-center gap-3 text-center">
+        <IconUpload className="size-6" />
         <div className="space-y-1">
           <p className="text-sm font-medium text-foreground">
-            {isDragActive ? "Drop image here" : "Drag image here"}
-          </p>
-          <p className="text-sm text-muted-foreground">
-            or choose one from your device
+            {isDragActive
+              ? "Drop image here"
+              : "Drag an image here or choose one"}
           </p>
         </div>
 
@@ -142,7 +143,7 @@ export function ArtworkImageUpload({
 
         <div className="space-y-1">
           <p className="text-xs text-muted-foreground">
-            Max. 4 MB · JPG, PNG, WebP
+            Max. 4.5 MB · JPG, PNG, WebP
           </p>
 
           {selectedFileName ? (

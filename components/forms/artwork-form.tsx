@@ -85,44 +85,6 @@ type ArtworkFormProps = {
   initialValues?: Partial<ArtworkFormValues>;
 };
 
-function MapPlaceholder({
-  latitude,
-  longitude,
-  onPickLocation,
-}: {
-  latitude?: number;
-  longitude?: number;
-  onPickLocation: (lat: number, lng: number) => void;
-}) {
-  const handleFakePick = () => {
-    onPickLocation(52.520008, 13.404954);
-  };
-
-  return (
-    <div className="space-y-3 rounded-xl border p-4">
-      <div className="text-sm font-medium">Map placeholder</div>
-      <p className="text-sm text-muted-foreground">
-        Later, show a Google Map here if the uploaded image has no EXIF/GEO
-        data. For now, this is a placeholder for manual location selection.
-      </p>
-
-      <div className="flex min-h-48 items-center justify-center rounded-lg border border-dashed bg-muted/40 text-sm text-muted-foreground">
-        Google Maps placeholder
-      </div>
-
-      <Button type="button" variant="outline" onClick={handleFakePick}>
-        Set demo coordinates
-      </Button>
-
-      {(latitude !== undefined || longitude !== undefined) && (
-        <p className="text-sm text-muted-foreground">
-          Current selection: {latitude ?? "—"}, {longitude ?? "—"}
-        </p>
-      )}
-    </div>
-  );
-}
-
 export function ArtworkForm({
   mode,
   artworkId,
@@ -181,6 +143,46 @@ export function ArtworkForm({
       ? Number(watchedLongitudeValue)
       : undefined;
 
+  // map placeholder function
+  function MapPlaceholder({
+    latitude,
+    longitude,
+    onPickLocation,
+  }: {
+    latitude?: number;
+    longitude?: number;
+    onPickLocation: (lat: number, lng: number) => void;
+  }) {
+    const handleFakePick = () => {
+      onPickLocation(52.520008, 13.404954);
+    };
+
+    return (
+      <div className="space-y-3 rounded-xl border p-4">
+        <div className="text-sm font-medium">Map placeholder</div>
+        <p className="text-sm text-muted-foreground">
+          Later, show a Google Map here if the uploaded image has no EXIF/GEO
+          data. For now, this is a placeholder for manual location selection.
+        </p>
+
+        <div className="flex min-h-48 items-center justify-center rounded-lg border border-dashed bg-muted/40 text-sm text-muted-foreground">
+          Google Maps placeholder
+        </div>
+
+        <Button type="button" variant="outline" onClick={handleFakePick}>
+          Set demo coordinates
+        </Button>
+
+        {(latitude !== undefined || longitude !== undefined) && (
+          <p className="text-sm text-muted-foreground">
+            Current selection: {latitude ?? "—"}, {longitude ?? "—"}
+          </p>
+        )}
+      </div>
+    );
+  }
+
+  // submit functiom
   async function onSubmit(values: ArtworkFormValues) {
     setIsSubmitting(true);
 
@@ -268,6 +270,7 @@ export function ArtworkForm({
     }
   }
 
+  // check (selected) image function
   async function handleSelectedFile(file: File) {
     setImageStatusMessage(null);
     setImageStatusVariant("default");
@@ -307,115 +310,7 @@ export function ArtworkForm({
     await handleImageUpload(file);
   }
 
-  //   async function handleImageUpload(file: File) {
-  //     setIsUploadingImage(true);
-
-  //     try {
-  //       const uploadFormData = new FormData();
-  //       uploadFormData.append("image", file);
-
-  //       const response = await fetch("/api/upload", {
-  //         method: "POST",
-  //         body: uploadFormData,
-  //       });
-
-  //       const result = await response.json().catch(() => null);
-
-  //       if (!response.ok) {
-  //         throw new Error(result?.message || "Image upload failed.");
-  //       }
-
-  //       const secureUrl = result?.data?.secureUrl;
-  //       const extractedLatitude = result?.data?.latitude;
-  //       const extractedLongitude = result?.data?.longitude;
-  //       const hasExtractedCoordinates =
-  //         typeof extractedLatitude === "number" &&
-  //         typeof extractedLongitude === "number";
-
-  //       if (hasExtractedCoordinates) {
-  //         form.setValue("latitude", String(extractedLatitude), {
-  //           shouldValidate: true,
-  //           shouldDirty: true,
-  //         });
-
-  //         form.setValue("longitude", String(extractedLongitude), {
-  //           shouldValidate: true,
-  //           shouldDirty: true,
-  //         });
-
-  //         toast.success("Image uploaded and geo coordinates extracted.", {
-  //           className: "!bg-green-200 !text-green-700 !border-green-500 mt-15",
-  //         });
-  //       } else {
-  //         form.setValue("latitude", "", {
-  //           shouldValidate: true,
-  //           shouldDirty: true,
-  //         });
-
-  //         form.setValue("longitude", "", {
-  //           shouldValidate: true,
-  //           shouldDirty: true,
-  //         });
-
-  //         toast.error(
-  //           "Could not extract geo coordinates. Please enter them manually.",
-  //           {
-  //             duration: Infinity,
-  //             action: {
-  //               label: "Dismiss",
-  //               onClick: () => toast.dismiss(),
-  //             },
-  //             className: "!bg-red-200 !text-red-700 !border-red-500",
-  //           }
-  //         );
-  //       }
-
-  //       if (!secureUrl) {
-  //         throw new Error("No uploaded image URL returned.");
-  //       }
-
-  //       form.setValue("imageUrl", secureUrl, {
-  //         shouldValidate: true,
-  //         shouldDirty: true,
-  //       });
-
-  //       if (typeof extractedLatitude === "number") {
-  //         form.setValue("latitude", String(extractedLatitude), {
-  //           shouldValidate: true,
-  //           shouldDirty: true,
-  //         });
-  //       }
-
-  //       if (typeof extractedLongitude === "number") {
-  //         form.setValue("longitude", String(extractedLongitude), {
-  //           shouldValidate: true,
-  //           shouldDirty: true,
-  //         });
-  //       }
-
-  //       setImagePreviewUrl((current) => {
-  //         if (current?.startsWith("blob:")) {
-  //           URL.revokeObjectURL(current);
-  //         }
-  //         return secureUrl;
-  //       });
-
-  //       toast.success("Image uploaded successfully.", {
-  //         className: "!bg-green-200 !text-green-700 !border-green-500 mt-15",
-  //       });
-  //     } catch (error) {
-  //       console.error(error);
-
-  //       const message =
-  //         error instanceof Error ? error.message : "Image upload failed.";
-
-  //       toast.error(message, {
-  //         className: "!bg-red-200 !text-red-700 !border-red-500",
-  //       });
-  //     } finally {
-  //       setIsUploadingImage(false);
-  //     }
-  //   }
+  // image upload function
   async function handleImageUpload(file: File) {
     setIsUploadingImage(true);
 
@@ -517,6 +412,7 @@ export function ArtworkForm({
     }
   }
 
+  // reset function
   function handleReset() {
     form.reset(defaultValues);
     setSelectedFileName(null);
@@ -527,32 +423,6 @@ export function ArtworkForm({
 
   return (
     <Card className="w-full max-w-2xl">
-      <CardHeader>
-        <h2 className="text-lg font-semibold">
-          {mode === "edit" ? "Edit artwork" : "Add artwork"}
-        </h2>
-      </CardHeader>
-      {/* <CardHeader>
-        <CardTitle>
-          {imagePreviewUrl ? (
-            <div className="overflow-hidden rounded-xl border bg-muted">
-              <div className="relative aspect-video w-full">
-                <Image
-                  src={imagePreviewUrl}
-                  alt="Artwork preview"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-            </div>
-          ) : (
-            <div className="flex aspect-video items-center justify-center rounded-xl border border-dashed bg-muted/90 text-sm text-muted-foreground">
-              No image uploaded yet.
-            </div>
-          )}
-        </CardTitle>
-      </CardHeader> */}
-
       <CardContent>
         <form id="artwork-form" onSubmit={form.handleSubmit(onSubmit)}>
           <FieldGroup>
