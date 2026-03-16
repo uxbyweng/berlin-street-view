@@ -598,7 +598,7 @@ export function ArtworkForm({
                     aria-invalid={fieldState.invalid}
                     placeholder="street art, berlin, mural"
                   />
-                  <FieldDescription>
+                  <FieldDescription className="text-xs mt-0 pt-0">
                     Separate tags with commas.
                   </FieldDescription>
                   {fieldState.invalid && (
@@ -608,7 +608,7 @@ export function ArtworkForm({
               )}
             />
           </FieldGroup>
-          <div className="flex items-center justify-between gap-3 border-t pt-6">
+          <div className="flex items-center justify-between gap-3 pt-8">
             <Button
               type="button"
               variant="outline"
