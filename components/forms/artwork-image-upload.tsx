@@ -5,12 +5,16 @@ import Image from "next/image";
 import { useDropzone } from "react-dropzone";
 import { Button } from "@/components/ui/button";
 
+type UploadStatusVariant = "default" | "success" | "warning";
+
 type ArtworkImageUploadProps = {
   imagePreviewUrl: string | null;
   isUploadingImage: boolean;
   isSubmitting: boolean;
   selectedFileName: string | null;
   onFileSelect: (file: File) => Promise<void>;
+  statusMessage?: string | null;
+  statusVariant?: UploadStatusVariant;
 };
 
 export function ArtworkImageUpload({
@@ -19,6 +23,8 @@ export function ArtworkImageUpload({
   isSubmitting,
   selectedFileName,
   onFileSelect,
+  statusMessage,
+  statusVariant = "default",
 }: ArtworkImageUploadProps) {
   const isDisabled = isUploadingImage || isSubmitting;
 
@@ -44,7 +50,15 @@ export function ArtworkImageUpload({
     noClick: !!imagePreviewUrl,
     noKeyboard: !!imagePreviewUrl,
     disabled: isDisabled,
+    useFsAccessApi: false,
   });
+
+  const statusClassName =
+    statusVariant === "success"
+      ? "text-green-700"
+      : statusVariant === "warning"
+        ? "text-amber-700"
+        : "text-muted-foreground";
 
   if (imagePreviewUrl) {
     return (
@@ -57,18 +71,28 @@ export function ArtworkImageUpload({
               fill
               className="object-cover"
             />
+
+            {isUploadingImage ? (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                <p className="rounded-md bg-background/90 px-3 py-2 text-sm font-medium text-foreground">
+                  Uploading image...
+                </p>
+              </div>
+            ) : null}
           </div>
         </div>
 
-        <div className="flex items-center justify-between gap-3">
-          <div className="min-w-0">
-            {selectedFileName ? (
-              <p className="truncate text-sm text-muted-foreground">
-                {selectedFileName}
-              </p>
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0 space-y-1">
+            <p className="truncate text-sm text-foreground">
+              {selectedFileName ?? "Image ready"}
+            </p>
+
+            {statusMessage ? (
+              <p className={`text-xs ${statusClassName}`}>{statusMessage}</p>
             ) : (
               <p className="text-xs text-muted-foreground">
-                Supported image upload up to 4.5 MB.
+                Max. 4 MB · JPG, PNG, WebP
               </p>
             )}
           </div>
@@ -95,39 +119,44 @@ export function ArtworkImageUpload({
       className={[
         "rounded-xl border border-dashed p-6 transition",
         isDisabled ? "cursor-not-allowed opacity-60" : "cursor-pointer",
-        isDragActive ? "border-primary bg-muted" : "border-border bg-muted/40",
+        isDragActive
+          ? "border-primary bg-muted"
+          : "border-border bg-muted/40 hover:bg-muted/60",
       ].join(" ")}
     >
       <input {...getInputProps()} />
 
       <div className="flex aspect-video flex-col items-center justify-center gap-3 text-center">
-        <p className="text-sm font-medium text-foreground">
-          {isDragActive
-            ? "Drop image here"
-            : "Drag image here or browse from filesystem"}
-        </p>
+        <div className="space-y-1">
+          <p className="text-sm font-medium text-foreground">
+            {isDragActive ? "Drop image here" : "Drag image here"}
+          </p>
+          <p className="text-sm text-muted-foreground">
+            or choose one from your device
+          </p>
+        </div>
 
-        <p className="text-xs text-muted-foreground">
-          Supported image upload up to 4.5 MB.
-        </p>
-
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={open}
-          disabled={isDisabled}
-        >
+        <Button type="button" variant="outline" size="sm" disabled={isDisabled}>
           Choose image
         </Button>
 
-        {selectedFileName ? (
-          <p className="text-sm text-muted-foreground">{selectedFileName}</p>
-        ) : null}
+        <div className="space-y-1">
+          <p className="text-xs text-muted-foreground">
+            Max. 4 MB · JPG, PNG, WebP
+          </p>
 
-        {isUploadingImage ? (
-          <p className="text-sm text-muted-foreground">Uploading image...</p>
-        ) : null}
+          {selectedFileName ? (
+            <p className="text-xs text-muted-foreground">{selectedFileName}</p>
+          ) : null}
+
+          {statusMessage ? (
+            <p className={`text-xs ${statusClassName}`}>{statusMessage}</p>
+          ) : null}
+
+          {isUploadingImage ? (
+            <p className="text-xs text-muted-foreground">Uploading image...</p>
+          ) : null}
+        </div>
       </div>
     </div>
   );

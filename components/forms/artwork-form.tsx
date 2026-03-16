@@ -1,5 +1,3 @@
-// components\forms\artwork-form.tsx
-
 "use client";
 
 import * as React from "react";
@@ -11,14 +9,7 @@ import * as z from "zod";
 import { ArtworkImageUpload } from "@/components/forms/artwork-image-upload";
 
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import {
   Field,
   FieldDescription,
@@ -146,6 +137,12 @@ export function ArtworkForm({
   const [imagePreviewUrl, setImagePreviewUrl] = React.useState<string | null>(
     initialValues?.imageUrl ?? null
   );
+  const [imageStatusMessage, setImageStatusMessage] = React.useState<
+    string | null
+  >(null);
+  const [imageStatusVariant, setImageStatusVariant] = React.useState<
+    "default" | "success" | "warning"
+  >("default");
   const MAX_IMAGE_FILE_SIZE_BYTES = 4.5 * 1024 * 1024; // 4 MB
 
   const defaultValues: ArtworkFormValues = {
@@ -272,7 +269,13 @@ export function ArtworkForm({
   }
 
   async function handleSelectedFile(file: File) {
+    setImageStatusMessage(null);
+    setImageStatusVariant("default");
     if (file.size > MAX_IMAGE_FILE_SIZE_BYTES) {
+      setImageStatusMessage(
+        "Image is too large. Please choose a file smaller than 4 MB."
+      );
+      setImageStatusVariant("warning");
       const id = toast.error(
         "Image is too large. Please upload an image smaller than 4 MB.",
         {
@@ -428,6 +431,8 @@ export function ArtworkForm({
       const result = await response.json().catch(() => null);
 
       if (!response.ok) {
+        setImageStatusMessage("Image upload failed. Please try again.");
+        setImageStatusVariant("warning");
         throw new Error(result?.message || "Image upload failed.");
       }
 
@@ -458,6 +463,8 @@ export function ArtworkForm({
           shouldValidate: true,
           shouldDirty: true,
         });
+        setImageStatusMessage("Image uploaded and geo coordinates extracted.");
+        setImageStatusVariant("success");
 
         toast.success("Image uploaded and geo coordinates extracted.", {
           className: "!bg-green-200 !text-green-700 !border-green-500 mt-15",
@@ -472,6 +479,10 @@ export function ArtworkForm({
           shouldValidate: true,
           shouldDirty: true,
         });
+        setImageStatusMessage(
+          "No geo coordinates found. Please enter them manually."
+        );
+        setImageStatusVariant("warning");
 
         const id = toast.error(
           "Could not extract geo coordinates. Please enter them manually.",
@@ -506,8 +517,21 @@ export function ArtworkForm({
     }
   }
 
+  function handleReset() {
+    form.reset(defaultValues);
+    setSelectedFileName(null);
+    setImagePreviewUrl(initialValues?.imageUrl ?? null);
+    setImageStatusMessage(null);
+    setImageStatusVariant("default");
+  }
+
   return (
     <Card className="w-full max-w-2xl">
+      <CardHeader>
+        <h2 className="text-lg font-semibold">
+          {mode === "edit" ? "Edit artwork" : "Add artwork"}
+        </h2>
+      </CardHeader>
       {/* <CardHeader>
         <CardTitle>
           {imagePreviewUrl ? (
@@ -544,6 +568,8 @@ export function ArtworkForm({
                 isSubmitting={isSubmitting}
                 selectedFileName={selectedFileName}
                 onFileSelect={handleSelectedFile}
+                statusMessage={imageStatusMessage}
+                statusVariant={imageStatusVariant}
               />
             </Field>
 
@@ -712,26 +738,26 @@ export function ArtworkForm({
               )}
             />
           </FieldGroup>
+          <div className="flex items-center justify-between gap-3 border-t pt-6">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleReset}
+              disabled={isSubmitting}
+            >
+              Reset
+            </Button>
+
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting
+                ? "Saving..."
+                : mode === "edit"
+                  ? "Save changes"
+                  : "Save artwork"}
+            </Button>
+          </div>
         </form>
       </CardContent>
-
-      <CardFooter className="flex justify-between gap-3">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => form.reset(defaultValues)}
-          disabled={isSubmitting}
-        >
-          Reset
-        </Button>
-        <Button type="submit" form="artwork-form" disabled={isSubmitting}>
-          {isSubmitting
-            ? "Saving..."
-            : mode === "edit"
-              ? "Save changes"
-              : "Save artwork"}
-        </Button>
-      </CardFooter>
     </Card>
   );
 }
