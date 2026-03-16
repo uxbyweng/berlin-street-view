@@ -54,16 +54,22 @@ const artworkFormSchema = z.object({
 
       return value === "" || isAbsoluteUrl || isRelativePath;
     }, "Please enter a valid image URL or relative path."),
-  latitude: z.string().refine((value) => {
-    if (value === "") return true;
-    const number = Number(value);
-    return !Number.isNaN(number) && number >= -90 && number <= 90;
-  }, "Latitude must be between -90 and 90."),
-  longitude: z.string().refine((value) => {
-    if (value === "") return true;
-    const number = Number(value);
-    return !Number.isNaN(number) && number >= -180 && number <= 180;
-  }, "Longitude must be between -180 and 180."),
+  latitude: z
+    .string()
+    .trim()
+    .min(1, "Latitude is required.")
+    .refine((value) => {
+      const number = Number(value);
+      return !Number.isNaN(number) && number >= -90 && number <= 90;
+    }, "Latitude must be between -90 and 90."),
+  longitude: z
+    .string()
+    .trim()
+    .min(1, "Longitude is required.")
+    .refine((value) => {
+      const number = Number(value);
+      return !Number.isNaN(number) && number >= -180 && number <= 180;
+    }, "Longitude must be between -180 and 180."),
   tags: z.string().optional(),
 });
 
@@ -281,6 +287,8 @@ export function ArtworkForm({
       }
 
       const secureUrl = result?.data?.secureUrl;
+      const extractedLatitude = result?.data?.latitude;
+      const extractedLongitude = result?.data?.longitude;
 
       if (!secureUrl) {
         throw new Error("No uploaded image URL returned.");
@@ -290,6 +298,20 @@ export function ArtworkForm({
         shouldValidate: true,
         shouldDirty: true,
       });
+
+      if (typeof extractedLatitude === "number") {
+        form.setValue("latitude", String(extractedLatitude), {
+          shouldValidate: true,
+          shouldDirty: true,
+        });
+      }
+
+      if (typeof extractedLongitude === "number") {
+        form.setValue("longitude", String(extractedLongitude), {
+          shouldValidate: true,
+          shouldDirty: true,
+        });
+      }
 
       setImagePreviewUrl((current) => {
         if (current?.startsWith("blob:")) {
