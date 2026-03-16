@@ -164,8 +164,7 @@ export function ArtworkForm({
       <div className="space-y-3 rounded-xl border p-4">
         <div className="text-sm font-medium">Map placeholder</div>
         <p className="text-sm text-muted-foreground">
-          Later, show a Google Map here if the uploaded image has no EXIF/GEO
-          data. For now, this is a placeholder for manual location selection.
+          Show a Google Map here if the uploaded image has no EXIF/GEO data.
         </p>
 
         <div className="flex min-h-48 items-center justify-center rounded-lg border border-dashed bg-muted/40 text-sm text-muted-foreground">
@@ -533,57 +532,78 @@ export function ArtworkForm({
               )}
             />
 
-            {/* latitude */}
-            <Controller
-              name="latitude"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor={field.name}>Latitude</FieldLabel>
-                  <Input
-                    {...field}
-                    id={field.name}
-                    type="text"
-                    value={field.value ?? ""}
-                    aria-invalid={fieldState.invalid}
-                    placeholder="e.g. 52.520008"
-                    disabled={!areCoordinatesEditable}
-                  />
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </Field>
-              )}
-            />
+            {/* location */}
+            <Field>
+              <FieldLabel>Location</FieldLabel>
 
-            {/* longitude */}
-            <Controller
-              name="longitude"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor={field.name}>Longitude</FieldLabel>
-                  <Input
-                    {...field}
-                    id={field.name}
-                    type="text"
-                    value={field.value ?? ""}
-                    aria-invalid={fieldState.invalid}
-                    placeholder="e.g. 13.404954"
-                    disabled={!areCoordinatesEditable}
-                  />
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
+              <div className="grid grid-cols-2 gap-3">
+                <Controller
+                  name="latitude"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <div className="space-y-2">
+                      <FieldLabel
+                        htmlFor={field.name}
+                        className="text-xs text-muted-foreground"
+                      >
+                        Lat.
+                      </FieldLabel>
+                      <Input
+                        {...field}
+                        id={field.name}
+                        type="text"
+                        value={field.value ?? ""}
+                        aria-invalid={fieldState.invalid}
+                        placeholder="e.g. 52.520008"
+                        disabled={!areCoordinatesEditable}
+                      />
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </div>
                   )}
-                </Field>
+                />
+
+                <Controller
+                  name="longitude"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <div className="space-y-2">
+                      <FieldLabel
+                        htmlFor={field.name}
+                        className="text-xs text-muted-foreground"
+                      >
+                        Long.
+                      </FieldLabel>
+                      <Input
+                        {...field}
+                        id={field.name}
+                        type="text"
+                        value={field.value ?? ""}
+                        aria-invalid={fieldState.invalid}
+                        placeholder="e.g. 13.404954"
+                        disabled={!areCoordinatesEditable}
+                      />
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </div>
+                  )}
+                />
+              </div>
+
+              {!areCoordinatesEditable ? (
+                <FieldDescription className="text-xs">
+                  Geo coordinates were extracted automatically from the uploaded
+                  image.
+                </FieldDescription>
+              ) : (
+                <FieldDescription className="text-xs">
+                  Enter latitude and longitude manually if no geo data could be
+                  extracted.
+                </FieldDescription>
               )}
-            />
-            {!areCoordinatesEditable ? (
-              <p className="text-xs text-muted-foreground">
-                Geo coordinates were extracted automatically from the uploaded
-                image.
-              </p>
-            ) : null}
+            </Field>
 
             {(watchedLatitude === undefined ||
               watchedLongitude === undefined) && (
