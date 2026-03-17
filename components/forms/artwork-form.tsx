@@ -1,5 +1,6 @@
 "use client";
 
+/* IMPORTS */
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -7,9 +8,11 @@ import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
 import { ArtworkImageUpload } from "@/components/forms/artwork-image-upload";
-
+import { MapPlaceholder } from "@/components/map/map-placeholder";
+import { FormTextField } from "@/components/forms/form-text-field";
+import { FormTextareaField } from "@/components/forms/form-textarea-field";
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Field,
   FieldDescription,
@@ -18,13 +21,8 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupText,
-  InputGroupTextarea,
-} from "@/components/ui/input-group";
 
+/* SCHEMA */
 const artworkFormSchema = z.object({
   title: z
     .string()
@@ -38,16 +36,7 @@ const artworkFormSchema = z.object({
     .string()
     .min(10, "Description must be at least 10 characters.")
     .max(1000, "Description must be at most 1000 characters."),
-  imageUrl: z
-    .string()
-    .trim()
-    .or(z.literal(""))
-    .refine((value) => {
-      const isAbsoluteUrl = /^https?:\/\/.+/i.test(value);
-      const isRelativePath = /^\/.+/.test(value);
-
-      return value === "" || isAbsoluteUrl || isRelativePath;
-    }, "Please enter a valid image URL or relative path."),
+  imageUrl: z.string().trim().optional(),
   latitude: z
     .string()
     .trim()
@@ -67,8 +56,10 @@ const artworkFormSchema = z.object({
   tags: z.string().optional(),
 });
 
+/* EXPORT TYPES */
 export type ArtworkFormValues = z.infer<typeof artworkFormSchema>;
 
+/* LOCAL TYPES */
 type ArtworkPayload = {
   title: string;
   artist: string;
@@ -85,11 +76,81 @@ type ArtworkFormProps = {
   initialValues?: Partial<ArtworkFormValues>;
 };
 
+/* HELPER FUNCTIONS */
+
+function parseCoordinate(value?: string): number | undefined {
+  if (!value) return undefined;
+
+  const parsedValue = Number(value);
+  return Number.isNaN(parsedValue) ? undefined : parsedValue;
+}
+
+function parseTags(value?: string): string[] {
+  if (!value) return [];
+
+  return value
+    .split(",")
+    .map((tag) => tag.trim())
+    .filter(Boolean);
+}
+
+function buildArtworkPayload(values: ArtworkFormValues): ArtworkPayload {
+  return {
+    title: values.title,
+    artist: values.artist,
+    description: values.description,
+    imageUrl: values.imageUrl || undefined,
+    latitude: parseCoordinate(values.latitude),
+    longitude: parseCoordinate(values.longitude),
+    tags: parseTags(values.tags),
+  };
+}
+
+const MAX_IMAGE_FILE_SIZE_BYTES = 4.5 * 1024 * 1024; // 4.5 MB
+
+// Save Artwork / API-Kommunikation
+async function saveArtwork(
+  payload: ArtworkPayload,
+  options: {
+    mode: "create" | "edit";
+    artworkId?: string;
+  }
+) {
+  const endpoint =
+    options.mode === "edit" && options.artworkId
+      ? `/api/artworks/${options.artworkId}`
+      : "/api/artworks";
+
+  const method = options.mode === "edit" ? "PATCH" : "POST";
+
+  const response = await fetch(endpoint, {
+    method,
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  const result = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    throw new Error(
+      result?.message ||
+        (options.mode === "edit"
+          ? "Failed to update artwork."
+          : "Failed to save artwork.")
+    );
+  }
+
+  return result;
+}
+
 export function ArtworkForm({
   mode,
   artworkId,
   initialValues,
 }: ArtworkFormProps) {
+  /* HOOKS */
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [isUploadingImage, setIsUploadingImage] = React.useState(false);
@@ -108,8 +169,8 @@ export function ArtworkForm({
   const [areCoordinatesEditable, setAreCoordinatesEditable] = React.useState(
     !initialValues?.latitude || !initialValues?.longitude
   );
-  const MAX_IMAGE_FILE_SIZE_BYTES = 4.5 * 1024 * 1024; // 4 MB
 
+  // DEFAULT VALUES
   const defaultValues: ArtworkFormValues = {
     title: initialValues?.title ?? "",
     artist: initialValues?.artist ?? "",
@@ -120,6 +181,25 @@ export function ArtworkForm({
     tags: initialValues?.tags ?? "",
   };
 
+  // USEFORM
+  const form = useForm<ArtworkFormValues>({
+    resolver: zodResolver(artworkFormSchema),
+    defaultValues,
+  });
+
+  // WATCHED VALUES
+  const watchedLatitudeValue = form.watch("latitude");
+  const watchedLongitudeValue = form.watch("longitude");
+  const watchedLatitude =
+    watchedLatitudeValue && !Number.isNaN(Number(watchedLatitudeValue))
+      ? Number(watchedLatitudeValue)
+      : undefined;
+  const watchedLongitude =
+    watchedLongitudeValue && !Number.isNaN(Number(watchedLongitudeValue))
+      ? Number(watchedLongitudeValue)
+      : undefined;
+
+  // USEEFFECT
   React.useEffect(() => {
     return () => {
       if (imagePreviewUrl?.startsWith("blob:")) {
@@ -128,107 +208,19 @@ export function ArtworkForm({
     };
   }, [imagePreviewUrl]);
 
-  const form = useForm<ArtworkFormValues>({
-    resolver: zodResolver(artworkFormSchema),
-    defaultValues,
-  });
+  /* HANDLERS */
 
-  const watchedLatitudeValue = form.watch("latitude");
-  const watchedLongitudeValue = form.watch("longitude");
-
-  const watchedLatitude =
-    watchedLatitudeValue && !Number.isNaN(Number(watchedLatitudeValue))
-      ? Number(watchedLatitudeValue)
-      : undefined;
-
-  const watchedLongitude =
-    watchedLongitudeValue && !Number.isNaN(Number(watchedLongitudeValue))
-      ? Number(watchedLongitudeValue)
-      : undefined;
-
-  // map placeholder function
-  function MapPlaceholder({
-    latitude,
-    longitude,
-    onPickLocation,
-  }: {
-    latitude?: number;
-    longitude?: number;
-    onPickLocation: (lat: number, lng: number) => void;
-  }) {
-    const handleFakePick = () => {
-      onPickLocation(52.520008, 13.404954);
-    };
-
-    return (
-      <div className="space-y-3 rounded-xl border p-4">
-        <div className="text-sm font-medium">Map placeholder</div>
-        <p className="text-sm text-muted-foreground">
-          Show a Google Map here if the uploaded image has no EXIF/GEO data.
-        </p>
-
-        <div className="flex min-h-48 items-center justify-center rounded-lg border border-dashed bg-muted/40 text-sm text-muted-foreground">
-          Google Maps placeholder
-        </div>
-
-        <Button type="button" variant="outline" onClick={handleFakePick}>
-          Set demo coordinates
-        </Button>
-
-        {(latitude !== undefined || longitude !== undefined) && (
-          <p className="text-sm text-muted-foreground">
-            Current selection: {latitude ?? "—"}, {longitude ?? "—"}
-          </p>
-        )}
-      </div>
-    );
-  }
-
-  // submit functiom
+  // Submit form
   async function onSubmit(values: ArtworkFormValues) {
     setIsSubmitting(true);
 
-    const payload: ArtworkPayload = {
-      title: values.title,
-      artist: values.artist,
-      description: values.description,
-      imageUrl: values.imageUrl || undefined,
-      latitude: values.latitude ? Number(values.latitude) : undefined,
-      longitude: values.longitude ? Number(values.longitude) : undefined,
-      tags: values.tags
-        ? values.tags
-            .split(",")
-            .map((tag) => tag.trim())
-            .filter(Boolean)
-        : [],
-    };
-
-    const endpoint =
-      mode === "edit" && artworkId
-        ? `/api/artworks/${artworkId}`
-        : "/api/artworks";
-
-    const method = mode === "edit" ? "PATCH" : "POST";
+    const payload = buildArtworkPayload(values);
 
     try {
-      const response = await fetch(endpoint, {
-        method,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
+      const result = await saveArtwork(payload, {
+        mode,
+        artworkId,
       });
-
-      const result = await response.json().catch(() => null);
-
-      if (!response.ok) {
-        throw new Error(
-          result?.message ||
-            (mode === "edit"
-              ? "Failed to update artwork."
-              : "Failed to save artwork.")
-        );
-      }
 
       toast.success(
         mode === "edit"
@@ -272,8 +264,8 @@ export function ArtworkForm({
     }
   }
 
-  // check (selected) image function
-  async function handleSelectedFile(file: File) {
+  // Handle image selection
+  async function handleImageSelection(file: File) {
     setImageStatusMessage(null);
     setImageStatusVariant("default");
     if (file.size > MAX_IMAGE_FILE_SIZE_BYTES) {
@@ -312,7 +304,7 @@ export function ArtworkForm({
     await handleImageUpload(file);
   }
 
-  // image upload function
+  // Upload image
   async function handleImageUpload(file: File) {
     setIsUploadingImage(true);
 
@@ -417,7 +409,7 @@ export function ArtworkForm({
     }
   }
 
-  // reset function
+  // Reset form state
   function handleReset() {
     form.reset(defaultValues);
     setSelectedFileName(null);
@@ -445,13 +437,13 @@ export function ArtworkForm({
                 isUploadingImage={isUploadingImage}
                 isSubmitting={isSubmitting}
                 selectedFileName={selectedFileName}
-                onFileSelect={handleSelectedFile}
+                onFileSelect={handleImageSelection}
                 statusMessage={imageStatusMessage}
                 statusVariant={imageStatusVariant}
               />
             </Field>
 
-            {/* Image URL */}
+            {/* Image URL (hidden) -> bekommt die URL von Cloudinary */}
             <Controller
               name="imageUrl"
               control={form.control}
@@ -459,83 +451,33 @@ export function ArtworkForm({
             />
 
             {/* Title */}
-            <Controller
+            <FormTextField
               name="title"
+              label="Title"
               control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor={field.name}>Title</FieldLabel>
-                  <Input
-                    {...field}
-                    id={field.name}
-                    aria-invalid={fieldState.invalid}
-                    placeholder="e.g. Girl with Balloon"
-                  />
-                  <FieldDescription
-                    className={fieldState.invalid ? "text-destructive" : ""}
-                  >
-                    {fieldState.error?.message}
-                  </FieldDescription>
-                </Field>
-              )}
+              placeholder="e.g. Girl with Balloon"
             />
 
             {/* Artist */}
-            <Controller
+            <FormTextField
               name="artist"
+              label="Artist"
               control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor={field.name}>Artist</FieldLabel>
-                  <Input
-                    {...field}
-                    id={field.name}
-                    aria-invalid={fieldState.invalid}
-                    placeholder="e.g. Banksy"
-                  />
-                  <FieldDescription
-                    className={fieldState.invalid ? "text-destructive" : ""}
-                  >
-                    {fieldState.error?.message}
-                  </FieldDescription>
-                </Field>
-              )}
+              placeholder="e.g. Banksy"
             />
 
             {/* Description */}
-            <Controller
+            <FormTextareaField
               name="description"
+              label="Description"
+              rows={6}
               control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor={field.name}>Description</FieldLabel>
-                  <InputGroup>
-                    <InputGroupTextarea
-                      {...field}
-                      id={field.name}
-                      rows={6}
-                      className="min-h-28 resize-none"
-                      aria-invalid={fieldState.invalid}
-                      placeholder="Describe the artwork, context, or why it is interesting."
-                    />
-                    <InputGroupAddon align="block-end">
-                      <InputGroupText className="tabular-nums">
-                        {field.value.length}/1000
-                      </InputGroupText>
-                    </InputGroupAddon>
-                  </InputGroup>
-
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </Field>
-              )}
+              placeholder="Describe the artwork, context, or why it is interesting."
             />
 
             {/* location */}
             <Field>
               <FieldLabel>Location</FieldLabel>
-
               <div className="grid grid-cols-2 gap-3">
                 <Controller
                   name="latitude"
@@ -605,42 +547,17 @@ export function ArtworkForm({
               )}
             </Field>
 
+            {/* Map Placeholder */}
             {(watchedLatitude === undefined ||
-              watchedLongitude === undefined) && (
-              <MapPlaceholder
-                latitude={watchedLatitude}
-                longitude={watchedLongitude}
-                onPickLocation={(lat, lng) => {
-                  form.setValue("latitude", String(lat), {
-                    shouldValidate: true,
-                  });
-                  form.setValue("longitude", String(lng), {
-                    shouldValidate: true,
-                  });
-                }}
-              />
-            )}
+              watchedLongitude === undefined) && <MapPlaceholder />}
 
-            <Controller
+            {/* Tags */}
+            <FormTextField
               name="tags"
+              label="Tags"
               control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor={field.name}>Tags</FieldLabel>
-                  <Input
-                    {...field}
-                    id={field.name}
-                    aria-invalid={fieldState.invalid}
-                    placeholder="street art, berlin, mural"
-                  />
-                  <FieldDescription className="text-xs mt-0 pt-0">
-                    Separate tags with commas.
-                  </FieldDescription>
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </Field>
-              )}
+              placeholder="street art, berlin, mural"
+              description="Separate tags with commas."
             />
           </FieldGroup>
           <div className="flex items-center justify-between gap-3 pt-8">
@@ -652,7 +569,6 @@ export function ArtworkForm({
             >
               Reset
             </Button>
-
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting
                 ? "Saving..."
