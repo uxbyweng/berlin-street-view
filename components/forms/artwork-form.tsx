@@ -148,12 +148,7 @@ export function ArtworkForm({
       imageUrl: values.imageUrl || undefined,
       latitude: values.latitude ? Number(values.latitude) : undefined,
       longitude: values.longitude ? Number(values.longitude) : undefined,
-      tags: values.tags
-        ? values.tags
-            .split(",")
-            .map((tag) => tag.trim())
-            .filter(Boolean)
-        : [],
+      tags: parseTags(values.tags),
     };
 
     const endpoint =
@@ -368,6 +363,16 @@ export function ArtworkForm({
     } finally {
       setIsUploadingImage(false);
     }
+  }
+
+  // parse tags
+  function parseTags(value?: string): string[] {
+    if (!value) return [];
+
+    return value
+      .split(",")
+      .map((tag) => tag.trim())
+      .filter(Boolean);
   }
 
   // reset function
