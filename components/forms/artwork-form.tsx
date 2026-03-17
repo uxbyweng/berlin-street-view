@@ -39,16 +39,7 @@ const artworkFormSchema = z.object({
     .string()
     .min(10, "Description must be at least 10 characters.")
     .max(1000, "Description must be at most 1000 characters."),
-  imageUrl: z
-    .string()
-    .trim()
-    .or(z.literal(""))
-    .refine((value) => {
-      const isAbsoluteUrl = /^https?:\/\/.+/i.test(value);
-      const isRelativePath = /^\/.+/.test(value);
-
-      return value === "" || isAbsoluteUrl || isRelativePath;
-    }, "Please enter a valid image URL or relative path."),
+  imageUrl: z.string().trim().optional(),
   latitude: z
     .string()
     .trim()
@@ -109,7 +100,7 @@ export function ArtworkForm({
   const [areCoordinatesEditable, setAreCoordinatesEditable] = React.useState(
     !initialValues?.latitude || !initialValues?.longitude
   );
-  const MAX_IMAGE_FILE_SIZE_BYTES = 4.5 * 1024 * 1024; // 4 MB
+  const MAX_IMAGE_FILE_SIZE_BYTES = 4.5 * 1024 * 1024; // 4.5 MB
 
   const defaultValues: ArtworkFormValues = {
     title: initialValues?.title ?? "",
