@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import * as z from "zod";
 import { ArtworkImageUpload } from "@/components/forms/artwork-image-upload";
 import { MapPlaceholder } from "@/components/map/map-placeholder";
-
+import { FormTextField } from "@/components/forms/form-text-field";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -133,6 +133,8 @@ export function ArtworkForm({
     resolver: zodResolver(artworkFormSchema),
     defaultValues,
   });
+
+  // Check if there are Geo Cordinates
   const watchedLatitudeValue = form.watch("latitude");
   const watchedLongitudeValue = form.watch("longitude");
   const watchedLatitude =
@@ -410,54 +412,30 @@ export function ArtworkForm({
                 statusVariant={imageStatusVariant}
               />
             </Field>
+
             {/* Image URL (hidden) -> bekommt die URL von Cloudinary */}
             <Controller
               name="imageUrl"
               control={form.control}
               render={({ field }) => <input type="hidden" {...field} />}
             />
+
             {/* Title */}
-            <Controller
+            <FormTextField
               name="title"
+              label="Title"
               control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor={field.name}>Title</FieldLabel>
-                  <Input
-                    {...field}
-                    id={field.name}
-                    aria-invalid={fieldState.invalid}
-                    placeholder="e.g. Girl with Balloon"
-                  />
-                  <FieldDescription
-                    className={fieldState.invalid ? "text-destructive" : ""}
-                  >
-                    {fieldState.error?.message}
-                  </FieldDescription>
-                </Field>
-              )}
+              placeholder="e.g. Girl with Balloon"
             />
+
             {/* Artist */}
-            <Controller
+            <FormTextField
               name="artist"
+              label="Artist"
               control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor={field.name}>Artist</FieldLabel>
-                  <Input
-                    {...field}
-                    id={field.name}
-                    aria-invalid={fieldState.invalid}
-                    placeholder="e.g. Banksy"
-                  />
-                  <FieldDescription
-                    className={fieldState.invalid ? "text-destructive" : ""}
-                  >
-                    {fieldState.error?.message}
-                  </FieldDescription>
-                </Field>
-              )}
+              placeholder="e.g. Banksy"
             />
+
             {/* Description */}
             <Controller
               name="description"
@@ -487,10 +465,10 @@ export function ArtworkForm({
                 </Field>
               )}
             />
+
             {/* location */}
             <Field>
               <FieldLabel>Location</FieldLabel>
-
               <div className="grid grid-cols-2 gap-3">
                 <Controller
                   name="latitude"
@@ -560,42 +538,16 @@ export function ArtworkForm({
               )}
             </Field>
 
+            {/* Map Placeholder */}
             {(watchedLatitude === undefined ||
-              watchedLongitude === undefined) && (
-              <MapPlaceholder
-                latitude={watchedLatitude}
-                longitude={watchedLongitude}
-                onPickLocation={(lat, lng) => {
-                  form.setValue("latitude", String(lat), {
-                    shouldValidate: true,
-                  });
-                  form.setValue("longitude", String(lng), {
-                    shouldValidate: true,
-                  });
-                }}
-              />
-            )}
+              watchedLongitude === undefined) && <MapPlaceholder />}
 
-            <Controller
+            {/* Tags */}
+            <FormTextField
               name="tags"
+              label="Tags"
               control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor={field.name}>Tags</FieldLabel>
-                  <Input
-                    {...field}
-                    id={field.name}
-                    aria-invalid={fieldState.invalid}
-                    placeholder="street art, berlin, mural"
-                  />
-                  <FieldDescription className="text-xs mt-0 pt-0">
-                    Separate tags with commas.
-                  </FieldDescription>
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </Field>
-              )}
+              placeholder="street art, berlin, mural"
             />
           </FieldGroup>
           <div className="flex items-center justify-between gap-3 pt-8">
