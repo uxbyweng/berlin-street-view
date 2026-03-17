@@ -7,9 +7,10 @@ import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
 import { ArtworkImageUpload } from "@/components/forms/artwork-image-upload";
+import { MapPlaceholder } from "@/components/map/map-placeholder";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Field,
   FieldDescription,
@@ -132,57 +133,16 @@ export function ArtworkForm({
     resolver: zodResolver(artworkFormSchema),
     defaultValues,
   });
-
   const watchedLatitudeValue = form.watch("latitude");
   const watchedLongitudeValue = form.watch("longitude");
-
   const watchedLatitude =
     watchedLatitudeValue && !Number.isNaN(Number(watchedLatitudeValue))
       ? Number(watchedLatitudeValue)
       : undefined;
-
   const watchedLongitude =
     watchedLongitudeValue && !Number.isNaN(Number(watchedLongitudeValue))
       ? Number(watchedLongitudeValue)
       : undefined;
-
-  // map placeholder function
-  function MapPlaceholder({
-    latitude,
-    longitude,
-    onPickLocation,
-  }: {
-    latitude?: number;
-    longitude?: number;
-    onPickLocation: (lat: number, lng: number) => void;
-  }) {
-    const handleFakePick = () => {
-      onPickLocation(52.520008, 13.404954);
-    };
-
-    return (
-      <div className="space-y-3 rounded-xl border p-4">
-        <div className="text-sm font-medium">Map placeholder</div>
-        <p className="text-sm text-muted-foreground">
-          Show a Google Map here if the uploaded image has no EXIF/GEO data.
-        </p>
-
-        <div className="flex min-h-48 items-center justify-center rounded-lg border border-dashed bg-muted/40 text-sm text-muted-foreground">
-          Google Maps placeholder
-        </div>
-
-        <Button type="button" variant="outline" onClick={handleFakePick}>
-          Set demo coordinates
-        </Button>
-
-        {(latitude !== undefined || longitude !== undefined) && (
-          <p className="text-sm text-muted-foreground">
-            Current selection: {latitude ?? "—"}, {longitude ?? "—"}
-          </p>
-        )}
-      </div>
-    );
-  }
 
   // submit functiom
   async function onSubmit(values: ArtworkFormValues) {
@@ -450,14 +410,12 @@ export function ArtworkForm({
                 statusVariant={imageStatusVariant}
               />
             </Field>
-
-            {/* Image URL */}
+            {/* Image URL (hidden) -> bekommt die URL von Cloudinary */}
             <Controller
               name="imageUrl"
               control={form.control}
               render={({ field }) => <input type="hidden" {...field} />}
             />
-
             {/* Title */}
             <Controller
               name="title"
@@ -479,7 +437,6 @@ export function ArtworkForm({
                 </Field>
               )}
             />
-
             {/* Artist */}
             <Controller
               name="artist"
@@ -501,7 +458,6 @@ export function ArtworkForm({
                 </Field>
               )}
             />
-
             {/* Description */}
             <Controller
               name="description"
@@ -531,7 +487,6 @@ export function ArtworkForm({
                 </Field>
               )}
             />
-
             {/* location */}
             <Field>
               <FieldLabel>Location</FieldLabel>
@@ -652,7 +607,6 @@ export function ArtworkForm({
             >
               Reset
             </Button>
-
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting
                 ? "Saving..."
