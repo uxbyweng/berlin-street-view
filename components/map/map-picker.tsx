@@ -10,12 +10,15 @@ import {
   MarkerContent,
   useMap,
 } from "@/components/ui/map";
+import { cn } from "@/lib/utils";
 
 type MapPickerProps = {
   latitude?: number;
   longitude?: number;
   onChange?: (coords: { lat: number; lng: number }) => void;
   disabled?: boolean;
+  showControls?: boolean;
+  className?: string;
 };
 
 const DEFAULT_LOCATION = {
@@ -96,12 +99,14 @@ export function MapPicker({
   longitude,
   onChange,
   disabled = false,
+  showControls = true,
+  className,
 }: MapPickerProps) {
   const lat = latitude ?? DEFAULT_LOCATION.lat;
   const lng = longitude ?? DEFAULT_LOCATION.lng;
 
   return (
-    <div className="overflow-hidden rounded-xl border">
+    <div className={cn("overflow-hidden rounded-xl border", className)}>
       <Map
         className="h-50 w-full"
         viewport={{
@@ -110,13 +115,15 @@ export function MapPicker({
         }}
         styles={MAP_STYLES}
       >
-        <MapControls
-          position="bottom-right"
-          showZoom
-          showCompass={false}
-          showLocate={false}
-          showFullscreen={false}
-        />
+        {showControls ? (
+          <MapControls
+            position="bottom-right"
+            showZoom
+            showCompass={false}
+            showLocate={false}
+            showFullscreen={false}
+          />
+        ) : null}
 
         <MapClickHandler disabled={disabled} onChange={onChange} />
         <MapViewportSync latitude={lat} longitude={lng} />
