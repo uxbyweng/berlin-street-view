@@ -10,6 +10,7 @@ import * as z from "zod";
 import { ArtworkImageUpload } from "@/components/forms/artwork-image-upload";
 import { MapPlaceholder } from "@/components/map/map-placeholder";
 import { FormTextField } from "@/components/forms/form-text-field";
+import { FormTextareaField } from "@/components/forms/form-textarea-field";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -20,12 +21,6 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupText,
-  InputGroupTextarea,
-} from "@/components/ui/input-group";
 
 /* SCHEMA */
 const artworkFormSchema = z.object({
@@ -111,7 +106,6 @@ function buildArtworkPayload(values: ArtworkFormValues): ArtworkPayload {
   };
 }
 
-// MAXIMALE BILDGRÖSSE
 const MAX_IMAGE_FILE_SIZE_BYTES = 4.5 * 1024 * 1024; // 4.5 MB
 
 // Save Artwork / API-Kommunikation
@@ -473,33 +467,12 @@ export function ArtworkForm({
             />
 
             {/* Description */}
-            <Controller
+            <FormTextareaField
               name="description"
+              label="Description"
+              rows={6}
               control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor={field.name}>Description</FieldLabel>
-                  <InputGroup>
-                    <InputGroupTextarea
-                      {...field}
-                      id={field.name}
-                      rows={6}
-                      className="min-h-28 resize-none"
-                      aria-invalid={fieldState.invalid}
-                      placeholder="Describe the artwork, context, or why it is interesting."
-                    />
-                    <InputGroupAddon align="block-end">
-                      <InputGroupText className="tabular-nums">
-                        {field.value.length}/1000
-                      </InputGroupText>
-                    </InputGroupAddon>
-                  </InputGroup>
-
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </Field>
-              )}
+              placeholder="Describe the artwork, context, or why it is interesting."
             />
 
             {/* location */}
