@@ -246,13 +246,13 @@ Current implementation focus:
 
 ## Roadmap
 
-- [ ] Project setup
-- [ ] Database connection
-- [ ] CRUD for spots
-- [ ] Image upload
+- [/] Project setup
+- [/] Database connection
+- [/] CRUD for artworks
+- [/] Image upload
+- [/] Deployment on Vercel
 - [ ] Delete cleanup for assets
 - [ ] Responsive polish
-- [ ] Deployment on Vercel
 - [ ] Map integration with mapcn / MapLibre
 - [ ] Geo queries
 - [ ] Authentication
