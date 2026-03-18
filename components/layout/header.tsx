@@ -1,11 +1,12 @@
 import Link from "next/link";
 import Image from "next/image";
+import { MobileMenu } from "@/components/layout/mobile-menu";
 
 export default function Header() {
   return (
     <header className="sticky top-0 z-50 border-b bg-background">
       <div className="mx-auto flex min-h-14 max-w-5xl items-center justify-between px-4">
-        <Link href="/" aria-label="Go to Homepage">
+        <Link href="/" aria-label="Go to Homepage" className="z-60">
           <Image
             src="/images/logo-streetlens-light.png"
             width={132}
@@ -15,8 +16,8 @@ export default function Header() {
           />
         </Link>
 
-        <nav className="flex items-center gap-4 text-sm">
-          <Link href="/" className="hover:underline hidden md:block">
+        <nav className="hidden items-center gap-6 text-sm md:flex">
+          <Link href="/" className="hover:underline">
             Home
           </Link>
           <Link href="/map" className="hover:underline">
@@ -29,6 +30,7 @@ export default function Header() {
             Add Artwork
           </Link>
         </nav>
+        <MobileMenu />
       </div>
     </header>
   );
