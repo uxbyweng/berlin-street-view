@@ -10,6 +10,7 @@ import {
   MarkerPopup,
 } from "@/components/ui/map";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 import type { Artwork } from "@/types/artwork";
 
 type ArtworksMapProps = {
@@ -62,7 +63,12 @@ export function ArtworksMap({
             <MarkerPopup>
               <div className="w-56 space-y-3">
                 <div className="relative aspect-video overflow-hidden rounded-md bg-muted">
-                  TEST
+                  <Image
+                    src={artwork.imageUrl ?? "/images/artwork-placeholder.jpg"}
+                    alt={artwork.title}
+                    fill
+                    className="object-cover"
+                  />
                 </div>
               </div>
             </MarkerPopup>
