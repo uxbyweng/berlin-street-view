@@ -12,6 +12,7 @@ import {
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import type { Artwork } from "@/types/artwork";
 
 type ArtworksMapProps = {
@@ -63,6 +64,13 @@ export function ArtworksMap({
             <MarkerContent />
             <MarkerPopup>
               <div className="w-56 space-y-3">
+                <div className="space-y-1">
+                  <p className="font-medium leading-tight">{artwork.title}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {artwork.artist || "Unknown artist"}
+                  </p>
+                </div>
+
                 <div className="relative aspect-video overflow-hidden rounded-md bg-muted">
                   <Image
                     src={artwork.imageUrl ?? "/images/artwork-placeholder.jpg"}
@@ -70,19 +78,11 @@ export function ArtworksMap({
                     fill
                     className="object-cover"
                   />
-                  <div className="space-y-1">
-                    <p className="font-medium leading-tight">{artwork.title}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {artwork.artist || "Unknown artist"}
-                    </p>
-                  </div>
-                  <Link
-                    href={`/artworks/${artwork._id}`}
-                    className="inline-flex text-sm font-medium underline underline-offset-4"
-                  >
-                    View artwork
-                  </Link>
                 </div>
+
+                <Button asChild size="sm" className="w-full">
+                  <Link href={`/artworks/${artwork._id}`}>More Info</Link>
+                </Button>
               </div>
             </MarkerPopup>
           </MapMarker>
