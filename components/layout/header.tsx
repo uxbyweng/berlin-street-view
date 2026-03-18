@@ -6,7 +6,7 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 border-b bg-background">
       <div className="mx-auto flex min-h-14 max-w-5xl items-center justify-between px-4">
-        <Link href="/" aria-label="Go to Homepage">
+        <Link href="/" aria-label="Go to Homepage" className="z-60">
           <Image
             src="/images/logo-streetlens-light.png"
             width={132}
