@@ -446,6 +446,13 @@ export function ArtworkForm({
               render={({ field }) => <input type="hidden" {...field} />}
             />
 
+            {/* Cloudinary Public ID als hidden field -> wichtig für DELETE */}
+            <Controller
+              name="cloudinaryPublicId"
+              control={form.control}
+              render={({ field }) => <input type="hidden" {...field} />}
+            />
+
             {/* Title */}
             <FormTextField
               name="title"
