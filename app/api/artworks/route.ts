@@ -30,6 +30,7 @@ export async function POST(request: Request) {
       artist: body.artist,
       description: body.description,
       imageUrl: body.imageUrl ?? "",
+      cloudinaryPublicId: body.cloudinaryPublicId ?? "",
       latitude: body.latitude ?? undefined,
       longitude: body.longitude ?? undefined,
       tags: body.tags ?? [],

@@ -8,6 +8,10 @@ import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
 import { ArtworkImageUpload } from "@/components/forms/artwork-image-upload";
+import {
+  extractCoordinatesFromImage,
+  uploadImageToCloudinary,
+} from "@/lib/cloudinary/client-upload";
 import { MapPicker } from "@/components/map/map-picker";
 import { FormTextField } from "@/components/forms/form-text-field";
 import { FormTextareaField } from "@/components/forms/form-textarea-field";
@@ -37,6 +41,7 @@ const artworkFormSchema = z.object({
     .min(10, "Description must be at least 10 characters.")
     .max(1000, "Description must be at most 1000 characters."),
   imageUrl: z.string().trim().optional(),
+  cloudinaryPublicId: z.string().trim().optional(),
   latitude: z
     .string()
     .trim()
@@ -65,6 +70,7 @@ type ArtworkPayload = {
   artist: string;
   description: string;
   imageUrl?: string;
+  cloudinaryPublicId?: string;
   latitude?: number;
   longitude?: number;
   tags: string[];
@@ -100,13 +106,14 @@ function buildArtworkPayload(values: ArtworkFormValues): ArtworkPayload {
     artist: values.artist,
     description: values.description,
     imageUrl: values.imageUrl || undefined,
+    cloudinaryPublicId: values.cloudinaryPublicId || undefined,
     latitude: parseCoordinate(values.latitude),
     longitude: parseCoordinate(values.longitude),
     tags: parseTags(values.tags),
   };
 }
 
-const MAX_IMAGE_FILE_SIZE_BYTES = 4.5 * 1024 * 1024; // 4.5 MB
+const MAX_IMAGE_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10 MB
 
 // Save Artwork / API-Kommunikation
 async function saveArtwork(
@@ -176,6 +183,7 @@ export function ArtworkForm({
     artist: initialValues?.artist ?? "",
     description: initialValues?.description ?? "",
     imageUrl: initialValues?.imageUrl ?? "",
+    cloudinaryPublicId: initialValues?.cloudinaryPublicId ?? "",
     latitude: initialValues?.latitude ?? "",
     longitude: initialValues?.longitude ?? "",
     tags: initialValues?.tags ?? "",
@@ -191,11 +199,12 @@ export function ArtworkForm({
   const watchedLatitudeValue = form.watch("latitude");
   const watchedLongitudeValue = form.watch("longitude");
   const watchedLatitude =
-    watchedLatitudeValue && !Number.isNaN(Number(watchedLatitudeValue))
+    watchedLatitudeValue !== "" && !Number.isNaN(Number(watchedLatitudeValue))
       ? Number(watchedLatitudeValue)
       : undefined;
+
   const watchedLongitude =
-    watchedLongitudeValue && !Number.isNaN(Number(watchedLongitudeValue))
+    watchedLongitudeValue !== "" && !Number.isNaN(Number(watchedLongitudeValue))
       ? Number(watchedLongitudeValue)
       : undefined;
 
@@ -268,13 +277,15 @@ export function ArtworkForm({
   async function handleImageSelection(file: File) {
     setImageStatusMessage(null);
     setImageStatusVariant("default");
+
     if (file.size > MAX_IMAGE_FILE_SIZE_BYTES) {
       setImageStatusMessage(
-        "Image is too large. Please choose a file smaller than 4 MB."
+        "Image is too large. Please choose a file smaller than 10 MB."
       );
       setImageStatusVariant("warning");
+
       const id = toast.error(
-        "Image is too large. Please upload an image smaller than 4 MB.",
+        "Image is too large. Please upload an image smaller than 10 MB.",
         {
           duration: Infinity,
           action: {
@@ -309,29 +320,22 @@ export function ArtworkForm({
     setIsUploadingImage(true);
 
     try {
-      const uploadFormData = new FormData();
-      uploadFormData.append("image", file);
+      const extractedCoordinates = await extractCoordinatesFromImage(file);
+      const uploadResult = await uploadImageToCloudinary(file);
 
-      const response = await fetch("/api/upload", {
-        method: "POST",
-        body: uploadFormData,
+      const secureUrl = uploadResult.secureUrl;
+
+      const publicId = uploadResult.publicId;
+
+      form.setValue("imageUrl", secureUrl, {
+        shouldValidate: true,
+        shouldDirty: true,
       });
 
-      const result = await response.json().catch(() => null);
-
-      if (!response.ok) {
-        setImageStatusMessage("Image upload failed. Please try again.");
-        setImageStatusVariant("warning");
-        throw new Error(result?.message || "Image upload failed.");
-      }
-
-      const secureUrl = result?.data?.secureUrl;
-      const extractedLatitude = result?.data?.latitude;
-      const extractedLongitude = result?.data?.longitude;
-
-      if (!secureUrl) {
-        throw new Error("No uploaded image URL returned.");
-      }
+      form.setValue("cloudinaryPublicId", publicId, {
+        shouldValidate: false,
+        shouldDirty: true,
+      });
 
       form.setValue("imageUrl", secureUrl, {
         shouldValidate: true,
@@ -339,19 +343,20 @@ export function ArtworkForm({
       });
 
       const hasExtractedCoordinates =
-        typeof extractedLatitude === "number" &&
-        typeof extractedLongitude === "number";
+        typeof extractedCoordinates?.latitude === "number" &&
+        typeof extractedCoordinates?.longitude === "number";
 
       if (hasExtractedCoordinates) {
-        form.setValue("latitude", String(extractedLatitude), {
+        form.setValue("latitude", String(extractedCoordinates.latitude), {
           shouldValidate: true,
           shouldDirty: true,
         });
 
-        form.setValue("longitude", String(extractedLongitude), {
+        form.setValue("longitude", String(extractedCoordinates.longitude), {
           shouldValidate: true,
           shouldDirty: true,
         });
+
         setAreCoordinatesEditable(false);
         setImageStatusMessage("Image uploaded and geo coordinates extracted.");
         setImageStatusVariant("success");
@@ -401,6 +406,9 @@ export function ArtworkForm({
       const message =
         error instanceof Error ? error.message : "Image upload failed.";
 
+      setImageStatusMessage("Image upload failed. Please try again.");
+      setImageStatusVariant("warning");
+
       toast.error(message, {
         className: "!bg-red-200 !text-red-700 !border-red-500",
       });
@@ -446,6 +454,13 @@ export function ArtworkForm({
             {/* Image URL (hidden) -> bekommt die URL von Cloudinary */}
             <Controller
               name="imageUrl"
+              control={form.control}
+              render={({ field }) => <input type="hidden" {...field} />}
+            />
+
+            {/* Cloudinary Public ID als hidden field -> wichtig für DELETE */}
+            <Controller
+              name="cloudinaryPublicId"
               control={form.control}
               render={({ field }) => <input type="hidden" {...field} />}
             />
