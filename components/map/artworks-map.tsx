@@ -35,9 +35,9 @@ export function ArtworksMap({
   className,
 }: ArtworksMapProps) {
   return (
-    <div className={cn("overflow-hidden rounded-xl border", className)}>
+    <div className={cn("h-full overflow-hidden", className)}>
       <Map
-        className="h-100 w-full"
+        className="h-full w-full"
         viewport={{
           center: [DEFAULT_LOCATION.lng, DEFAULT_LOCATION.lat],
           zoom: 11,
