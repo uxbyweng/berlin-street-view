@@ -272,13 +272,15 @@ export function ArtworkForm({
   async function handleImageSelection(file: File) {
     setImageStatusMessage(null);
     setImageStatusVariant("default");
+
     if (file.size > MAX_IMAGE_FILE_SIZE_BYTES) {
       setImageStatusMessage(
-        "Image is too large. Please choose a file smaller than 4 MB."
+        "Image is too large. Please choose a file smaller than 10 MB."
       );
       setImageStatusVariant("warning");
+
       const id = toast.error(
-        "Image is too large. Please upload an image smaller than 4 MB.",
+        "Image is too large. Please upload an image smaller than 10 MB.",
         {
           duration: Infinity,
           action: {
