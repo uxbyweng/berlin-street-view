@@ -3,6 +3,7 @@ import { ArtworkImageViewer } from "@/components/artworks/artwork-image-viewer";
 import { MapPicker } from "@/components/map/map-picker";
 import { TextLink } from "@/components/ui/text-link";
 import { Button } from "@/components/ui/button";
+import { IconLocation } from "@tabler/icons-react";
 import { DeleteArtworkButton } from "@/components/artworks/delete-artwork-button";
 
 import {
@@ -66,7 +67,10 @@ export function ArtworkDetail({ artwork }: ArtworkDetailProps) {
               showControls={false}
               className="aspect-video"
             />
-            <Button>Navigate to Artwork</Button>
+            <Button>
+              Navigate to Artwork
+              <IconLocation className="size-4" />
+            </Button>
           </div>
         ) : null}
 
