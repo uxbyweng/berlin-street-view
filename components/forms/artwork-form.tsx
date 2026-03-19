@@ -195,11 +195,12 @@ export function ArtworkForm({
   const watchedLatitudeValue = form.watch("latitude");
   const watchedLongitudeValue = form.watch("longitude");
   const watchedLatitude =
-    watchedLatitudeValue && !Number.isNaN(Number(watchedLatitudeValue))
+    watchedLatitudeValue !== "" && !Number.isNaN(Number(watchedLatitudeValue))
       ? Number(watchedLatitudeValue)
       : undefined;
+
   const watchedLongitude =
-    watchedLongitudeValue && !Number.isNaN(Number(watchedLongitudeValue))
+    watchedLongitudeValue !== "" && !Number.isNaN(Number(watchedLongitudeValue))
       ? Number(watchedLongitudeValue)
       : undefined;
 
