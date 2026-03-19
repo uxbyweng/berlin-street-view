@@ -3,6 +3,7 @@ export type ArtworkBase = {
   artist?: string;
   description: string;
   imageUrl?: string;
+  cloudinaryPublicId?: string;
   latitude?: number;
   longitude?: number;
   tags?: string[];
