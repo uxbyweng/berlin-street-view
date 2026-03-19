@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArtworkImageViewer } from "@/components/artworks/artwork-image-viewer";
 import { MapPicker } from "@/components/map/map-picker";
 import { TextLink } from "@/components/ui/text-link";
+import { Button } from "@/components/ui/button";
 import { DeleteArtworkButton } from "@/components/artworks/delete-artwork-button";
 
 import {
@@ -53,13 +54,9 @@ export function ArtworkDetail({ artwork }: ArtworkDetailProps) {
         {hasCoordinates ? (
           <div className="space-y-3">
             <div className="space-y-1 text-sm text-muted-foreground">
-              <p className="font-medium text-foreground">Location</p>
-              <TextLink
-                href={`https://www.google.com/maps?q=${artwork.latitude},${artwork.longitude}`}
-                target="_blank"
-              >
-                {artwork.latitude.toFixed(4)}, {artwork.longitude.toFixed(4)}
-              </TextLink>
+              <p className="font-medium text-foreground">
+                Location: {artwork.latitude}, {artwork.longitude}
+              </p>
             </div>
 
             <MapPicker
@@ -69,6 +66,7 @@ export function ArtworkDetail({ artwork }: ArtworkDetailProps) {
               showControls={false}
               className="aspect-video"
             />
+            <Button>Navigate to Artwork</Button>
           </div>
         ) : null}
 
