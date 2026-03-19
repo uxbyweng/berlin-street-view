@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { ArtworkImageViewer } from "@/components/artworks/artwork-image-viewer";
 import { MapPicker } from "@/components/map/map-picker";
@@ -10,6 +9,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from "@/components/ui/card";
 import type { Artwork } from "@/types/artwork";
 
@@ -29,16 +29,9 @@ export function ArtworkDetail({ artwork }: ArtworkDetailProps) {
   return (
     <Card className="mx-auto flex w-full max-w-3xl flex-col overflow-hidden pt-0">
       <ArtworkImageViewer
-        src={artwork.imageUrl ?? "/images/artwork-placeholder.jpg"}
+        src={artwork.imageUrl ?? "/images/placeholder.jpg"}
         alt={`${artwork.title}${artwork.artist ? ` - ${artwork.artist}` : ""}`}
       />
-
-      <div className="px-6 py-0">
-        <DeleteArtworkButton
-          artworkId={artwork._id}
-          artworkTitle={artwork.title}
-        />
-      </div>
 
       <CardHeader className="space-y-6">
         <div className="flex items-start justify-between gap-4">
@@ -122,6 +115,12 @@ export function ArtworkDetail({ artwork }: ArtworkDetailProps) {
           </div>
         ) : null}
       </CardHeader>
+      <CardFooter className="px-6 py-0">
+        <DeleteArtworkButton
+          artworkId={artwork._id}
+          artworkTitle={artwork.title}
+        />
+      </CardFooter>
     </Card>
   );
 }
