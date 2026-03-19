@@ -106,7 +106,7 @@ export function MapPicker({
   return (
     <div className={cn("overflow-hidden rounded-xl border", className)}>
       <Map
-        className="h-50 w-full"
+        className="h-full w-full"
         viewport={{
           center: [lng, lat],
           zoom: 13,
