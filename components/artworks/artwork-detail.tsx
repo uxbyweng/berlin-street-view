@@ -27,27 +27,23 @@ export function ArtworkDetail({ artwork }: ArtworkDetailProps) {
   }
 
   return (
-    <Card className="mx-auto flex w-full max-w-3xl flex-col overflow-hidden pt-0">
+    <Card className="mx-auto w-full max-w-3xl overflow-hidden pt-0">
       <ArtworkImageViewer
         src={artwork.imageUrl ?? "/images/placeholder.jpg"}
         alt={`${artwork.title}${artwork.artist ? ` - ${artwork.artist}` : ""}`}
       />
 
-      <CardHeader className="space-y-6">
-        <div className="flex items-start justify-between gap-4">
-          <div className="space-y-1">
-            <CardTitle className="text-2xl sm:text-3xl">
-              {artwork.title}
-            </CardTitle>
+      <CardHeader className="space-y-2">
+        <CardTitle className="text-2xl sm:text-3xl">{artwork.title}</CardTitle>
 
-            {artwork.artist ? (
-              <CardDescription className="text-sm sm:text-base">
-                {artwork.artist}
-              </CardDescription>
-            ) : null}
-          </div>
-        </div>
+        {artwork.artist ? (
+          <CardDescription className="text-sm sm:text-base">
+            {artwork.artist}
+          </CardDescription>
+        ) : null}
+      </CardHeader>
 
+      <div className="space-y-6 px-6 pb-6">
         {artwork.description ? (
           <p className="text-sm leading-6 text-foreground sm:text-base">
             {artwork.description}
@@ -66,19 +62,16 @@ export function ArtworkDetail({ artwork }: ArtworkDetailProps) {
               </TextLink>
             </div>
 
-            <div className="overflow-hidden rounded-xl border">
-              <MapPicker
-                latitude={artwork.latitude}
-                longitude={artwork.longitude}
-                disabled={true}
-                showControls={false}
-                className="aspect-video"
-              />
-            </div>
+            <MapPicker
+              latitude={artwork.latitude}
+              longitude={artwork.longitude}
+              disabled={true}
+              showControls={false}
+              className="aspect-video"
+            />
           </div>
         ) : null}
 
-        {/* // PLACEHOLDER -> User Handling kommt später -> tbd. */}
         <div className="space-y-1 text-sm text-muted-foreground">
           <p className="font-medium text-foreground">User</p>
           <TextLink href="/users/maxi1973">@maxi1973</TextLink>
@@ -101,21 +94,24 @@ export function ArtworkDetail({ artwork }: ArtworkDetailProps) {
           </div>
         ) : null}
 
-        {hasCreatedAt ? (
-          <div className="space-y-1 text-sm text-muted-foreground">
-            <p className="font-medium text-foreground">Date created</p>
-            <p className="text-xs">{formatDate(artwork.createdAt!)}</p>
-          </div>
-        ) : null}
+        <div className="grid gap-4 sm:grid-cols-2">
+          {hasCreatedAt ? (
+            <div className="space-y-1 text-sm text-muted-foreground">
+              <p className="font-medium text-foreground">Date created</p>
+              <p className="text-xs">{formatDate(artwork.createdAt!)}</p>
+            </div>
+          ) : null}
 
-        {hasUpdatedAt ? (
-          <div className="space-y-1 text-sm text-muted-foreground">
-            <p className="font-medium text-foreground">Last updated</p>
-            <p className="text-xs">{formatDate(artwork.updatedAt!)}</p>
-          </div>
-        ) : null}
-      </CardHeader>
-      <CardFooter className="px-6 py-0">
+          {hasUpdatedAt ? (
+            <div className="space-y-1 text-sm text-muted-foreground">
+              <p className="font-medium text-foreground">Last updated</p>
+              <p className="text-xs">{formatDate(artwork.updatedAt!)}</p>
+            </div>
+          ) : null}
+        </div>
+      </div>
+
+      <CardFooter className="border-t px-6 py-4">
         <DeleteArtworkButton
           artworkId={artwork._id}
           artworkTitle={artwork.title}
