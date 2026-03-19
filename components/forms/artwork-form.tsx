@@ -170,6 +170,12 @@ export function ArtworkForm({
     !initialValues?.latitude || !initialValues?.longitude
   );
 
+  console.log("cloud name:", process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME);
+  console.log(
+    "upload preset:",
+    process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET
+  );
+
   // DEFAULT VALUES
   const defaultValues: ArtworkFormValues = {
     title: initialValues?.title ?? "",
