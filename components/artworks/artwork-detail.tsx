@@ -65,7 +65,6 @@ export function ArtworkDetail({ artwork }: ArtworkDetailProps) {
               longitude={artwork.longitude}
               disabled={true}
               showControls={false}
-              className="aspect-video"
             />
             <Button>
               Navigate to Artwork
