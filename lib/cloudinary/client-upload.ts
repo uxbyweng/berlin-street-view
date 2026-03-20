@@ -1,3 +1,5 @@
+// UPLOAD STEUERUNG
+
 import exifr from "exifr"; // importier Bibliothek zum Auslesen von EXIF-Daten
 
 // --- TYP-DEFINITIONEN ---
@@ -48,7 +50,12 @@ export async function extractCoordinatesFromImage(
 
 // --- FUNKTION: BILD HOCHLADEN ---
 /**
- * Bild zu Cloudinary hochladen.
+Client-Utility, die das Bild direkt vom Browser zu Cloudinary sendet
+Diese Funktion macht:
+- FormData erzeugen
+- file anhängen
+- upload_preset anhängen
+- fetch("https://api.cloudinary.com/v1_1/<cloud>/image/upload")
  */
 export async function uploadImageToCloudinary(
   file: File

@@ -325,7 +325,10 @@ export function ArtworkForm({
     setIsUploadingImage(true);
 
     try {
+      // 1. versuchen ccordinaten auszulesen
       const extractedCoordinates = await extractCoordinatesFromImage(file);
+
+      // 2. Bild zu Cloudinary hochladen
       const uploadResult = await uploadImageToCloudinary(file);
 
       const secureUrl = uploadResult.secureUrl;
