@@ -13,7 +13,7 @@ export default async function MapPage() {
   const artworks = await getArtworks();
 
   return (
-    <section className="h-[calc(100dvh-var(--header-height))]">
+    <section className="h-[calc(100dvh-var(--header-height))] w-full">
       <ArtworksMap artworks={artworks} className="h-full" />
     </section>
   );
