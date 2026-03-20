@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Roboto } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { UserLocationBootstrap } from "@/components/location/user-location-bootstrap";
+import { MapRoutePrefetch } from "@/components/navigation/map-route-prefetch";
 import { Toaster } from "@/components/ui/sonner";
 
 const roboto = Roboto({
@@ -44,6 +45,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <UserLocationBootstrap />
+        <MapRoutePrefetch />
         {children}
         <Toaster position="top-center" />
       </body>
