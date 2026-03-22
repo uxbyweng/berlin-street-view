@@ -82,7 +82,7 @@ export function MobileMenu() {
                   <Link
                     href={item.href}
                     onClick={closeMenu}
-                    className="text-xl font-semibold"
+                    className="text-2xl font-fjalla uppercase"
                   >
                     {item.label}
                   </Link>

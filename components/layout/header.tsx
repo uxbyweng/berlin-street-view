@@ -6,19 +6,19 @@ import { PrefetchingLink } from "@/components/navigation/prefetching-link";
 export default function Header() {
   return (
     <header className="sticky top-0 z-50 border-b bg-background">
-      <div className="mx-auto flex min-h-14 max-w-5xl items-center justify-between px-4">
+      <div className="mx-auto flex min-h-14 max-w-6xl items-center justify-between px-4">
         <Link href="/" aria-label="Go to Homepage" className="z-60">
           <Image
-            src="/images/logo-streetlens-light.png"
-            width={132}
-            height={39}
+            src="/images/logo_street_lens.png"
+            width={210}
+            height={40}
             alt="STREETLIST"
             priority
             sizes="132px"
           />
         </Link>
 
-        <nav className="hidden items-center gap-6 text-sm md:flex">
+        <nav className="hidden items-center gap-6 text-md md:flex font-fjalla uppercase">
           <Link href="/" className="hover:underline">
             Home
           </Link>

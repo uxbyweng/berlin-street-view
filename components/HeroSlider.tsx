@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import Image from "next/image";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -13,41 +14,51 @@ interface Slide {
   title: string;
   subtitle: string;
   cta?: string;
+  imagePositionX?: string;
 }
 
 const slides: Slide[] = [
   {
     id: 1,
-    image:
-      "https://images.unsplash.com/photo-1691995016747-d367c51c7d65?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdHJlZXQlMjBhcnQlMjBncmFmZml0aSUyMHdhbGwlMjB1cmJhbnxlbnwxfHx8fDE3NzQwOTk5MDZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
-
-    title: "EXPLORE STREET ART IN BERLIN ",
-    subtitle: "We have more than 2+ artworks to discover lots of...",
+    image: "/images/slider_image_001.jpg",
+    title: "EXPLORE STREET ART IN BERLIN",
+    subtitle: "Capture murals, tags, and locations as you explore the city",
     cta: "START EXPLORING",
+    imagePositionX: "80%",
   },
   {
     id: 2,
-    image:
-      "https://images.unsplash.com/photo-1691995016747-d367c51c7d65?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdHJlZXQlMjBhcnQlMjBncmFmZml0aSUyMHdhbGwlMjB1cmJhbnxlbnwxfHx8fDE3NzQwOTk5MDZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
-    title: "DISCOVER URBAN MASTERPIECES",
-    subtitle: "Lorem ipsum dolores mia di spiace con enrico eco nei lisa.",
-    cta: "VIEW GALLERY",
+    image: "/images/slider_image_002.jpg",
+    title: "DISCOVER URBAN ARTWORKS",
+    subtitle:
+      "Find striking murals and iconic walls across the urban landscape.",
+    cta: "VIEW ARTWORKS",
+    imagePositionX: "70%",
   },
   {
     id: 3,
-    image:
-      "https://images.unsplash.com/photo-1659354264952-88c7cea55ec9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb2xvcmZ1bCUyMG11cmFsJTIwY2l0eXxlbnwxfHx8fDE3NzQwOTk5MDd8MA&ixlib=rb-4.1.0&q=80&w=1080",
-    title: "COLORFUL MURALS WORLDWIDE",
-    subtitle: "Lorem ipsum dolores mia di spiace con enrico eco nei lisa.",
-    cta: "EXPLORE MAP",
+    image: "/images/slider_image_003.jpg",
+    title: "FIND COLORFUL MURALS",
+    subtitle: "Explore hidden spots and uncover vibrant walls across the city.",
+    cta: "OPEN MAP",
+    imagePositionX: "40%",
   },
   {
     id: 4,
-    image:
-      "https://images.unsplash.com/photo-1739838870750-6375b6d46eff?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdHJlZXQlMjBhcnQlMjBiZXJsaW58ZW58MXx8fHwxNzc0MDk5OTA2fDA&ixlib=rb-4.1.0&q=80&w=1080",
-    title: "MEET THE ARTISTS BEHIND THE WALLS",
-    subtitle: "Lorem ipsum dolores mia di spiace con enrico eco nei lisa.",
-    cta: "LEARN MORE",
+    image: "/images/slider_image_004.jpg",
+    title: "MEET THE ARTISTS",
+    subtitle: "Discover the names, styles, and stories behind urban artworks.",
+    cta: "VIEW ARTISTS",
+    imagePositionX: "90%",
+  },
+  {
+    id: 5,
+    image: "/images/slider_image_005.jpg",
+    title: "TRACK ART ACROSS THE CITY",
+    subtitle:
+      "Find new spots, revisit favorites, and explore urban art routes.",
+    cta: "START EXPLORING",
+    imagePositionX: "75%",
   },
 ];
 
@@ -55,22 +66,17 @@ export function HeroSlider() {
   const sliderRef = useRef<Slider>(null);
 
   const settings = {
-    dots: true,
+    dots: false,
     infinite: true,
-    speed: 500,
+    speed: 2000,
     slidesToShow: 1,
     slidesToScroll: 1,
     autoplay: true,
-    autoplaySpeed: 5000,
+    autoplaySpeed: 2000,
     pauseOnHover: true,
     arrows: false,
     fade: true,
     cssEase: "ease-in-out",
-    appendDots: (dots: React.ReactNode) => (
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
-        <ul className="flex gap-3">{dots}</ul>
-      </div>
-    ),
     customPaging: () => (
       <button
         className="w-3 h-3 rounded-full bg-white/50 hover:bg-white transition-all"
@@ -88,26 +94,33 @@ export function HeroSlider() {
             className="relative h-[calc(100vh-5rem)] md:h-[calc(100vh-5rem)]"
           >
             <div className="absolute inset-0">
-              <img
+              <Image
                 src={slide.image}
                 alt={slide.title}
+                width={800}
+                height={450}
+                sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 33vw"
+                priority
                 className="w-full h-full object-cover"
+                style={{
+                  objectPosition: `${slide.imagePositionX ?? "50%"} center`,
+                }}
               />
-              <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent" />
+              <div className="absolute inset-0 bg-linear-to-r from-black/70 via-black/40 to-transparent" />
             </div>
 
             <div className="relative h-full flex items-center">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+              <div className="max-w-6xl mx-auto px-4 w-full">
                 <div className="max-w-2xl">
-                  <h1 className="font-fjalla text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-white leading-none mb-2">
+                  <h1 className="font-fjalla text-6xl sm:text-6xl md:text-7xl lg:text-7xl text-white leading-none mb-2 mt-40 lg:mt-80">
                     {slide.title}
                   </h1>
                   {slide.cta && (
                     <div className="mt-8">
-                      <p className="text-pink-500 text-sm mb-2">
+                      <h2 className="text-pink-600 text-xl mb-2">
                         {slide.subtitle}
-                      </p>
-                      <button className="inline-flex items-center gap-2 text-white font-medium text-sm hover:text-pink-500 transition-colors group">
+                      </h2>
+                      <button className="inline-flex items-center gap-2 text-pink-600 hover:text-white border-1 border-pink-600 hover:border-white p-4 font-medium text-sm hover:text-pink-500 transition-colors group">
                         <span>{slide.cta}</span>
                         <ChevronRight
                           size={20}
@@ -126,14 +139,14 @@ export function HeroSlider() {
       {/* Custom Navigation Arrows */}
       <button
         onClick={() => sliderRef.current?.slickPrev()}
-        className="absolute left-4 md:left-8 top-1/2 transform -translate-y-1/2 z-10 w-12 h-12 md:w-16 md:h-16 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm flex items-center justify-center text-white transition-all"
+        className="absolute left-4 top-1/2 z-10 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white transition-all backdrop-blur-sm hover:bg-white/20 md:left-8 md:flex md:h-16 md:w-16"
         aria-label="Previous slide"
       >
         <ChevronLeft size={28} />
       </button>
       <button
         onClick={() => sliderRef.current?.slickNext()}
-        className="absolute right-4 md:right-8 top-1/2 transform -translate-y-1/2 z-10 w-12 h-12 md:w-16 md:h-16 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm flex items-center justify-center text-white transition-all"
+        className="absolute right-4 top-1/2 z-10 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white transition-all backdrop-blur-sm hover:bg-white/20 md:right-8 md:flex md:h-16 md:w-16"
         aria-label="Next slide"
       >
         <ChevronRight size={28} />

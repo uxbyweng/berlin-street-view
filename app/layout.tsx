@@ -48,7 +48,7 @@ export default function RootLayout({
   return (
     <html
       lang="de"
-      className={cn("font-sans", roboto.variable, fjallaOne.variable)}
+      className={cn("dark font-sans", roboto.variable, fjallaOne.variable)}
     >
       <body
         className={cn(geistSans.variable, geistMono.variable, "antialiased")}

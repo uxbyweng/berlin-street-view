@@ -22,7 +22,7 @@ export default async function HomePage() {
         }}
       /> */}
 
-      <section className="mt-8">
+      <section className="mx-auto max-w-6xl my-8 px-4">
         <h2 className="text-lg font-semibold mb-4">Recently added ...</h2>
         <ArtworkList artworks={latestArtworks} />
       </section>
