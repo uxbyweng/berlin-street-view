@@ -16,7 +16,7 @@ export default async function ArtworksPage() {
   return (
     <>
       <PageIntro
-        title="Artwork List"
+        title="Artworks"
         subtitle="Overview of all available artworks to quickly discover interesting artworks."
         action={{
           label: "Add artwork",
