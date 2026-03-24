@@ -89,12 +89,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       await connectDB();
 
       const githubProfile = profile as {
-        id: number;
+        id?: string | number;
         login?: string;
         name?: string;
         email?: string;
         avatar_url?: string;
       };
+
+      if (!githubProfile.id) {
+        return false;
+      }
 
       await User.findOneAndUpdate(
         { githubId: String(githubProfile.id) },
@@ -138,7 +142,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
       const githubId =
         account?.provider === "github" && profile
-          ? String((profile as { id: number }).id)
+          ? String((profile as { id: string | number }).id)
           : token.githubId;
 
       if (githubId) {
