@@ -31,16 +31,6 @@ const slides: Slide[] = [
   },
   {
     id: 2,
-    image: "/images/slider_image_002.jpg",
-    title: "DISCOVER URBAN ARTWORKS",
-    subtitle:
-      "Find striking murals and iconic walls across the urban landscape.",
-    cta: "View artworks",
-    href: "/artworks",
-    imagePositionX: "70%",
-  },
-  {
-    id: 3,
     image: "/images/slider_image_003.jpg",
     title: "FIND COLORFUL MURALS",
     subtitle: "Explore hidden spots and uncover vibrant walls across the city.",
@@ -49,16 +39,27 @@ const slides: Slide[] = [
     imagePositionX: "40%",
   },
   {
-    id: 4,
-    image: "/images/slider_image_004.jpg",
-    title: "MEET THE ARTISTS",
-    subtitle: "Discover the names, styles, and stories behind urban artworks.",
-    cta: "View artists",
-    href: "/artists",
-    imagePositionX: "90%",
+    id: 3,
+    image: "/images/slider_image_002.jpg",
+    title: "DISCOVER URBAN ARTWORKS",
+    subtitle:
+      "Find striking murals and iconic walls across the urban landscape.",
+    cta: "View artworks",
+    href: "/artworks",
+    imagePositionX: "70%",
   },
+
+  //   {
+  //     id: 4,
+  //     image: "/images/slider_image_004.jpg",
+  //     title: "MEET THE ARTISTS",
+  //     subtitle: "Discover the names, styles, and stories behind urban artworks.",
+  //     cta: "View artists",
+  //     href: "/artists",
+  //     imagePositionX: "90%",
+  //   },
   {
-    id: 5,
+    id: 4,
     image: "/images/slider_image_005.jpg",
     title: "TRACK ART ACROSS THE CITY",
     subtitle:
@@ -124,10 +125,10 @@ export function HeroSlider() {
                   </h1>
                   {slide.cta && slide.href ? (
                     <div className="mt-8">
-                      <h2 className="mb-2 text-xl text-pink-600">
+                      <h2 className="mb-4 text-2xl lg:text-4xl text-pink-500 font-bold lg:font-medium">
                         {slide.subtitle}
                       </h2>
-                      <Button>
+                      <Button className="w-full md:w-auto">
                         <a
                           href={slide.href}
                           className="group inline-flex items-center gap-2 text-lg"
