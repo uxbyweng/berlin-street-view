@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { ArtworkImageViewer } from "@/components/artworks/artwork-image-viewer";
 import { MapPicker } from "@/components/map/map-picker";
-import { TextLink } from "@/components/ui/text-link";
 import { Button } from "@/components/ui/button";
 import { IconLocation } from "@tabler/icons-react";
 import { DeleteArtworkButton } from "@/components/artworks/delete-artwork-button";
@@ -36,12 +35,12 @@ export function ArtworkDetail({ artwork }: ArtworkDetailProps) {
       />
       <Card className="mx-auto w-full max-w-3xl overflow-hidden pt-8 border-0 rounded-none bg-background">
         <CardHeader className="space-y-2">
-          <CardTitle className="font-fjalla text-3xl sm:text-4xl">
+          <CardTitle className="font-fjalla text-4xl sm:text-6xl">
             {artwork.title}
           </CardTitle>
 
           {artwork.artist ? (
-            <CardDescription className="font-fjalla text-pink-600 text-xl sm:2xl">
+            <CardDescription className="font-fjalla text-pink-600 text-2xl sm:text-4xl">
               {artwork.artist}
             </CardDescription>
           ) : null}
@@ -49,30 +48,28 @@ export function ArtworkDetail({ artwork }: ArtworkDetailProps) {
 
         <div className="space-y-6 px-6 pb-6">
           {artwork.description ? (
-            <p className="text-sm leading-6 text-foreground sm:text-base">
-              {artwork.description}
-            </p>
+            <p className="text-xl text-foreground">{artwork.description}</p>
           ) : null}
 
           {hasCoordinates ? (
             <div className="space-y-3">
-              <div className="space-y-1 text-sm text-muted-foreground">
-                <p className="font-medium text-foreground">
-                  Location: {artwork.latitude}, {artwork.longitude}
-                </p>
-              </div>
-
               <MapPicker
                 latitude={artwork.latitude}
                 longitude={artwork.longitude}
                 disabled={true}
                 showControls={true}
               />
+              <div className="space-y-1 text-xs text-muted-foreground">
+                <p className="text-muted-foreground">
+                  Lat. {artwork.latitude}, Long. {artwork.longitude}
+                </p>
+              </div>
               <Button asChild>
                 <a
                   href={`https://www.google.com/maps/search/?api=1&query=${artwork.latitude},${artwork.longitude}`}
                   target="_blank"
                   rel="noopener noreferrer"
+                  className="hover:bg-sky-800"
                 >
                   Navigate to Artwork
                   <IconLocation className="size-4" />
@@ -81,20 +78,15 @@ export function ArtworkDetail({ artwork }: ArtworkDetailProps) {
             </div>
           ) : null}
 
-          <div className="space-y-1 text-sm text-muted-foreground">
-            <p className="font-medium text-foreground">User</p>
-            <TextLink href="/users/maxi1973">@maxi1973</TextLink>
-          </div>
-
           {artwork.tags?.length ? (
             <div className="space-y-2">
-              <p className="text-sm font-medium text-foreground">Tags</p>
-              <div className="flex flex-wrap gap-2">
+              <p className="text-lg font-medium text-foreground">Tags</p>
+              <div className="flex flex-wrap gap-4">
                 {artwork.tags.map((tag) => (
                   <Link
                     key={tag}
                     href={`/artworks?tag=${encodeURIComponent(tag)}`}
-                    className="inline-flex items-center rounded-full border px-3 py-1 text-xs text-muted-foreground transition hover:bg-muted hover:text-foreground"
+                    className="bg-pink-400/30 inline-flex items-center rounded-full border px-3 py-1 text-xs text-muted-foreground transition hover:bg-orange-500/50 hover:text-foreground"
                   >
                     #{tag}
                   </Link>
@@ -102,8 +94,11 @@ export function ArtworkDetail({ artwork }: ArtworkDetailProps) {
               </div>
             </div>
           ) : null}
+        </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
+        {/* SHOW ONLY WHEN LOGGED IN */}
+        <CardFooter className="border-t px-6 py-4">
+          <div className="grid gap-5 sm:grid-cols-4">
             {hasCreatedAt ? (
               <div className="space-y-1 text-sm text-muted-foreground">
                 <p className="font-medium text-foreground">Date created</p>
@@ -117,14 +112,11 @@ export function ArtworkDetail({ artwork }: ArtworkDetailProps) {
                 <p className="text-xs">{formatDate(artwork.updatedAt!)}</p>
               </div>
             ) : null}
+            <DeleteArtworkButton
+              artworkId={artwork._id}
+              artworkTitle={artwork.title}
+            />
           </div>
-        </div>
-
-        <CardFooter className="border-t px-6 py-4">
-          <DeleteArtworkButton
-            artworkId={artwork._id}
-            artworkTitle={artwork.title}
-          />
         </CardFooter>
       </Card>
     </>

@@ -3,6 +3,7 @@
 import {
   Map,
   MapControls,
+  MarkerLabel,
   MapMarker,
   MarkerContent,
   MarkerPopup,
@@ -22,8 +23,9 @@ type ArtworksMapProps = {
 };
 
 const DEFAULT_LOCATION = {
-  lat: 52.52,
-  lng: 13.405,
+  // Kottbusser Tor, Berlin, germany
+  lat: 52.49905,
+  lng: 13.418327,
 };
 
 const MAP_STYLES = {
@@ -47,6 +49,9 @@ export function ArtworksMap({
   className,
 }: ArtworksMapProps) {
   const [initialCenter] = useState<[number, number]>(() => getInitialCenter());
+  const [userLocation, setUserLocation] = useState(() =>
+    getStoredUserLocation()
+  );
 
   return (
     <div className={cn("h-full overflow-hidden", className)}>
@@ -54,9 +59,9 @@ export function ArtworksMap({
         className="h-full w-full"
         viewport={{
           center: initialCenter,
-          zoom: 14,
+          zoom: 15,
           pitch: 60,
-          bearing: -20,
+          bearing: 0,
         }}
         styles={MAP_STYLES}
       >
@@ -67,43 +72,88 @@ export function ArtworksMap({
             showCompass={false}
             showLocate={true}
             showFullscreen={false}
+            onLocate={({ longitude, latitude }) => {
+              setUserLocation({
+                lng: longitude,
+                lat: latitude,
+                timestamp: Date.now(),
+              });
+            }}
           />
         ) : null}
-        {artworks.map((artwork) => (
-          <MapMarker
-            key={artwork._id}
-            longitude={artwork.longitude}
-            latitude={artwork.latitude}
-          >
-            <MarkerContent />
-            <MarkerPopup closeButton={true}>
-              <div className="w-56 space-y-3">
-                <div className="space-y-1">
-                  <p className="text-sm font-bold leading-tight">
-                    {artwork.title}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {artwork.artist || "Unknown artist"}
-                  </p>
-                </div>
 
-                <div className="relative aspect-video overflow-hidden rounded-md bg-muted">
-                  <Image
-                    src={artwork.imageUrl ?? "/images/artwork-placeholder.jpg"}
-                    alt={artwork.title}
-                    fill
-                    sizes="224px"
-                    className="object-cover"
-                  />
-                </div>
-
-                <Button asChild size="sm" className="w-full">
-                  <Link href={`/artworks/${artwork._id}`}>More Info</Link>
-                </Button>
+        {userLocation ? (
+          <MapMarker longitude={userLocation.lng} latitude={userLocation.lat}>
+            <MarkerContent>
+              <div className="relative flex items-center justify-center">
+                <div className="absolute h-10 w-10 rounded-full bg-sky-500/20" />
+                <div className="absolute h-6 w-6 rounded-full bg-sky-500/35 animate-ping animation-duration-[2s]" />
+                <div className="relative h-4 w-4 rounded-full border-2 border-white bg-sky-500 shadow-lg shadow-sky-500/50" />
               </div>
-            </MarkerPopup>
+              <MarkerLabel
+                position="bottom"
+                className="font-fjalla text-sm uppercase"
+              >
+                Your location
+              </MarkerLabel>
+            </MarkerContent>
           </MapMarker>
-        ))}
+        ) : null}
+
+        {artworks.map((artwork) => {
+          return (
+            <MapMarker
+              key={artwork._id}
+              longitude={artwork.longitude}
+              latitude={artwork.latitude}
+              className=""
+            >
+              <MarkerContent>
+                <div className="relative flex items-center justify-center">
+                  <div className="pointer-events-none absolute h-18 w-18 rounded-full bg-orange-500/15" />
+                  <div className="pointer-events-none absolute h-12 w-12 rounded-full bg-orange-500/35 animate-ping animation-duration-[3s]" />
+                  <div className="relative h-4 w-4 rounded-full bg-pink-500 shadow-lg shadow-pink-500/50" />
+                </div>
+
+                <MarkerLabel
+                  position="bottom"
+                  className="font-fjalla text-lg uppercase"
+                >
+                  {artwork.artist}
+                </MarkerLabel>
+              </MarkerContent>
+
+              <MarkerPopup closeButton={true}>
+                <div className="w-56 space-y-3">
+                  <div className="space-y-1">
+                    <p className="text-sm font-bold leading-tight">
+                      {artwork.title}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {artwork.artist || "Unknown artist"}
+                    </p>
+                  </div>
+
+                  <div className="relative aspect-video overflow-hidden rounded-md bg-muted">
+                    <Image
+                      src={
+                        artwork.imageUrl ?? "/images/artwork-placeholder.jpg"
+                      }
+                      alt={artwork.title}
+                      fill
+                      sizes="224px"
+                      className="object-cover"
+                    />
+                  </div>
+
+                  <Button asChild size="sm" className="w-full">
+                    <Link href={`/artworks/${artwork._id}`}>More Info</Link>
+                  </Button>
+                </div>
+              </MarkerPopup>
+            </MapMarker>
+          );
+        })}
       </Map>
     </div>
   );

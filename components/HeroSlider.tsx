@@ -3,11 +3,11 @@
 import { useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-// import heroImage from "figma:asset/642dfc8c304898f759f7fedb1f882b1d0f80a6a1.png";
 
 interface Slide {
   id: number;
@@ -25,45 +25,46 @@ const slides: Slide[] = [
     image: "/images/slider_image_001.jpg",
     title: "EXPLORE STREET ART IN BERLIN",
     subtitle: "Capture murals, tags, and locations as you explore the city",
-    cta: "START EXPLORING",
+    cta: "Start exploring",
     href: "/artworks",
     imagePositionX: "80%",
   },
   {
     id: 2,
-    image: "/images/slider_image_002.jpg",
-    title: "DISCOVER URBAN ARTWORKS",
-    subtitle:
-      "Find striking murals and iconic walls across the urban landscape.",
-    cta: "VIEW ARTWORKS",
-    href: "/artworks",
-    imagePositionX: "70%",
-  },
-  {
-    id: 3,
     image: "/images/slider_image_003.jpg",
     title: "FIND COLORFUL MURALS",
     subtitle: "Explore hidden spots and uncover vibrant walls across the city.",
-    cta: "OPEN MAP",
+    cta: "Open map",
     href: "/map",
     imagePositionX: "40%",
   },
   {
-    id: 4,
-    image: "/images/slider_image_004.jpg",
-    title: "MEET THE ARTISTS",
-    subtitle: "Discover the names, styles, and stories behind urban artworks.",
-    cta: "VIEW ARTISTS",
-    href: "/artists",
-    imagePositionX: "90%",
+    id: 3,
+    image: "/images/slider_image_002.jpg",
+    title: "DISCOVER URBAN ARTWORKS",
+    subtitle:
+      "Find striking murals and iconic walls across the urban landscape.",
+    cta: "View artworks",
+    href: "/artworks",
+    imagePositionX: "70%",
   },
+
+  //   {
+  //     id: 4,
+  //     image: "/images/slider_image_004.jpg",
+  //     title: "MEET THE ARTISTS",
+  //     subtitle: "Discover the names, styles, and stories behind urban artworks.",
+  //     cta: "View artists",
+  //     href: "/artists",
+  //     imagePositionX: "90%",
+  //   },
   {
-    id: 5,
+    id: 4,
     image: "/images/slider_image_005.jpg",
     title: "TRACK ART ACROSS THE CITY",
     subtitle:
       "Find new spots, revisit favorites, and explore urban art routes.",
-    cta: "START EXPLORING",
+    cta: "Start exporing",
     href: "/artworks",
     imagePositionX: "75%",
   },
@@ -75,11 +76,11 @@ export function HeroSlider() {
   const settings = {
     dots: false,
     infinite: true,
-    speed: 2000,
+    speed: 1500,
     slidesToShow: 1,
     slidesToScroll: 1,
     autoplay: true,
-    autoplaySpeed: 2000,
+    autoplaySpeed: 5000,
     pauseOnHover: true,
     arrows: false,
     fade: true,
@@ -113,39 +114,34 @@ export function HeroSlider() {
                   objectPosition: `${slide.imagePositionX ?? "50%"} center`,
                 }}
               />
-              <div className="absolute inset-0 bg-linear-to-r from-black/70 via-black/40 to-transparent" />
+              <div className="absolute inset-0 bg-linear-to-t from-black/90 to-transparent" />
             </div>
 
             <div className="relative h-full flex items-center">
               <div className="max-w-6xl mx-auto px-4 w-full">
                 <div className="max-w-2xl">
-                  <h1 className="font-fjalla text-6xl sm:text-6xl md:text-7xl lg:text-7xl text-white leading-none mb-2 mt-40 lg:mt-80">
+                  <h1 className="font-fjalla text-6xl md:text-7xl text-white leading-none mb-2 mt-40 lg:mt-80">
                     {slide.title}
                   </h1>
-                  {slide.cta && (
+                  {slide.cta && slide.href ? (
                     <div className="mt-8">
-                      <h2 className="text-pink-600 text-xl mb-2">
+                      <h2 className="mb-4 text-2xl lg:text-4xl text-pink-500 font-bold lg:font-medium">
                         {slide.subtitle}
                       </h2>
-                      {slide.cta && slide.href ? (
-                        <div className="mt-8">
-                          <h2 className="mb-2 text-xl text-pink-600">
-                            {slide.subtitle}
-                          </h2>
-                          <Link
-                            href={slide.href}
-                            className="group inline-flex items-center gap-2 border border-pink-600 p-4 text-sm font-medium text-pink-600 transition-colors hover:border-white hover:text-white"
-                          >
-                            <span>{slide.cta}</span>
-                            <ChevronRight
-                              size={20}
-                              className="transition-transform group-hover:translate-x-1"
-                            />
-                          </Link>
-                        </div>
-                      ) : null}
+                      <Button className="w-full md:w-auto">
+                        <a
+                          href={slide.href}
+                          className="group inline-flex items-center gap-2 text-lg"
+                        >
+                          <span>{slide.cta}</span>
+                          <ChevronRight
+                            size={20}
+                            className="transition-transform group-hover:translate-x-1"
+                          />
+                        </a>
+                      </Button>
                     </div>
-                  )}
+                  ) : null}
                 </div>
               </div>
             </div>

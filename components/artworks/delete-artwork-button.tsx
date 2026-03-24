@@ -67,9 +67,9 @@ export function DeleteArtworkButton({ artworkId }: DeleteArtworkButtonProps) {
         <div className="flex gap-3">
           <Button
             type="button"
-            variant="outline"
             onClick={() => setIsConfirming(false)}
             disabled={isDeleting}
+            className="hover:bg-sky-800 cursor-pointer"
             size="xs"
           >
             Cancel
@@ -77,7 +77,7 @@ export function DeleteArtworkButton({ artworkId }: DeleteArtworkButtonProps) {
 
           <Button
             type="button"
-            variant="destructive"
+            className="bg-red-600 hover:bg-red-800 cursor-pointer"
             onClick={handleDelete}
             disabled={isDeleting}
             size="xs"
@@ -91,7 +91,12 @@ export function DeleteArtworkButton({ artworkId }: DeleteArtworkButtonProps) {
 
   return (
     <div className="flex justify-end gap-3">
-      <Button asChild type="button" variant="outline" size="xs">
+      <Button
+        asChild
+        type="button"
+        size="xs"
+        className="hover:bg-sky-800 cursor-pointer"
+      >
         <Link href={`/artworks/${artworkId}/edit`}>
           <IconPencil className="size-4" />
           Edit
@@ -100,7 +105,7 @@ export function DeleteArtworkButton({ artworkId }: DeleteArtworkButtonProps) {
 
       <Button
         type="button"
-        variant="destructive"
+        className="bg-red-600 hover:bg-red-800 cursor-pointer"
         onClick={() => setIsConfirming(true)}
         size="xs"
       >
