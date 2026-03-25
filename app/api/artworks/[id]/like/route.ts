@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { connectDB } from "@/lib/db/mongodb";
-import { Like } from "@/lib/models/likes";
+import { Like } from "@/lib/models/like";
 import { Artwork } from "@/lib/models/artwork";
 
 type RouteContext = {
