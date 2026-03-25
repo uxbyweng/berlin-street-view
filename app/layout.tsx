@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Roboto, Fjalla_One } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
-import { UserLocationBootstrap } from "@/components/location/user-location-bootstrap";
+import { UserLocationBootstrap } from "@/components/map/user-location-bootstrap";
 import { Toaster } from "@/components/ui/sonner";
 
 const fjallaOne = Fjalla_One({
