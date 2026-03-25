@@ -1,32 +1,49 @@
+// components\artworks\like-toggle.tsx
+
 "use client";
 
 import { useState } from "react";
 import { IconHeart, IconHeartFilled } from "@tabler/icons-react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
 
-type LikeButtonProps = {
+type LikeToggleProps = {
   artworkId: string;
   initialLiked: boolean;
   initialLikeCount: number;
-  isAuthenticated: boolean;
+  isAuthenticated?: boolean;
+  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  className?: string;
+  countClassName?: string;
+  showCount?: boolean;
+  likedIconClassName?: string;
+  unlikedIconClassName?: string;
 };
 
-export function LikeButton({
+export function LikeToggle({
   artworkId,
   initialLiked,
   initialLikeCount,
-  isAuthenticated,
-}: LikeButtonProps) {
+  isAuthenticated = true,
+  onClick,
+  className = "",
+  countClassName = "",
+  showCount = true,
+  likedIconClassName = "size-5 fill-current text-pink-500",
+  unlikedIconClassName = "size-5 text-white",
+}: LikeToggleProps) {
   const [liked, setLiked] = useState(initialLiked);
   const [likeCount, setLikeCount] = useState(initialLikeCount);
   const [isPending, setIsPending] = useState(false);
 
-  async function handleLikeClick() {
+  async function handleLikeClick(event: React.MouseEvent<HTMLButtonElement>) {
+    onClick?.(event);
+
     if (!isAuthenticated) {
       toast.error("Log in to like this artwork.");
       return;
     }
+
+    if (isPending) return;
 
     setIsPending(true);
 
@@ -51,9 +68,8 @@ export function LikeButton({
   }
 
   return (
-    <Button
+    <button
       type="button"
-      variant="ghost"
       onClick={handleLikeClick}
       disabled={isPending}
       aria-pressed={liked}
@@ -64,18 +80,15 @@ export function LikeButton({
             : "Like artwork"
           : "Log in to like this artwork"
       }
-      className="h-auto px-1 py-1 hover:bg-transparent"
+      className={className}
     >
-      <span className="flex items-center gap-2 cursor-pointer">
-        {liked ? (
-          <IconHeartFilled className="size-6 transition text-red-500" />
-        ) : (
-          <IconHeart className="size-6 transition text-foreground" />
-        )}
-        <span className="text-base font-medium text-foreground">
-          {likeCount}
-        </span>
-      </span>
-    </Button>
+      {liked ? (
+        <IconHeartFilled className={likedIconClassName} />
+      ) : (
+        <IconHeart className={unlikedIconClassName} />
+      )}
+
+      {showCount ? <span className={countClassName}>{likeCount}</span> : null}
+    </button>
   );
 }

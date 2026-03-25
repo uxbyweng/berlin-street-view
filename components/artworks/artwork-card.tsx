@@ -1,6 +1,11 @@
+// components\artworks\artwork-card.tsx
+
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
-import { IconHeart, IconMapPinFilled } from "@tabler/icons-react";
+import { IconMapPinFilled } from "@tabler/icons-react";
+import { LikeToggle } from "@/components/artworks/like-toggle";
 
 import { Card } from "@/components/ui/card";
 import type { Artwork } from "@/types/artwork";
@@ -8,6 +13,7 @@ import type { Artwork } from "@/types/artwork";
 type ArtworkCardProps = {
   artwork: Artwork & {
     likeCount?: number;
+    isLiked?: boolean;
   };
   href: string;
   index: number;
@@ -15,16 +21,15 @@ type ArtworkCardProps = {
 
 export function ArtworkCard({ artwork, href, index }: ArtworkCardProps) {
   const shouldPreload = index < 3;
-
   const hasCoordinates = artwork.latitude != null && artwork.longitude != null;
 
   return (
     <Card className="mx-auto flex h-full w-full max-w-sm flex-col overflow-hidden py-0 transition hover:shadow-md">
-      <Link
-        href={href}
-        className="flex h-full flex-col focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-      >
-        <div className="relative">
+      <div className="relative">
+        <Link
+          href={href}
+          className="flex h-full flex-col focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+        >
           <Image
             src={artwork.imageUrl ?? "/images/artwork-placeholder.jpg"}
             alt={`${artwork.title}${artwork.artist ? ` - ${artwork.artist}` : ""}`}
@@ -54,27 +59,34 @@ export function ArtworkCard({ artwork, href, index }: ArtworkCardProps) {
               </div>
             </div>
 
-            <div className="flex items-end justify-between text-xs">
-              <div className="min-w-0">
-                {hasCoordinates ? (
-                  <div className="flex items-center gap-1 text-white/90">
-                    <IconMapPinFilled className="size-3.5 shrink-0" />
-                    <span className="truncate">
-                      {artwork.latitude.toFixed(4)},{" "}
-                      {artwork.longitude.toFixed(4)}
-                    </span>
-                  </div>
-                ) : null}
-              </div>
+            <div className="flex items-center justify-between text-xs text-white/90">
+              <LikeToggle
+                artworkId={artwork._id}
+                initialLiked={Boolean(artwork.isLiked)}
+                initialLikeCount={artwork.likeCount ?? 0}
+                onClick={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                }}
+                className="inline-flex items-center gap-1.5 rounded-md px-1 py-1 transition disabled:opacity-60"
+                likedIconClassName="size-5 fill-current text-pink-500"
+                unlikedIconClassName="size-5 text-white"
+                countClassName="text-xs text-white/90"
+              />
 
-              <div className="ml-3 flex shrink-0 items-center gap-1 text-white/90">
-                <IconHeart className="size-4" />
-                <span>{artwork.likeCount ?? 0}</span>
-              </div>
+              {hasCoordinates ? (
+                <div className="ml-3 inline-flex min-w-0 items-center gap-1">
+                  <IconMapPinFilled className="size-3.5 shrink-0" />
+                  <span className="truncate">
+                    {artwork.latitude.toFixed(4)},{" "}
+                    {artwork.longitude.toFixed(4)}
+                  </span>
+                </div>
+              ) : null}
             </div>
           </div>
-        </div>
-      </Link>
+        </Link>
+      </div>
     </Card>
   );
 }
