@@ -66,9 +66,9 @@ export function LikeButton({
       }
       className="h-auto px-1 py-1 hover:bg-transparent"
     >
-      <span className="flex items-center gap-2">
+      <span className="flex items-center gap-2 cursor-pointer">
         {liked ? (
-          <IconHeartFilled className="size-6 transition text-red-500 " />
+          <IconHeartFilled className="size-6 transition text-red-500" />
         ) : (
           <IconHeart className="size-6 transition text-foreground" />
         )}
