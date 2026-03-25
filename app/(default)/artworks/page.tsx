@@ -14,6 +14,25 @@ type ArtworksPageProps = {
   }>;
 };
 
+function serializeArtwork(artwork: any) {
+  return {
+    _id: artwork._id.toString(),
+    title: artwork.title,
+    artist: artwork.artist,
+    description: artwork.description,
+    imageUrl: artwork.imageUrl ?? "",
+    cloudinaryPublicId: artwork.cloudinaryPublicId ?? "",
+    latitude: artwork.latitude ?? null,
+    longitude: artwork.longitude ?? null,
+    tags: Array.isArray(artwork.tags) ? artwork.tags : [],
+    owner: artwork.owner?.toString?.() ?? "",
+    createdAt: artwork.createdAt?.toISOString?.() ?? "",
+    updatedAt: artwork.updatedAt?.toISOString?.() ?? "",
+    likeCount: artwork.likeCount ?? 0,
+    isLiked: Boolean(artwork.isLiked),
+  };
+}
+
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
@@ -31,6 +50,14 @@ export default async function ArtworksPage({
 
   let artworks = [];
 
+  const userLikedArtworkIds = session?.user?.id
+    ? new Set(
+        (await Like.find({ userId: session.user.id }).lean()).map((like) =>
+          like.artworkId.toString()
+        )
+      )
+    : new Set<string>();
+
   if (liked && session?.user?.id) {
     const likes = await Like.find({ userId: session.user.id })
       .sort({ createdAt: -1 })
@@ -38,7 +65,7 @@ export default async function ArtworksPage({
 
     const artworkIds = likes.map((like) => like.artworkId);
 
-    artworks = await Artwork.find({
+    const likedArtworks = await Artwork.find({
       _id: { $in: artworkIds },
     }).lean();
 
@@ -60,12 +87,20 @@ export default async function ArtworksPage({
       likeCounts.map((entry) => [entry._id.toString(), entry.count])
     );
 
-    artworks = artworks.map((artwork) => ({
-      ...artwork,
-      likeCount: likeCountMap.get(artwork._id.toString()) ?? 0,
-    }));
+    artworks = likedArtworks.map((artwork) =>
+      serializeArtwork({
+        ...artwork,
+        likeCount: likeCountMap.get(artwork._id.toString()) ?? 0,
+        isLiked: userLikedArtworkIds.has(artwork._id.toString()),
+      })
+    );
   } else {
-    artworks = await getArtworks();
+    artworks = (await getArtworks()).map((artwork) =>
+      serializeArtwork({
+        ...artwork,
+        isLiked: userLikedArtworkIds.has(artwork._id.toString()),
+      })
+    );
   }
 
   const pageTitle = "Artworks";

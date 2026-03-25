@@ -1,3 +1,4 @@
+import { auth } from "@/auth";
 import { ArtworkList } from "@/components/artworks/artwork-list";
 import { getLatestArtworks } from "@/lib/data/artworks";
 import { HeroSlider } from "@/components/HeroSlider";
@@ -5,7 +6,8 @@ import { HeroSlider } from "@/components/HeroSlider";
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const latestArtworks = await getLatestArtworks(3);
+  const session = await auth();
+  const latestArtworks = await getLatestArtworks(3, session?.user?.id);
 
   return (
     <>

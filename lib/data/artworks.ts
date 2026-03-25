@@ -33,7 +33,11 @@ function toIsoString(value: unknown): string | undefined {
   return undefined;
 }
 
-function serializeArtwork(doc: any, likeCount = 0): Artwork {
+function serializeArtwork(
+  doc: any,
+  likeCount = 0,
+  isLiked = false
+): Artwork & { likeCount: number; isLiked: boolean } {
   return {
     _id: doc._id.toString(),
     title: doc.title,
@@ -46,6 +50,7 @@ function serializeArtwork(doc: any, likeCount = 0): Artwork {
     createdAt: toIsoString(doc.createdAt),
     updatedAt: toIsoString(doc.updatedAt),
     likeCount,
+    isLiked,
   };
 }
 
@@ -81,21 +86,57 @@ export async function getArtworks(): Promise<Artwork[]> {
 
 // Nur neueste Artworks aus Datenbank laden.
 // per default werden 3 Einträge geladen.
-export async function getLatestArtworks(limit = 3): Promise<Artwork[]> {
+export async function getLatestArtworks(
+  limit = 3,
+  userId?: string
+): Promise<(Artwork & { likeCount: number; isLiked: boolean })[]> {
   await connectDB();
 
   const artworks = await ArtworkModel.find()
     .sort({ createdAt: -1 })
     .limit(limit)
     .lean();
-  //   console.log(
-  //     artworks.map((artwork) => ({
-  //       title: artwork.title,
-  //       createdAt: artwork.createdAt,
-  //     }))
-  //   );
 
-  return artworks.map(serializeArtwork);
+  const artworkIds = artworks.map((artwork) => artwork._id);
+
+  const likeCounts = await Like.aggregate([
+    {
+      $match: {
+        artworkId: { $in: artworkIds },
+      },
+    },
+    {
+      $group: {
+        _id: "$artworkId",
+        likeCount: { $sum: 1 },
+      },
+    },
+  ]);
+
+  const likeCountMap = new Map<string, number>(
+    likeCounts.map((entry) => [entry._id.toString(), entry.likeCount])
+  );
+
+  let userLikedArtworkIds = new Set<string>();
+
+  if (userId) {
+    const userLikes = await Like.find({
+      userId,
+      artworkId: { $in: artworkIds },
+    }).lean();
+
+    userLikedArtworkIds = new Set(
+      userLikes.map((like) => like.artworkId.toString())
+    );
+  }
+
+  return artworks.map((artwork) =>
+    serializeArtwork(
+      artwork,
+      likeCountMap.get(artwork._id.toString()) ?? 0,
+      userLikedArtworkIds.has(artwork._id.toString())
+    )
+  );
 }
 
 export const getArtworkById = cache(

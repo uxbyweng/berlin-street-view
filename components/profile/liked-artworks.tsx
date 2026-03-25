@@ -76,7 +76,7 @@ export function LikedArtworks({ likedArtworks }: LikedArtworksProps) {
                           <span className="truncate text-[10px] font-medium text-white">
                             {artwork.artist ?? "Unknown artist"}
                           </span>
-                          <IconHeart className="h-3.5 w-3.5 fill-red-500 text-red-500" />
+                          <IconHeart className="h-4 w-4 fill-pink-500 text-pink-500" />
                         </div>
                       </article>
                     </Link>
