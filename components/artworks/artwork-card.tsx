@@ -24,7 +24,7 @@ export function ArtworkCard({ artwork, href, index }: ArtworkCardProps) {
   const hasCoordinates = artwork.latitude != null && artwork.longitude != null;
 
   return (
-    <Card className="mx-auto flex h-full w-full max-w-sm flex-col overflow-hidden py-0 transition hover:shadow-md">
+    <Card className="mx-auto flex h-full w-full max-w-sm flex-col overflow-hidden py-0 transition hover:shadow-md focus-within:ring-2 focus-within:ring-white focus-within:ring-offset-2 focus-within:ring-offset-background">
       <div className="relative">
         <Link
           href={href}
