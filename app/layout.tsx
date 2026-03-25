@@ -4,7 +4,6 @@ import { Geist, Geist_Mono, Roboto, Fjalla_One } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { UserLocationBootstrap } from "@/components/location/user-location-bootstrap";
-// import { MapRoutePrefetch } from "@/components/navigation/map-route-prefetch";
 import { Toaster } from "@/components/ui/sonner";
 
 const fjallaOne = Fjalla_One({

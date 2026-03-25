@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import { ArtworkList } from "@/components/artworks/artwork-list";
 import { getLatestArtworks } from "@/lib/data/artworks";
-import { HeroSlider } from "@/components/HeroSlider";
+import { HeroSlider } from "@/components/home/hero-slider";
 
 export const dynamic = "force-dynamic";
 
