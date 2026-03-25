@@ -5,15 +5,18 @@ import Image from "next/image";
 import { IconMaximize, IconX } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
+import { cn } from "@/lib/utils";
 
 type ArtworkImageViewerProps = {
   src: string;
   alt: string;
+  className?: string;
 };
 
 type FullscreenOverlayProps = {
   src: string;
   alt: string;
+  className?: string;
   onClose: () => void;
 };
 
@@ -30,7 +33,12 @@ function useLockBodyScroll(isLocked: boolean) {
   }, [isLocked]);
 }
 
-function FullscreenOverlay({ src, alt, onClose }: FullscreenOverlayProps) {
+function FullscreenOverlay({
+  src,
+  alt,
+  onClose,
+  className,
+}: FullscreenOverlayProps) {
   useLockBodyScroll(true);
 
   React.useEffect(() => {
@@ -48,7 +56,12 @@ function FullscreenOverlay({ src, alt, onClose }: FullscreenOverlayProps) {
   }, [onClose]);
 
   return (
-    <div className="fixed inset-x-0 bottom-0 top-14 z-50 bg-black/70">
+    <div
+      className={cn(
+        "fixed inset-x-0 bottom-0 top-14 z-50 bg-black/70",
+        className
+      )}
+    >
       <div className="absolute right-4 top-4 z-20">
         <Button
           type="button"
@@ -94,7 +107,11 @@ function FullscreenOverlay({ src, alt, onClose }: FullscreenOverlayProps) {
   );
 }
 
-export function ArtworkImageViewer({ src, alt }: ArtworkImageViewerProps) {
+export function ArtworkImageViewer({
+  src,
+  alt,
+  className,
+}: ArtworkImageViewerProps) {
   const [isFullscreenOpen, setIsFullscreenOpen] = React.useState(false);
 
   const openFullscreen = React.useCallback(() => {
@@ -107,7 +124,7 @@ export function ArtworkImageViewer({ src, alt }: ArtworkImageViewerProps) {
 
   return (
     <>
-      <div className="relative">
+      <div className={cn("relative", className)}>
         <Image
           src={src}
           alt={alt}

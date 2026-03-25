@@ -104,14 +104,14 @@ export default async function ArtworksPage({
   }
 
   const pageTitle = "Artworks";
-  const pageSubtitle = "Discover interesting artworks.";
+  const pageSubtitle = "";
 
   return (
     <>
       <PageIntro
         title={pageTitle}
         subtitle={pageSubtitle}
-        className="max-w-6xl"
+        className="font-fjalla rounded-none h-70 lg:h-100 sm:px-5 md:px-10 lg:px-40 lg:py-15 text-black  bg-[url('/images/stage_artworks.jpg')] bg-cover bg-top bg-no-repeat"
       />
 
       <section className="mx-auto mt-6 max-w-6xl px-4">
