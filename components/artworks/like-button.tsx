@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Heart } from "lucide-react";
+import { IconHeart, IconHeartFilled } from "@tabler/icons-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 
@@ -24,7 +24,7 @@ export function LikeButton({
 
   async function handleLikeClick() {
     if (!isAuthenticated) {
-      toast.error("Please log in to like artworks.");
+      toast.error("Log in to like this artwork.");
       return;
     }
 
@@ -35,7 +35,7 @@ export function LikeButton({
         method: liked ? "DELETE" : "POST",
       });
 
-      const data = await response.json();
+      const data = await response.json().catch(() => null);
 
       if (!response.ok) {
         throw new Error(data?.message ?? "Like request failed.");
@@ -51,30 +51,31 @@ export function LikeButton({
   }
 
   return (
-    <div className="space-y-2">
-      <div className="flex items-center gap-3">
-        <Button
-          type="button"
-          variant={liked ? "default" : "outline"}
-          onClick={handleLikeClick}
-          disabled={isPending || !isAuthenticated}
-          aria-pressed={liked}
-          aria-label={liked ? "Remove like" : "Like artwork"}
-        >
-          <Heart className={liked ? "fill-current" : ""} />
-          {liked ? "Liked" : "Like"}
-        </Button>
-
-        <span className="text-sm text-muted-foreground">
-          {likeCount} {likeCount === 1 ? "like" : "likes"}
+    <Button
+      type="button"
+      variant="ghost"
+      onClick={handleLikeClick}
+      disabled={isPending}
+      aria-pressed={liked}
+      aria-label={
+        isAuthenticated
+          ? liked
+            ? "Remove like"
+            : "Like artwork"
+          : "Log in to like this artwork"
+      }
+      className="h-auto px-1 py-1 hover:bg-transparent"
+    >
+      <span className="flex items-center gap-2">
+        {liked ? (
+          <IconHeartFilled className="size-6 transition text-red-500 " />
+        ) : (
+          <IconHeart className="size-6 transition text-foreground" />
+        )}
+        <span className="text-base font-medium text-foreground">
+          {likeCount}
         </span>
-      </div>
-
-      {!isAuthenticated ? (
-        <p className="text-sm text-muted-foreground">
-          Log in to like this artwork.
-        </p>
-      ) : null}
-    </div>
+      </span>
+    </Button>
   );
 }
