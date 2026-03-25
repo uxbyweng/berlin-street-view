@@ -122,7 +122,7 @@ export function HeroSlider() {
 
                     {slide.cta && slide.href ? (
                       <div className="mt-8">
-                        <h2 className="mb-4 text-2xl font-bold text-pink-500 lg:text-4xl lg:font-medium">
+                        <h2 className="mb-8 text-2xl font-bold text-pink-500 lg:text-4xl lg:font-medium">
                           {slide.subtitle}
                         </h2>
 
