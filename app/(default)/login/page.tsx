@@ -28,8 +28,10 @@ export default function LoginPage() {
       redirect: false,
     });
 
+    console.log("credentials signIn result:", result);
+
     if (result?.error) {
-      setError("Invalid username or password.");
+      setError(result.error);
       setIsSubmitting(false);
       return;
     }
@@ -37,6 +39,27 @@ export default function LoginPage() {
     router.push("/");
     router.refresh();
   }
+
+  //   async function handlePreviewLogin(event: React.FormEvent<HTMLFormElement>) {
+  //     event.preventDefault();
+  //     setError("");
+  //     setIsSubmitting(true);
+
+  //     const result = await signIn("credentials", {
+  //       username,
+  //       password,
+  //       redirect: false,
+  //     });
+
+  //     if (result?.error) {
+  //       setError("Invalid username or password.");
+  //       setIsSubmitting(false);
+  //       return;
+  //     }
+
+  //     router.push("/");
+  //     router.refresh();
+  //   }
 
   return (
     <div className="relative h-[100svh] overflow-hidden">

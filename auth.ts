@@ -27,45 +27,67 @@ const providers = [
             },
           },
           async authorize(credentials) {
-            if (
-              credentials?.username !== "fisch" ||
-              credentials?.password !== "fisch"
-            ) {
+            try {
+              console.log("Preview credentials received:", {
+                username: credentials?.username,
+                passwordPresent: Boolean(credentials?.password),
+                vercelEnv: process.env.VERCEL_ENV,
+              });
+
+              const username = credentials?.username?.trim();
+              const password = credentials?.password?.trim();
+
+              if (username !== "fisch" || password !== "fisch") {
+                console.log("Preview credentials invalid");
+                return null;
+              }
+
+              await connectDB();
+
+              const provider = "credentials";
+              const providerAccountId = "preview-fisch-user";
+
+              const previewUser = await User.findOneAndUpdate(
+                { provider, providerAccountId },
+                {
+                  provider,
+                  providerAccountId,
+                  username: "fisch",
+                  name: "Neuer Fisch",
+                  email: "test@example.com",
+                  image: "",
+                  role: "admin",
+                },
+                {
+                  new: true,
+                  upsert: true,
+                  setDefaultsOnInsert: true,
+                }
+              );
+
+              console.log(
+                "Preview user upserted:",
+                previewUser?._id?.toString()
+              );
+
+              if (!previewUser) {
+                return null;
+              }
+
+              return {
+                id: previewUser._id.toString(),
+                name: previewUser.name,
+                email: previewUser.email,
+                image: previewUser.image,
+                provider: previewUser.provider,
+                providerAccountId: previewUser.providerAccountId,
+                role: previewUser.role,
+                username: previewUser.username,
+              };
+            } catch (error) {
+              console.error("Credentials authorize error:", error);
               return null;
             }
-
-            await connectDB();
-
-            const provider = "credentials";
-            const providerAccountId = "preview-fisch-user";
-
-            const previewUser = await User.findOneAndUpdate(
-              { provider, providerAccountId },
-              {
-                provider,
-                providerAccountId,
-                username: "fisch",
-                name: "Neuer Fisch",
-                email: "test@example.com",
-                image: "",
-                role: "admin",
-              },
-              {
-                new: true,
-                upsert: true,
-              }
-            );
-
-            return {
-              id: previewUser._id.toString(),
-              name: previewUser.name,
-              email: previewUser.email,
-              image: previewUser.image,
-              provider: previewUser.provider,
-              providerAccountId: previewUser.providerAccountId,
-              role: previewUser.role,
-              username: previewUser.username,
-            };
           },
         }),
       ]
