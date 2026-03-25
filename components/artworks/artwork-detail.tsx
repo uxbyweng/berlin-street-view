@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { auth } from "@/auth";
+// import { auth } from "@/auth";
 import { ArtworkImageViewer } from "@/components/artworks/artwork-image-viewer";
 import { MapPicker } from "@/components/map/map-picker";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,9 @@ import type { Artwork } from "@/types/artwork";
 
 type ArtworkDetailProps = {
   artwork: Artwork;
+  initialLikeCount: number;
+  initialLiked: boolean;
+  isAuthenticated: boolean;
 };
 
 export async function ArtworkDetail({ artwork }: ArtworkDetailProps) {
