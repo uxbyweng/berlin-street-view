@@ -18,7 +18,7 @@ export default async function HomePage() {
         <HeroSlider />
       </div>
 
-      <section className="mx-auto max-w-6xl my-20 px-4">
+      <section className="mx-auto max-w-6xl my-10 lg:my-20 px-4">
         <div className="mb-10">
           <h2 className="font-fjalla uppercase text-3xl md:text-4xl lg:text-5xl font-black text-white mb-2">
             Newest Artworks

@@ -146,6 +146,7 @@ export function MobileMenu() {
               <TextLink
                 href="https://github.com/uxbyweng/street-lens"
                 target="_blank"
+                onClick={closeMenu}
               >
                 <IconBrandGithub
                   size={40}
@@ -157,6 +158,7 @@ export function MobileMenu() {
               <TextLink
                 href="https://www.linkedin.com/in/kweng/"
                 target="_blank"
+                onClick={closeMenu}
               >
                 <IconBrandLinkedin
                   size={40}
@@ -168,6 +170,7 @@ export function MobileMenu() {
               <TextLink
                 href="https://www.instagram.com/blnstreetview/"
                 target="_blank"
+                onClick={closeMenu}
               >
                 <IconBrandInstagram
                   size={40}
@@ -184,6 +187,7 @@ export function MobileMenu() {
                 href="/imprint"
                 target="_self"
                 className="text-xs text-muted-foreground"
+                onClick={closeMenu}
               >
                 Imprint
               </TextLink>
