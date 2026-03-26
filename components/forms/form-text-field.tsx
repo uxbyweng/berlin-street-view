@@ -23,15 +23,20 @@ export function FormTextField<TFormValues extends Record<string, any>>({
       control={control}
       render={({ field, fieldState }) => (
         <Field data-invalid={fieldState.invalid}>
-          <FieldLabel htmlFor={field.name}>{label}</FieldLabel>
+          <FieldLabel className="text-xl" htmlFor={field.name}>
+            {label}
+          </FieldLabel>
           <Input
             {...field}
             id={field.name}
             aria-invalid={fieldState.invalid}
             placeholder={placeholder}
+            className="h-12 bg-gray-800! text-lg! text-foreground placeholder:text-muted-foreground"
           />
           <FieldDescription
-            className={fieldState.invalid ? "text-destructive" : ""}
+            className={
+              fieldState.invalid ? "text-destructive text-base!" : " text-base!"
+            }
           >
             {fieldState.error?.message ?? description}
           </FieldDescription>

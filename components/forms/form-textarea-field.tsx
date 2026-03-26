@@ -28,7 +28,9 @@ export function FormTextareaField<TFormValues extends Record<string, any>>({
       control={control}
       render={({ field, fieldState }) => (
         <Field data-invalid={fieldState.invalid}>
-          <FieldLabel htmlFor={field.name}>{label}</FieldLabel>
+          <FieldLabel className="text-xl" htmlFor={field.name}>
+            {label}
+          </FieldLabel>
           <InputGroup>
             <InputGroupTextarea
               {...field}
@@ -36,6 +38,7 @@ export function FormTextareaField<TFormValues extends Record<string, any>>({
               rows={rows}
               aria-invalid={fieldState.invalid}
               placeholder={placeholder}
+              className="bg-gray-800! text-lg!"
             />
             <InputGroupAddon align="block-end">
               <InputGroupText className="tabular-nums">
