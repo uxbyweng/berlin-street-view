@@ -27,6 +27,16 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 
+/* ERLAUBTE TAGS */
+const ALLOWED_TAGS = [
+  "stencil",
+  "mural",
+  "paste-up",
+  "paint",
+  "canvas",
+  "spray-paint",
+] as const;
+
 /* SCHEMA */
 // Definition, was "richtig" ausgefüllt bedeutet.
 const artworkFormSchema = z.object({
@@ -60,7 +70,7 @@ const artworkFormSchema = z.object({
       const number = Number(value);
       return !Number.isNaN(number) && number >= -180 && number <= 180;
     }, "Longitude must be between -180 and 180."),
-  tags: z.string().optional(),
+  tags: z.array(z.enum(ALLOWED_TAGS)).default([]),
 });
 
 /* EXPORT TYPES */
