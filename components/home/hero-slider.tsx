@@ -115,13 +115,13 @@ export function HeroSlider() {
               <div className="relative flex h-[calc(100vh-10rem)] md:h-[calc(100vh-5rem)] items-center">
                 <div className="mx-auto w-full max-w-6xl px-4">
                   <div className="max-w-2xl">
-                    <h1 className="mb-2 mt-20 font-fjalla text-6xl leading-none text-white md:text-7xl lg:mt-80">
+                    <h1 className="mb-2 mt-20 font-fjalla text-6xl md:text-7xl leading-none text-white md:mt-50">
                       {slide.title}
                     </h1>
 
                     {slide.cta && slide.href ? (
                       <div className="mt-8">
-                        <h2 className="mb-8 text-2xl font-bold text-pink-500 lg:text-4xl lg:font-medium">
+                        <h2 className="mb-8 font-fjalla text-3xl md:text-4xl uppercase text-gray-400 md:font-medium">
                           {slide.subtitle}
                         </h2>
 
