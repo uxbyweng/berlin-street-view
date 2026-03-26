@@ -103,16 +103,6 @@ function parseCoordinate(value?: string): number | undefined {
   return Number.isNaN(parsedValue) ? undefined : parsedValue;
 }
 
-//  Text (anhand von Komma) in Array umwandeln
-function parseTags(value?: string): string[] {
-  if (!value) return [];
-
-  return value
-    .split(",")
-    .map((tag) => tag.trim())
-    .filter(Boolean);
-}
-
 // Formular-Werte in Objekt für Datenbank bündeln
 function buildArtworkPayload(values: ArtworkFormValues): ArtworkPayload {
   return {
