@@ -5,15 +5,18 @@ import Image from "next/image";
 import { IconMaximize, IconX } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
+import { cn } from "@/lib/utils";
 
 type ArtworkImageViewerProps = {
   src: string;
   alt: string;
+  className?: string;
 };
 
 type FullscreenOverlayProps = {
   src: string;
   alt: string;
+  className?: string;
   onClose: () => void;
 };
 
@@ -30,7 +33,12 @@ function useLockBodyScroll(isLocked: boolean) {
   }, [isLocked]);
 }
 
-function FullscreenOverlay({ src, alt, onClose }: FullscreenOverlayProps) {
+function FullscreenOverlay({
+  src,
+  alt,
+  onClose,
+  className,
+}: FullscreenOverlayProps) {
   useLockBodyScroll(true);
 
   React.useEffect(() => {
@@ -48,7 +56,12 @@ function FullscreenOverlay({ src, alt, onClose }: FullscreenOverlayProps) {
   }, [onClose]);
 
   return (
-    <div className="fixed inset-x-0 bottom-0 top-14 z-50 bg-black/70">
+    <div
+      className={cn(
+        "fixed inset-x-0 bottom-0 top-14 z-50 bg-black/70",
+        className
+      )}
+    >
       <div className="absolute right-4 top-4 z-20">
         <Button
           type="button"
@@ -80,11 +93,13 @@ function FullscreenOverlay({ src, alt, onClose }: FullscreenOverlayProps) {
               <Image
                 src={src}
                 alt={alt}
-                width={2400}
-                height={1600}
+                width={1200}
+                height={675}
                 sizes="100vw"
-                quality={90}
-                className="h-full w-full object-contain"
+                loading="eager"
+                fetchPriority="high"
+                quality={75}
+                className="aspect-video w-full object-cover lg:aspect-auto lg:max-h-120"
               />
             </div>
           </TransformComponent>
@@ -94,7 +109,11 @@ function FullscreenOverlay({ src, alt, onClose }: FullscreenOverlayProps) {
   );
 }
 
-export function ArtworkImageViewer({ src, alt }: ArtworkImageViewerProps) {
+export function ArtworkImageViewer({
+  src,
+  alt,
+  className,
+}: ArtworkImageViewerProps) {
   const [isFullscreenOpen, setIsFullscreenOpen] = React.useState(false);
 
   const openFullscreen = React.useCallback(() => {
@@ -107,14 +126,14 @@ export function ArtworkImageViewer({ src, alt }: ArtworkImageViewerProps) {
 
   return (
     <>
-      <div className="relative">
+      <div className={cn("relative", className)}>
         <Image
           src={src}
           alt={alt}
           width={1200}
           height={675}
           sizes="(max-width: 768px) 100vw, 1024px"
-          className="aspect-video lg:aspect-auto lg:max-h-120 w-full object-cover top-0"
+          className="aspect-video lg:aspect-auto lg:max-h-120 w-full object-cover object-[center_20%]"
         />
 
         <Button

@@ -11,14 +11,13 @@ import {
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { IconHeart } from "@tabler/icons-react";
+import { LikeToggle } from "@/components/artworks/like-toggle";
 import type { Artwork } from "@/types/artwork";
 import { getStoredUserLocation } from "@/lib/location/storage";
 import { useState } from "react";
 
 type ArtworksMapProps = {
-  artworks: (Artwork & { likeCount?: number })[];
+  artworks: (Artwork & { likeCount?: number; isLiked?: boolean })[];
   showControls?: boolean;
   className?: string;
 };
@@ -124,8 +123,8 @@ export function ArtworksMap({
                 </MarkerLabel>
               </MarkerContent>
 
-              <MarkerPopup closeButton={true}>
-                <div className="w-56 lg:w-100 space-y-3">
+              <MarkerPopup closeButton={true} className="bg-black px-5 py-3">
+                <div className="w-56 lg:w-90 space-y-3">
                   <div className="space-y-2">
                     <div className="space-y-1">
                       <p className="line-clamp-1 text-sm lg:text-xl font-bold uppercase text-pink-500">
@@ -137,26 +136,35 @@ export function ArtworksMap({
                     </div>
 
                     <div className="flex items-center gap-1 text-xs lg:text-base text-white/80">
-                      <IconHeart className="size-4" />
-                      <span>{artwork.likeCount ?? 0}</span>
+                      <LikeToggle
+                        artworkId={artwork._id}
+                        initialLiked={Boolean(artwork.isLiked)}
+                        initialLikeCount={artwork.likeCount ?? 0}
+                        onClick={(event) => {
+                          event.preventDefault();
+                          event.stopPropagation();
+                        }}
+                        className="cursor-pointer inline-flex items-center gap-1.5 rounded-md px-1 py-1 transition disabled:opacity-60"
+                        likedIconClassName="size-5 fill-current text-pink-500"
+                        unlikedIconClassName="size-5 text-white hover:text-pink-500"
+                        countClassName="text-xs text-white/90"
+                      />
                     </div>
                   </div>
 
                   <div className="relative aspect-video overflow-hidden rounded-md bg-muted">
-                    <Image
-                      src={
-                        artwork.imageUrl ?? "/images/artwork-placeholder.jpg"
-                      }
-                      alt={artwork.title}
-                      fill
-                      sizes="224px"
-                      className="object-cover"
-                    />
+                    <Link href={`/artworks/${artwork._id}`}>
+                      <Image
+                        src={
+                          artwork.imageUrl ?? "/images/artwork-placeholder.jpg"
+                        }
+                        alt={artwork.title}
+                        fill
+                        sizes="224px"
+                        className="object-cover"
+                      />
+                    </Link>
                   </div>
-
-                  <Button asChild size="sm" className="w-full">
-                    <Link href={`/artworks/${artwork._id}`}>More Info</Link>
-                  </Button>
                 </div>
               </MarkerPopup>
             </MapMarker>

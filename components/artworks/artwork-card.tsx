@@ -1,12 +1,9 @@
-// components\artworks\artwork-card.tsx
-
 "use client";
 
 import Image from "next/image";
 import Link from "next/link";
 import { IconMapPinFilled } from "@tabler/icons-react";
 import { LikeToggle } from "@/components/artworks/like-toggle";
-
 import { Card } from "@/components/ui/card";
 import type { Artwork } from "@/types/artwork";
 
@@ -17,14 +14,20 @@ type ArtworkCardProps = {
   };
   href: string;
   index: number;
+  isLikedFilterActive?: boolean;
 };
 
-export function ArtworkCard({ artwork, href, index }: ArtworkCardProps) {
+export function ArtworkCard({
+  artwork,
+  href,
+  index,
+  isLikedFilterActive = false,
+}: ArtworkCardProps) {
   const shouldPreload = index < 3;
   const hasCoordinates = artwork.latitude != null && artwork.longitude != null;
 
   return (
-    <Card className="mx-auto flex h-full w-full max-w-sm flex-col overflow-hidden py-0 transition hover:shadow-md">
+    <Card className="mx-auto flex h-full w-full max-w-sm flex-col overflow-hidden py-0 transition hover:shadow-md focus-within:ring-2 focus-within:ring-white focus-within:ring-offset-2 focus-within:ring-offset-background">
       <div className="relative">
         <Link
           href={href}
@@ -39,20 +42,18 @@ export function ArtworkCard({ artwork, href, index }: ArtworkCardProps) {
             preload={shouldPreload}
             className="aspect-video w-full object-cover"
           />
-
-          <div className="absolute inset-0 bg-linear-to-t from-black/65 via-black/15 to-transparent" />
-
+          <div className="absolute inset-0 bg-linear-to-t from-black/85 via-sky-900/55 to-transparent" />
           <div className="absolute inset-x-0 bottom-0 flex h-full flex-col justify-end p-1">
-            <div className="mb-1 space-y-1">
+            <div className="mb-3">
               {artwork.artist ? (
-                <div className="block w-fit max-w-[85%] bg-black/70 px-2 py-1">
-                  <p className="line-clamp-1 text-lg font-semibold uppercase tracking-wide text-pink-500">
+                <div className="block w-fit max-w-[85%] bg-black/70 px-2">
+                  <p className="line-clamp-1 text-md font-semibold uppercase tracking-wide text-pink-500">
                     {artwork.artist}
                   </p>
                 </div>
               ) : null}
 
-              <div className="block w-fit max-w-[92%] bg-black/70 px-2 py-1">
+              <div className="block w-fit max-w-[92%] bg-black/70 px-2">
                 <p className="line-clamp-2 text-lg font-semibold leading-tight text-white">
                   {artwork.title}
                 </p>
@@ -64,13 +65,14 @@ export function ArtworkCard({ artwork, href, index }: ArtworkCardProps) {
                 artworkId={artwork._id}
                 initialLiked={Boolean(artwork.isLiked)}
                 initialLikeCount={artwork.likeCount ?? 0}
+                refreshOnSuccess={isLikedFilterActive}
                 onClick={(event) => {
                   event.preventDefault();
                   event.stopPropagation();
                 }}
-                className="inline-flex items-center gap-1.5 rounded-md px-1 py-1 transition disabled:opacity-60"
+                className="cursor-pointer inline-flex items-center gap-1.5 rounded-md px-1 py-1 transition disabled:opacity-60"
                 likedIconClassName="size-5 fill-current text-pink-500"
-                unlikedIconClassName="size-5 text-white"
+                unlikedIconClassName="size-5 text-white hover:text-pink-500"
                 countClassName="text-xs text-white/90"
               />
 

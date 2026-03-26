@@ -12,9 +12,9 @@ export default function ImprintPage() {
       <PageIntro
         title="Imprint"
         subtitle="Mandatory legal notice pursuant to German law."
-        className="mb-6"
+        className="max-w-6xl"
       />
-      <section className="p-6">
+      <section className="mx-auto mt-6 my-20 max-w-6xl px-4">
         <div className="mt-2 space-y-6 text-sm leading-6">
           <section>
             <h2 className="text-base font-semibold">1. Service Provider</h2>

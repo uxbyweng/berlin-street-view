@@ -78,6 +78,8 @@ export function MobileMenu() {
       </div>
 
       <div
+        inert={!isOpen}
+        aria-hidden={!isOpen}
         className={`fixed inset-0 z-40 transition-opacity duration-400 md:hidden ${
           isOpen
             ? "pointer-events-auto opacity-100"
@@ -112,7 +114,7 @@ export function MobileMenu() {
                     type="button"
                     variant="default"
                     size="lg"
-                    className="mt-2 w-32"
+                    className="mt-2 w-32 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                   >
                     <Link href="/login" onClick={closeMenu}>
                       Sign in
@@ -144,6 +146,7 @@ export function MobileMenu() {
               <TextLink
                 href="https://github.com/uxbyweng/street-lens"
                 target="_blank"
+                onClick={closeMenu}
               >
                 <IconBrandGithub
                   size={40}
@@ -155,6 +158,7 @@ export function MobileMenu() {
               <TextLink
                 href="https://www.linkedin.com/in/kweng/"
                 target="_blank"
+                onClick={closeMenu}
               >
                 <IconBrandLinkedin
                   size={40}
@@ -166,6 +170,7 @@ export function MobileMenu() {
               <TextLink
                 href="https://www.instagram.com/blnstreetview/"
                 target="_blank"
+                onClick={closeMenu}
               >
                 <IconBrandInstagram
                   size={40}
@@ -182,6 +187,7 @@ export function MobileMenu() {
                 href="/imprint"
                 target="_self"
                 className="text-xs text-muted-foreground"
+                onClick={closeMenu}
               >
                 Imprint
               </TextLink>

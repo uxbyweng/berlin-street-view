@@ -17,6 +17,12 @@ type MapPickerProps = {
   disabled?: boolean;
   showControls?: boolean;
   className?: string;
+  scrollZoom?: boolean;
+  dragPan?: boolean;
+  dragRotate?: boolean;
+  doubleClickZoom?: boolean;
+  touchZoomRotate?: boolean;
+  keyboard?: boolean;
 };
 
 const DEFAULT_LOCATION = {
@@ -100,6 +106,12 @@ export function MapPicker({
   disabled = false,
   showControls = true,
   className,
+  scrollZoom,
+  dragPan,
+  dragRotate,
+  doubleClickZoom,
+  touchZoomRotate,
+  keyboard,
 }: MapPickerProps) {
   const lat = latitude ?? DEFAULT_LOCATION.lat;
   const lng = longitude ?? DEFAULT_LOCATION.lng;
@@ -113,6 +125,12 @@ export function MapPicker({
           zoom: 13,
         }}
         styles={MAP_STYLES}
+        scrollZoom={scrollZoom}
+        dragPan={dragPan}
+        dragRotate={dragRotate}
+        doubleClickZoom={doubleClickZoom}
+        touchZoomRotate={touchZoomRotate}
+        keyboard={keyboard}
       >
         {showControls ? (
           <MapControls

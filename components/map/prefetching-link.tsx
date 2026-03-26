@@ -1,3 +1,9 @@
+/**
+ * Smart-Link-Komponente ermöglicht das Vorladen von Zielrouten
+ * beim Überfahren mit der Maus. Reduziert efühlte Latenz.
+ * Kommt im Header-Menu für die 'Map' zum Einsatz.
+ */
+
 "use client";
 
 import Link from "next/link";

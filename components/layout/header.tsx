@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { MobileMenu } from "@/components/layout/mobile-menu";
-import { PrefetchingLink } from "@/components/navigation/prefetching-link";
+import { PrefetchingLink } from "@/components/map/prefetching-link";
 import { AuthDropdown } from "@/components/auth/auth-dropdown";
 
 export default function Header() {

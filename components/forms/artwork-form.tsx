@@ -448,191 +448,196 @@ export function ArtworkForm({
     <Card className="w-full bg-background border-0">
       <CardContent>
         <form id="artwork-form" onSubmit={form.handleSubmit(onSubmit)}>
-          <FieldGroup>
-            {/* Image Upload */}
-            <Field>
-              <FieldLabel>
-                {mode === "edit" ? "Update Image" : "Upload Image"}
-              </FieldLabel>
-
-              <ArtworkImageUpload
-                imagePreviewUrl={imagePreviewUrl}
-                isUploadingImage={isUploadingImage}
-                isSubmitting={isSubmitting}
-                selectedFileName={selectedFileName}
-                onFileSelect={handleImageSelection}
-                statusMessage={imageStatusMessage}
-                statusVariant={imageStatusVariant}
+          <FieldGroup className="grid grid-cols-1 gap-10 lg:grid-cols-3">
+            {/* Left column */}
+            <div className="space-y-6 lg:col-span-2">
+              <FormTextField
+                name="title"
+                label="Title"
+                control={form.control}
+                placeholder="e.g. Girl with Balloon"
               />
-            </Field>
 
-            {/* Image URL (hidden) -> bekommt die URL von Cloudinary */}
-            <Controller
-              name="imageUrl"
-              control={form.control}
-              render={({ field }) => <input type="hidden" {...field} />}
-            />
+              <FormTextField
+                name="artist"
+                label="Artist"
+                control={form.control}
+                placeholder="e.g. Banksy"
+              />
 
-            {/* Cloudinary Public ID als hidden field -> wichtig für DELETE */}
-            <Controller
-              name="cloudinaryPublicId"
-              control={form.control}
-              render={({ field }) => <input type="hidden" {...field} />}
-            />
+              <FormTextareaField
+                name="description"
+                label="Description"
+                rows={8}
+                control={form.control}
+                placeholder="Describe the artwork, context, or why it is interesting."
+              />
 
-            {/* Title */}
-            <FormTextField
-              name="title"
-              label="Title"
-              control={form.control}
-              placeholder="e.g. Girl with Balloon"
-            />
+              <FormTextField
+                name="tags"
+                label="Tags"
+                control={form.control}
+                placeholder="street art, berlin, mural"
+                description="Separate tags with commas."
+              />
+            </div>
 
-            {/* Artist */}
-            <FormTextField
-              name="artist"
-              label="Artist"
-              control={form.control}
-              placeholder="e.g. Banksy"
-            />
+            {/* Right column */}
+            <div className="space-y-6 lg:col-span-1">
+              <Field>
+                <FieldLabel className="text-xl">
+                  {mode === "edit" ? "Update Image" : "Upload Image"}
+                </FieldLabel>
 
-            {/* Description */}
-            <FormTextareaField
-              name="description"
-              label="Description"
-              rows={6}
-              control={form.control}
-              placeholder="Describe the artwork, context, or why it is interesting."
-            />
+                <ArtworkImageUpload
+                  imagePreviewUrl={imagePreviewUrl}
+                  isUploadingImage={isUploadingImage}
+                  isSubmitting={isSubmitting}
+                  selectedFileName={selectedFileName}
+                  onFileSelect={handleImageSelection}
+                  statusMessage={imageStatusMessage}
+                  statusVariant={imageStatusVariant}
+                />
+              </Field>
 
-            {/* location Edit Button*/}
-            <Field>
-              {/* Edit Button*/}
-              <div className="flex items-center justify-between gap-3">
-                <FieldLabel>Location</FieldLabel>
+              <Field>
+                <div className="flex items-center justify-between gap-3">
+                  <FieldLabel className="text-xl">Location</FieldLabel>
+
+                  {!areCoordinatesEditable && hasAutoExtractedCoordinates ? (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="h-8 px-2"
+                      onClick={() => setAreCoordinatesEditable(true)}
+                    >
+                      <IconPencil className="h-4 w-4" />
+                      <span className="ml-1 text-xs">Edit</span>
+                    </Button>
+                  ) : null}
+                </div>
+
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-1">
+                  <Controller
+                    name="latitude"
+                    control={form.control}
+                    render={({ field, fieldState }) => (
+                      <div className="space-y-2">
+                        <FieldLabel
+                          htmlFor={field.name}
+                          className="hidden text-xs text-muted-foreground"
+                        >
+                          Latitude
+                        </FieldLabel>
+                        <Input
+                          {...field}
+                          id={field.name}
+                          type="text"
+                          value={field.value ?? ""}
+                          aria-invalid={fieldState.invalid}
+                          placeholder="Lat. e.g. 52.520008"
+                          disabled={!areCoordinatesEditable}
+                          className="bg-gray-800! text-lg!"
+                        />
+                        {fieldState.invalid && (
+                          <FieldError errors={[fieldState.error]} />
+                        )}
+                      </div>
+                    )}
+                  />
+
+                  <Controller
+                    name="longitude"
+                    control={form.control}
+                    render={({ field, fieldState }) => (
+                      <div className="space-y-2">
+                        <FieldLabel
+                          htmlFor={field.name}
+                          className="hidden text-xs text-muted-foreground"
+                        >
+                          Longitude
+                        </FieldLabel>
+                        <Input
+                          {...field}
+                          id={field.name}
+                          type="text"
+                          value={field.value ?? ""}
+                          aria-invalid={fieldState.invalid}
+                          placeholder="Long. e.g. 13.404954"
+                          disabled={!areCoordinatesEditable}
+                          className="bg-gray-800! text-lg!"
+                        />
+                        {fieldState.invalid && (
+                          <FieldError errors={[fieldState.error]} />
+                        )}
+                      </div>
+                    )}
+                  />
+                </div>
 
                 {!areCoordinatesEditable && hasAutoExtractedCoordinates ? (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="h-8 px-2"
-                    onClick={() => setAreCoordinatesEditable(true)}
-                  >
-                    <IconPencil className="h-4 w-4" />
-                    <span className="ml-1 text-xs">Edit</span>
-                  </Button>
-                ) : null}
-              </div>
+                  <FieldDescription className="text-base">
+                    Geo coordinates were extracted automatically from the
+                    uploaded image. Click Edit to adjust the location manually.
+                  </FieldDescription>
+                ) : (
+                  <FieldDescription className="text-base">
+                    Enter latitude and longitude manually or select a position
+                    on the map.
+                  </FieldDescription>
+                )}
+              </Field>
 
-              {/* Koordinaten Felder (Latitude, Longitude) */}
-              <div className="grid grid-cols-2 gap-3">
-                <Controller
-                  name="latitude"
-                  control={form.control}
-                  render={({ field, fieldState }) => (
-                    <div className="space-y-2">
-                      <FieldLabel
-                        htmlFor={field.name}
-                        className="text-xs text-muted-foreground hidden"
-                      >
-                        Latitude
-                      </FieldLabel>
-                      <Input
-                        {...field}
-                        id={field.name}
-                        type="text"
-                        value={field.value ?? ""}
-                        aria-invalid={fieldState.invalid}
-                        placeholder="Lat. e.g. 52.520008"
-                        disabled={!areCoordinatesEditable}
-                      />
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
-                    </div>
-                  )}
+              <Field>
+                <FieldLabel className="text-xl">Map</FieldLabel>
+
+                <MapPicker
+                  latitude={watchedLatitude}
+                  longitude={watchedLongitude}
+                  disabled={!areCoordinatesEditable}
+                  scrollZoom={!areCoordinatesEditable}
+                  dragPan={!areCoordinatesEditable}
+                  dragRotate={!areCoordinatesEditable}
+                  doubleClickZoom={!areCoordinatesEditable}
+                  touchZoomRotate={!areCoordinatesEditable}
+                  keyboard={!areCoordinatesEditable}
+                  onChange={({ lat, lng }) => {
+                    form.setValue("latitude", lat.toFixed(6), {
+                      shouldValidate: true,
+                      shouldDirty: true,
+                    });
+
+                    form.setValue("longitude", lng.toFixed(6), {
+                      shouldValidate: true,
+                      shouldDirty: true,
+                    });
+                  }}
                 />
 
-                <Controller
-                  name="longitude"
-                  control={form.control}
-                  render={({ field, fieldState }) => (
-                    <div className="space-y-2">
-                      <FieldLabel
-                        htmlFor={field.name}
-                        className="text-xs text-muted-foreground hidden"
-                      >
-                        Longitude
-                      </FieldLabel>
-                      <Input
-                        {...field}
-                        id={field.name}
-                        type="text"
-                        value={field.value ?? ""}
-                        aria-invalid={fieldState.invalid}
-                        placeholder="Long. e.g. 13.404954"
-                        disabled={!areCoordinatesEditable}
-                      />
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
-                    </div>
-                  )}
-                />
-              </div>
-
-              {/* Hinweis zum Editieren der Koordinaten  */}
-              {!areCoordinatesEditable && hasAutoExtractedCoordinates ? (
-                <FieldDescription className="text-xs">
-                  Geo coordinates were extracted automatically from the uploaded
-                  image. Click Edit to adjust the location manually.
+                <FieldDescription className="text-base">
+                  {areCoordinatesEditable
+                    ? "Tap or click on the map to select a location."
+                    : "Map location is currently locked because coordinates were extracted automatically from the image."}
                 </FieldDescription>
-              ) : (
-                <FieldDescription className="text-xs">
-                  Enter latitude and longitude manually or select a position on
-                  the map.
-                </FieldDescription>
-              )}
-            </Field>
-
-            {/* Map  */}
-            <Field>
-              <FieldLabel>Map</FieldLabel>
-
-              <MapPicker
-                latitude={watchedLatitude}
-                longitude={watchedLongitude}
-                disabled={!areCoordinatesEditable}
-                onChange={({ lat, lng }) => {
-                  form.setValue("latitude", lat.toFixed(6), {
-                    shouldValidate: true,
-                    shouldDirty: true,
-                  });
-
-                  form.setValue("longitude", lng.toFixed(6), {
-                    shouldValidate: true,
-                    shouldDirty: true,
-                  });
-                }}
-              />
-
-              <FieldDescription className="text-xs">
-                {areCoordinatesEditable
-                  ? "Tap or click on the map to select a location."
-                  : "Map location is currently locked because coordinates were extracted automatically from the image."}
-              </FieldDescription>
-            </Field>
-
-            {/* Tags */}
-            <FormTextField
-              name="tags"
-              label="Tags"
-              control={form.control}
-              placeholder="street art, berlin, mural"
-              description="Separate tags with commas."
-            />
+              </Field>
+            </div>
           </FieldGroup>
+
+          {/* Hidden fields */}
+          <Controller
+            name="imageUrl"
+            control={form.control}
+            render={({ field }) => <input type="hidden" {...field} />}
+          />
+
+          <Controller
+            name="cloudinaryPublicId"
+            control={form.control}
+            render={({ field }) => <input type="hidden" {...field} />}
+          />
+
+          {/* Bottom actions */}
           <div className="flex items-center justify-between gap-3 pt-8">
             <div className="flex items-center gap-3">
               <Button
@@ -640,6 +645,7 @@ export function ArtworkForm({
                 variant="outline"
                 onClick={() => router.back()}
                 disabled={isSubmitting}
+                className="cursor-pointer"
               >
                 Cancel
               </Button>
@@ -649,12 +655,17 @@ export function ArtworkForm({
                 variant="outline"
                 onClick={handleReset}
                 disabled={isSubmitting}
+                className="cursor-pointer"
               >
                 Reset
               </Button>
             </div>
 
-            <Button type="submit" disabled={isSubmitting}>
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="cursor-pointer"
+            >
               {isSubmitting
                 ? "Saving..."
                 : mode === "edit"

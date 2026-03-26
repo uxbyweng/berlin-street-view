@@ -104,14 +104,14 @@ export default async function ArtworksPage({
   }
 
   const pageTitle = "Artworks";
-  const pageSubtitle = "Discover interesting artworks.";
+  const pageSubtitle = "";
 
   return (
     <>
       <PageIntro
         title={pageTitle}
         subtitle={pageSubtitle}
-        className="max-w-6xl"
+        className="font-fjalla rounded-none h-70 lg:h-100 sm:px-5 md:px-10 lg:px-40 lg:py-15 text-black  bg-[url('/images/stage_artworks.jpg')] bg-cover bg-top bg-no-repeat"
       />
 
       <section className="mx-auto mt-6 max-w-6xl px-4">
@@ -121,7 +121,7 @@ export default async function ArtworksPage({
             className={`inline-flex items-center rounded-full border px-4 py-2 text-sm font-medium transition ${
               liked
                 ? "bg-foreground text-background"
-                : "border-border bg-background text-foreground hover:bg-muted"
+                : "border-border bg-gray-800 text-foreground hover:bg-muted"
             }`}
           >
             Liked by me
@@ -130,7 +130,7 @@ export default async function ArtworksPage({
       </section>
 
       <section className="mx-auto my-8 max-w-6xl px-4">
-        <ArtworkList artworks={artworks} />
+        <ArtworkList artworks={artworks} isLikedFilterActive={liked} />
       </section>
 
       {isAdmin ? (
