@@ -44,20 +44,20 @@ export function ArtworkCard({
             preload={shouldPreload}
             className="aspect-video w-full object-cover"
           />
-
-          <div className="absolute inset-0 bg-linear-to-t from-black/65 via-black/15 to-transparent" />
+          <div className="absolute inset-0 bg-linear-to-t from-black/85 via-sky-900/55 to-transparent" />
+          {/* <div className="absolute inset-0 bg-linear-to-t from-black/65 via-black/15 to-transparent" /> */}
 
           <div className="absolute inset-x-0 bottom-0 flex h-full flex-col justify-end p-1">
-            <div className="mb-1 space-y-1">
+            <div className="mb-3">
               {artwork.artist ? (
-                <div className="block w-fit max-w-[85%] bg-black/70 px-2 py-1">
-                  <p className="line-clamp-1 text-lg font-semibold uppercase tracking-wide text-pink-500">
+                <div className="block w-fit max-w-[85%] bg-black/70 px-2">
+                  <p className="line-clamp-1 text-md font-semibold uppercase tracking-wide text-pink-500">
                     {artwork.artist}
                   </p>
                 </div>
               ) : null}
 
-              <div className="block w-fit max-w-[92%] bg-black/70 px-2 py-1">
+              <div className="block w-fit max-w-[92%] bg-black/70 px-2">
                 <p className="line-clamp-2 text-lg font-semibold leading-tight text-white">
                   {artwork.title}
                 </p>
