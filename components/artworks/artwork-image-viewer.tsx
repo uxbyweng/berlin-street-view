@@ -93,11 +93,13 @@ function FullscreenOverlay({
               <Image
                 src={src}
                 alt={alt}
-                width={2400}
-                height={1600}
+                width={1200}
+                height={675}
                 sizes="100vw"
-                quality={90}
-                className="h-full w-full object-contain"
+                loading="eager"
+                fetchPriority="high"
+                quality={75}
+                className="aspect-video w-full object-cover lg:aspect-auto lg:max-h-120"
               />
             </div>
           </TransformComponent>
@@ -131,7 +133,7 @@ export function ArtworkImageViewer({
           width={1200}
           height={675}
           sizes="(max-width: 768px) 100vw, 1024px"
-          className="aspect-video lg:aspect-auto lg:max-h-120 w-full object-cover top-0"
+          className="aspect-video lg:aspect-auto lg:max-h-120 w-full object-cover object-[center_20%]"
         />
 
         <Button
