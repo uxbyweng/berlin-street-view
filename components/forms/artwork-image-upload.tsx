@@ -93,7 +93,7 @@ export function ArtworkImageUpload({
               <p className={`text-xs ${statusClassName}`}>{statusMessage}</p>
             ) : (
               <p className="text-xs text-muted-foreground">
-                Max. 4 MB · JPG, PNG, WebP
+                Max. 10 MB · JPG, PNG, WebP
               </p>
             )}
           </div>
