@@ -12,9 +12,11 @@ type RouteContext = {
   }>;
 };
 
+// POST → Like setzen und mit ID (Artwork) verknüpfen
 export async function POST(_request: Request, { params }: RouteContext) {
   const { id: artworkId } = await params;
 
+  // Check if ID is valid
   if (!mongoose.Types.ObjectId.isValid(artworkId)) {
     return NextResponse.json(
       { message: "Invalid artwork id." },
@@ -22,21 +24,23 @@ export async function POST(_request: Request, { params }: RouteContext) {
     );
   }
 
+  // Check id User is logged in
   const session = await auth();
   const userId = session?.user?.id;
-
   if (!userId) {
     return NextResponse.json({ message: "Unauthorized." }, { status: 401 });
   }
 
+  // Check if userID is valid
   if (!mongoose.Types.ObjectId.isValid(userId)) {
     return NextResponse.json({ message: "Invalid user id." }, { status: 400 });
   }
 
+  // Datenbank Verbindung herstellen
   await connectDB();
 
+  // Check, ob passendes Artwork existiert
   const artworkExists = await Artwork.exists({ _id: artworkId });
-
   if (!artworkExists) {
     return NextResponse.json(
       { message: "Artwork not found." },
@@ -44,6 +48,7 @@ export async function POST(_request: Request, { params }: RouteContext) {
     );
   }
 
+  // Like erstellen
   try {
     await Like.create({
       artworkId,
@@ -65,8 +70,8 @@ export async function POST(_request: Request, { params }: RouteContext) {
     }
   }
 
+  // Likes neue berechnen/zählen
   const likeCount = await Like.countDocuments({ artworkId });
-
   return NextResponse.json(
     {
       liked: true,
@@ -76,9 +81,11 @@ export async function POST(_request: Request, { params }: RouteContext) {
   );
 }
 
+// POST → Like entfernen
 export async function DELETE(_request: Request, { params }: RouteContext) {
   const { id: artworkId } = await params;
 
+  // Check if ID is valid
   if (!mongoose.Types.ObjectId.isValid(artworkId)) {
     return NextResponse.json(
       { message: "Invalid artwork id." },
@@ -86,26 +93,29 @@ export async function DELETE(_request: Request, { params }: RouteContext) {
     );
   }
 
+  // Check id User is logged in
   const session = await auth();
   const userId = session?.user?.id;
-
   if (!userId) {
     return NextResponse.json({ message: "Unauthorized." }, { status: 401 });
   }
 
+  // Check if userID is valid
   if (!mongoose.Types.ObjectId.isValid(userId)) {
     return NextResponse.json({ message: "Invalid user id." }, { status: 400 });
   }
 
+  // Datenbank Verbindung herstellen
   await connectDB();
 
+  // Like entfernen
   await Like.findOneAndDelete({
     artworkId,
     userId,
   });
 
+  // Likes neue berechnen/zählen
   const likeCount = await Like.countDocuments({ artworkId });
-
   return NextResponse.json(
     {
       liked: false,
