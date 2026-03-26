@@ -11,7 +11,6 @@ import {
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { LikeToggle } from "@/components/artworks/like-toggle";
 import type { Artwork } from "@/types/artwork";
 import { getStoredUserLocation } from "@/lib/location/storage";
@@ -166,12 +165,6 @@ export function ArtworksMap({
                       />
                     </Link>
                   </div>
-
-                  {/* <Button asChild size="sm" className="w-full">
-                    <Link href={`/artworks/${artwork._id}`}>
-                      View Artwork Details
-                    </Link>
-                  </Button> */}
                 </div>
               </MarkerPopup>
             </MapMarker>

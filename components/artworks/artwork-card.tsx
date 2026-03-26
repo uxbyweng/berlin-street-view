@@ -1,5 +1,3 @@
-// components\artworks\artwork-card.tsx
-
 "use client";
 
 import Image from "next/image";
@@ -45,8 +43,6 @@ export function ArtworkCard({
             className="aspect-video w-full object-cover"
           />
           <div className="absolute inset-0 bg-linear-to-t from-black/85 via-sky-900/55 to-transparent" />
-          {/* <div className="absolute inset-0 bg-linear-to-t from-black/65 via-black/15 to-transparent" /> */}
-
           <div className="absolute inset-x-0 bottom-0 flex h-full flex-col justify-end p-1">
             <div className="mb-3">
               {artwork.artist ? (
