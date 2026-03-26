@@ -35,6 +35,21 @@ const ALLOWED_TAGS = [
   "paint",
   "canvas",
   "spray-paint",
+  "portrait",
+  "cut-out",
+  "sticker",
+  "roll-on",
+  "urban-knitting",
+  "graffiti",
+  "yarn-bombing",
+  "poster-art",
+  "deccolage",
+  "lego-art",
+  "mosaic-art",
+  "scratch-graffiti",
+  "tape-art",
+  "tiles-art",
+  "installation",
 ] as const;
 
 /* SCHEMA */
@@ -195,8 +210,11 @@ export function ArtworkForm({
     cloudinaryPublicId: initialValues?.cloudinaryPublicId ?? "",
     latitude: initialValues?.latitude ?? "",
     longitude: initialValues?.longitude ?? "",
-    tags: initialValues?.tags ?? "",
+    tags: initialValues?.tags ?? [],
   };
+
+  console.log("defaultValues.tags:", defaultValues.tags);
+  console.log("isArray:", Array.isArray(defaultValues.tags));
 
   // FORMULAR-INITIALISIERUNG
   const form = useForm<ArtworkFormValues>({
@@ -473,12 +491,65 @@ export function ArtworkForm({
                 placeholder="Describe the artwork, context, or why it is interesting."
               />
 
-              <FormTextField
+              <Controller
                 name="tags"
-                label="Tags"
                 control={form.control}
-                placeholder="street art, berlin, mural"
-                description="Separate tags with commas."
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel className="text-xl">Tags</FieldLabel>
+
+                    <div className="flex flex-wrap gap-3">
+                      {ALLOWED_TAGS.map((tag) => {
+                        const selectedTags = field.value ?? [];
+                        const isActive = selectedTags.includes(tag);
+
+                        function handleToggle() {
+                          if (isActive) {
+                            field.onChange(
+                              selectedTags.filter((value) => value !== tag)
+                            );
+                            return;
+                          }
+
+                          field.onChange([...selectedTags, tag]);
+                        }
+
+                        return (
+                          <button
+                            key={tag}
+                            type="button"
+                            onClick={handleToggle}
+                            aria-pressed={isActive}
+                            className={`inline-flex cursor-pointer items-center gap-2 rounded-full border px-3 py-2 text-sm font-medium transition ${
+                              isActive
+                                ? "border-pink-500 bg-pink-500/20 text-foreground"
+                                : "border-border bg-background text-muted-foreground hover:bg-muted hover:text-foreground"
+                            }`}
+                          >
+                            <span>{tag}</span>
+
+                            {isActive ? (
+                              <span
+                                aria-hidden="true"
+                                className="inline-flex h-4 w-4 items-center justify-center rounded-full border border-current text-xs leading-none"
+                              >
+                                ×
+                              </span>
+                            ) : null}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {fieldState.error ? (
+                      <FieldError errors={[fieldState.error]} />
+                    ) : (
+                      <FieldDescription className="text-base">
+                        Choose from the predefined tags.
+                      </FieldDescription>
+                    )}
+                  </Field>
+                )}
               />
             </div>
 

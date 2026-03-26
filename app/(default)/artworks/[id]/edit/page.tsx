@@ -85,7 +85,7 @@ export default async function EditArtworkPage({
               artwork.latitude !== undefined ? String(artwork.latitude) : "",
             longitude:
               artwork.longitude !== undefined ? String(artwork.longitude) : "",
-            tags: artwork.tags?.join(", ") ?? "",
+            tags: artwork.tags ?? [],
           }}
         />
       </section>
