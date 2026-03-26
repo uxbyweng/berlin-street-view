@@ -113,7 +113,7 @@ function buildArtworkPayload(values: ArtworkFormValues): ArtworkPayload {
     cloudinaryPublicId: values.cloudinaryPublicId || undefined,
     latitude: parseCoordinate(values.latitude),
     longitude: parseCoordinate(values.longitude),
-    tags: parseTags(values.tags),
+    tags: values.tags ?? [],
   };
 }
 
