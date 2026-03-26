@@ -14,16 +14,15 @@ export default async function HomePage() {
 
   return (
     <>
-      <div className="relative w-full h-[calc(100vh-5rem)] md:h-[calc(100vh-5rem)] overflow-hidden">
+      <div className="relative w-full h-[calc(100vh-10rem)] md:h-[calc(100vh-5rem)] overflow-hidden">
         <HeroSlider />
       </div>
 
-      <section className="mx-auto max-w-6xl my-10 lg:my-20 px-4">
-        <div className="mb-10">
-          <h2 className="font-fjalla uppercase text-3xl md:text-4xl lg:text-5xl font-black text-white mb-2">
+      <section className="mx-auto max-w-6xl my-5 lg:my-20 px-4">
+        <div className="mb-5 lg:mb-10">
+          <h2 className="font-fjalla uppercase text-3xl md:text-4xl lg:text-5xl font-black text-white">
             Newest Artworks
           </h2>
-          <p className="text-gray-400">Recently added ...</p>
         </div>
         <ArtworkList artworks={latestArtworks} />
         <Button asChild className="w-full md:w-auto mt-8 lg:mt-10">
