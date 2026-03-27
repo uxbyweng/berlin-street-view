@@ -1,8 +1,8 @@
 # STREETLENS
 
-A mobile-first web application to create, manage, and discover street art in a simple visual way. Users can add entries with text, images, and location data, browse existing artworks, and later explore them on an interactive map.
+STREETLENS is a mobile-first full-stack web application for discovering, saving, and managing street art in Berlin in a visual, location-based way. Users can browse artworks, view details, explore locations on a map, and save favorites. Admin users can create, edit, and delete artworks, including image upload with automatic EXIF GPS extraction and Cloudinary asset management.
 
-The project is intentionally scoped around a strong CRUD foundation first. Map features, nearby search, and authentication are planned only after the core product is stable.
+The project started with a strong CRUD-first scope and evolved into a richer full-stack application with authentication, image upload, geo extraction, and interactive map features.
 
 ## Project Goals
 
@@ -14,26 +14,29 @@ The goal of this capstone project is to build a clean, functional, and deployabl
 - maintainable code quality
 - realistic feature prioritization
 
-## MVP Features
+## Implemented Features
 
-- Create an artwork
-- Read and display all artworks
-- View artwork details
-- Update existing artworks
-- Delete artworks with confirmation dialog
-- Upload images for an artwork
-- Remove uploaded assets when an artwork is deleted
-- Responsive mobile-first interface
-- Deployment on Vercel
-- Interactive map view
+- Public artwork overview and artwork detail pages
+- Admin-only create, edit, and delete workflows
+- Direct browser image upload to Cloudinary
+- Automatic EXIF GPS extraction from uploaded images
+- Interactive map view with artwork markers
+- GitHub and Google authentication via Auth.js
+- Preview login for Vercel preview deployments
+- Role-based route and API protection
+- Like functionality for authenticated users
+- Mobile-first responsive interface
 
-## Planned After MVP
+## Technical Highlights
 
-- Authentication and protected actions (next-auth 4.24.x)
-- Nearby search / geo queries
-- Improved filtering and sorting
-- distance to artwork
-- mobile camera capture
+- Full-stack architecture with Next.js App Router and Route Handlers
+- Role-based access control for protected pages and write operations
+- Direct browser upload workflow with Cloudinary
+- Client-side EXIF GPS extraction for automatic geo-tagging
+- Cloudinary asset cleanup on artwork deletion
+- Interactive map integration with MapLibre and mapcn
+- Reusable, mobile-first component architecture
+
 
 ## Tech Stack
 
@@ -58,6 +61,7 @@ The goal of this capstone project is to build a clean, functional, and deployabl
 - Mongoose 9.2.x
 - Next.js Route Handlers (`app/api/...`) for CRUD and uploads
 
+
 ### Media Upload
 
 - Direct Cloudinary browser upload
@@ -76,12 +80,17 @@ The goal of this capstone project is to build a clean, functional, and deployabl
 - Vercel
 
 
+## Authentication & Authorization
+
+- Public read access for artworks
+- Admin-only create, edit, and delete permissions
+- GitHub and Google OAuth via Auth.js
+- Preview credentials login for Vercel preview deployments
+
+
 ## Data Model
 
 ### Artwork
-
-Fields:
-
 - `_id`
 - `title`
 - `artist`
@@ -91,35 +100,71 @@ Fields:
 - `latitude`
 - `longitude`
 - `tags`
+- `owner`
+- `createdAt`
+- `updatedAt`
+
+### User:
+- `_id`
+- `provider`
+- `providerAccountId`
+- `createdAt`
+- `email`
+- `image`
+- `name`
+- `role`
+- `updatedAt`
+- `username`
+
+### Like:
+- `_id`
+- `artworkId`
+- `userId`
 - `createdAt`
 - `updatedAt`
 
 ## Folder Structure
 
+The project follows a modular App Router structure with a clear separation between routes, UI components, data access, and domain models.
+
 ```bash
 app/
   api/
-    artworks/
-      [id]/
   artworks/
+    [id]/
+      edit/
+    new/
+  login/
   map/
+  profile/
+  imprint/
+  layout.tsx
   page.tsx
+  globals.css
+
 components/
   artworks/
+  auth/
   forms/
   layout/
   map/
+  profile/
   ui/
+
 lib/
   cloudinary/
+  constants/
   data/
   db/
-  hooks/
+  location/
   models/
+  utils.ts
+
 hooks/
-public/
 types/
+public/
 ```
+
 ## Local Setup
 
 ### 1. Clone the repository
@@ -137,9 +182,23 @@ npm install
 
 ### 3. Create environment variables
 
-Create a `.env.local` file in the project root and add the required environment variables.
+Create a  `.env.local` file in the project root.
+
+Use `env.example` as the source of truth for all required variables.
 
 ```bash
+# Auth.js / NextAuth
+AUTH_SECRET=
+AUTH_URL=http://localhost:3000
+
+# GitHub OAuth
+AUTH_GITHUB_ID=
+AUTH_GITHUB_SECRET=
+
+# Google OAuth
+AUTH_GOOGLE_ID=
+AUTH_GOOGLE_SECRET=
+
 # MongoDB
 MONGODB_URI=
 
@@ -148,12 +207,15 @@ CLOUDINARY_CLOUD_NAME=
 CLOUDINARY_API_KEY=
 CLOUDINARY_SECRET=
 
-# Cloudinary (unsigned)
+# Public Cloudinary upload
 NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=
 NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=
+
+# App URL
+NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
 
-See `env.example` for the expected variable names.
+If you want to test preview authentication locally or in preview deployments, also add the preview credential variables defined in `env.example`.
 
 
 ### 4. Start development server
@@ -174,13 +236,18 @@ Open `http://localhost:3000` in the browser.
 - [x] Deployment on Vercel
 - [x] Delete cleanup for assets
 - [x] Map integration with mapcn / MapLibre
-- [ ] Authentication
+- [x] Authentication
 - [ ] Geo queries
-
+- [ ] Nearby search
+- [ ] Distance-based discovery
+- [ ] Better filtering and sorting
+- [ ] User profile extensions
+- [ ] Comments / seen artworks / saved routes
 
 ## Deployment
 
-The application is intended to be deployed on **Vercel**.
+The project is deployed on Vercel. Environment variables are configured in Vercel for production and preview deployments. A preview login flow is included to simplify testing in preview environments.
+
 
 ## Notes
 
