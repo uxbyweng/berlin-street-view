@@ -19,15 +19,37 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://street-lens.vercel.app"),
   title: {
-    default: "STREETLENS",
-    template: "%s | STREETLENS",
+    default: "STREET LENS",
+    template: "%s | STREET LENS",
   },
   description: "Explore street art in Berlin.",
   manifest: "/site.webmanifest",
-  applicationName: "STREETLENS",
+  applicationName: "STREET LENS",
   appleWebApp: {
+    title: "STREET LENS",
+  },
+  openGraph: {
+    title: "STREET LENS",
+    description: "Explore street art in Berlin.",
+    siteName: "STREET LENS",
+    type: "website",
+    url: "https://street-lens.vercel.app",
+    images: [
+      {
+        url: "/images/og-default.jpg",
+        width: 1200,
+        height: 630,
+        alt: "STREETLENS",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
     title: "STREETLENS",
+    description: "Explore street art in Berlin.",
+    images: ["/images/og-default.jpg"],
   },
 };
 
