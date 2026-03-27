@@ -1,4 +1,4 @@
-# STREETLENS
+# STREET LENS
 
 STREETLENS is a mobile-first full-stack web application for discovering, saving, and managing street art in Berlin in a visual, location-based way. Users can browse artworks, view details, explore locations on a map, and save favorites. Admin users can create, edit, and delete artworks, including image upload with automatic EXIF GPS extraction and Cloudinary asset management.
 
