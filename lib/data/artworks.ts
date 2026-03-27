@@ -5,6 +5,19 @@ import { Artwork as ArtworkModel } from "@/lib/models/artwork";
 import type { Artwork } from "@/types/artwork";
 import { Like } from "@/lib/models/like";
 
+type ArtworkDocumentLike = {
+  _id: Types.ObjectId;
+  title: string;
+  artist?: string;
+  description?: string;
+  imageUrl?: string;
+  latitude?: number | null;
+  longitude?: number | null;
+  tags?: string[];
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+};
+
 // Hilfsfunktion
 // wandelt Datumswerte in einen ISO-String um,
 // z. B.: "2026-03-10T12:00:00.000Z"
@@ -34,18 +47,18 @@ function toIsoString(value: unknown): string | undefined {
 }
 
 function serializeArtwork(
-  doc: any,
+  doc: ArtworkDocumentLike,
   likeCount = 0,
   isLiked = false
 ): Artwork & { likeCount: number; isLiked: boolean } {
   return {
     _id: doc._id.toString(),
     title: doc.title,
-    artist: doc.artist,
-    description: doc.description,
-    imageUrl: doc.imageUrl,
-    latitude: doc.latitude,
-    longitude: doc.longitude,
+    artist: doc.artist ?? "",
+    description: doc.description ?? "",
+    imageUrl: doc.imageUrl ?? "",
+    latitude: doc.latitude ?? null,
+    longitude: doc.longitude ?? null,
     tags: doc.tags ?? [],
     createdAt: toIsoString(doc.createdAt),
     updatedAt: toIsoString(doc.updatedAt),
@@ -129,6 +142,85 @@ export async function getLatestArtworks(
       userLikes.map((like) => like.artworkId.toString())
     );
   }
+
+  return artworks.map((artwork) =>
+    serializeArtwork(
+      artwork,
+      likeCountMap.get(artwork._id.toString()) ?? 0,
+      userLikedArtworkIds.has(artwork._id.toString())
+    )
+  );
+}
+
+export async function getArtworksForOverview(options?: {
+  userId?: string;
+  likedOnly?: boolean;
+}): Promise<(Artwork & { likeCount: number; isLiked: boolean })[]> {
+  await connectDB();
+
+  const userId = options?.userId;
+  const likedOnly = options?.likedOnly ?? false;
+
+  let userLikedArtworkIds = new Set<string>();
+
+  if (userId) {
+    const userLikes = await Like.find({ userId })
+      .sort({ createdAt: -1 })
+      .lean();
+
+    userLikedArtworkIds = new Set(
+      userLikes.map((like) => like.artworkId.toString())
+    );
+
+    if (likedOnly) {
+      const artworkIds = userLikes.map((like) => like.artworkId);
+
+      const likedArtworks = await ArtworkModel.find({
+        _id: { $in: artworkIds },
+      }).lean();
+
+      const likeCounts = await Like.aggregate([
+        {
+          $match: {
+            artworkId: { $in: artworkIds },
+          },
+        },
+        {
+          $group: {
+            _id: "$artworkId",
+            likeCount: { $sum: 1 },
+          },
+        },
+      ]);
+
+      const likeCountMap = new Map<string, number>(
+        likeCounts.map((entry) => [entry._id.toString(), entry.likeCount])
+      );
+
+      return likedArtworks.map((artwork) =>
+        serializeArtwork(
+          artwork,
+          likeCountMap.get(artwork._id.toString()) ?? 0,
+          true
+        )
+      );
+    }
+  }
+
+  const artworks = await ArtworkModel.find().sort({ createdAt: -1 }).lean();
+
+  const likeCounts = await Like.aggregate([
+    {
+      $group: {
+        _id: "$artworkId",
+        likeCount: { $sum: 1 },
+      },
+    },
+  ]);
+
+  const likeCountMap = new Map<string, number>(
+    likeCounts.map((entry) => [entry._id.toString(), entry.likeCount])
+  );
 
   return artworks.map((artwork) =>
     serializeArtwork(
