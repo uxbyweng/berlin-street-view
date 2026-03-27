@@ -6,12 +6,29 @@ import { Artwork } from "@/lib/models/artwork";
 import { User } from "@/lib/models/user";
 import { artworkSchema } from "@/lib/validations/artwork";
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    await connectDB();
-    const artwork = await Artwork.find().sort({ createdAt: -1 });
+    const session = await auth();
+    const { searchParams } = new URL(request.url);
 
-    return NextResponse.json({ ok: true, data: artwork });
+    const likedOnly = searchParams.get("liked") === "true";
+
+    const pageParam = Number(searchParams.get("page") ?? "1");
+    const limitParam = Number(searchParams.get("limit") ?? "15");
+
+    const page = Number.isNaN(pageParam) || pageParam < 1 ? 1 : pageParam;
+    const limit = Number.isNaN(limitParam) || limitParam < 1 ? 15 : limitParam;
+
+    const { getArtworksForOverview } = await import("@/lib/data/artworks");
+
+    const artworks = await getArtworksForOverview({
+      userId: session?.user?.id,
+      likedOnly,
+      page,
+      limit,
+    });
+
+    return NextResponse.json({ ok: true, data: artworks });
   } catch (error) {
     console.error("GET /api/artworks error:", error);
 

@@ -1,9 +1,13 @@
-import { TextLink } from "@/components/ui/text-link";
 import { ArtworkCard } from "@/components/artworks/artwork-card";
 import type { Artwork } from "@/types/artwork";
 
+type ArtworkListItem = Artwork & {
+  likeCount?: number;
+  isLiked?: boolean;
+};
+
 type ArtworkListProps = {
-  artworks?: Artwork[];
+  artworks?: ArtworkListItem[];
   isLikedFilterActive?: boolean;
 };
 
@@ -13,11 +17,8 @@ export function ArtworkList({
 }: ArtworkListProps) {
   if (artworks.length === 0) {
     return (
-      <section className="space-y-3">
-        <p>No artworks yet. Start by adding one.</p>
-        <TextLink href="/artworks/new" className="underline">
-          Add a new artwork
-        </TextLink>
+      <section className="space-3">
+        <p className="p-2 text-lg">No artworks yet.</p>
       </section>
     );
   }
