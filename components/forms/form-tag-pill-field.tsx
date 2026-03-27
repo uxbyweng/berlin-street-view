@@ -1,6 +1,11 @@
 "use client";
 
-import { Controller, type Control, type FieldPath } from "react-hook-form";
+import {
+  Controller,
+  type Control,
+  type FieldPath,
+  type FieldValues,
+} from "react-hook-form";
 import {
   Field,
   FieldDescription,
@@ -12,14 +17,14 @@ import {
   type AllowedArtworkTag,
 } from "@/lib/constants/artwork-tags";
 
-type FormTagPillFieldProps<TFormValues extends Record<string, any>> = {
+type FormTagPillFieldProps<TFormValues extends FieldValues> = {
   name: FieldPath<TFormValues>;
   label: string;
   control: Control<TFormValues>;
   description?: string;
 };
 
-export function FormTagPillField<TFormValues extends Record<string, any>>({
+export function FormTagPillField<TFormValues extends FieldValues>({
   name,
   label,
   control,

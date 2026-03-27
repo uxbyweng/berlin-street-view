@@ -1,4 +1,9 @@
-import { Controller, type Control, type FieldPath } from "react-hook-form";
+import {
+  Controller,
+  type Control,
+  type FieldPath,
+  type FieldValues,
+} from "react-hook-form";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import {
   InputGroup,
@@ -7,7 +12,7 @@ import {
   InputGroupTextarea,
 } from "@/components/ui/input-group";
 
-type FormTextareaFieldProps<TFormValues extends Record<string, any>> = {
+type FormTextareaFieldProps<TFormValues extends FieldValues> = {
   name: FieldPath<TFormValues>;
   label: string;
   rows: number;
@@ -15,7 +20,7 @@ type FormTextareaFieldProps<TFormValues extends Record<string, any>> = {
   placeholder?: string;
 };
 
-export function FormTextareaField<TFormValues extends Record<string, any>>({
+export function FormTextareaField<TFormValues extends FieldValues>({
   name,
   label,
   rows,

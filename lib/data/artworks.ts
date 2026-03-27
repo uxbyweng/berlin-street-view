@@ -5,6 +5,19 @@ import { Artwork as ArtworkModel } from "@/lib/models/artwork";
 import type { Artwork } from "@/types/artwork";
 import { Like } from "@/lib/models/like";
 
+type ArtworkDocumentLike = {
+  _id: Types.ObjectId;
+  title: string;
+  artist?: string;
+  description?: string;
+  imageUrl?: string;
+  latitude?: number | null;
+  longitude?: number | null;
+  tags?: string[];
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+};
+
 // Hilfsfunktion
 // wandelt Datumswerte in einen ISO-String um,
 // z. B.: "2026-03-10T12:00:00.000Z"
@@ -34,18 +47,18 @@ function toIsoString(value: unknown): string | undefined {
 }
 
 function serializeArtwork(
-  doc: any,
+  doc: ArtworkDocumentLike,
   likeCount = 0,
   isLiked = false
 ): Artwork & { likeCount: number; isLiked: boolean } {
   return {
     _id: doc._id.toString(),
     title: doc.title,
-    artist: doc.artist,
-    description: doc.description,
-    imageUrl: doc.imageUrl,
-    latitude: doc.latitude,
-    longitude: doc.longitude,
+    artist: doc.artist ?? "",
+    description: doc.description ?? "",
+    imageUrl: doc.imageUrl ?? "",
+    latitude: doc.latitude ?? null,
+    longitude: doc.longitude ?? null,
     tags: doc.tags ?? [],
     createdAt: toIsoString(doc.createdAt),
     updatedAt: toIsoString(doc.updatedAt),
