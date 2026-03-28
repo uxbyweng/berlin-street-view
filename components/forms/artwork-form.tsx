@@ -146,6 +146,10 @@ export function ArtworkForm({
     (tag): tag is AllowedArtworkTag =>
       ALLOWED_TAGS.includes(tag as AllowedArtworkTag)
   );
+  const [debugExifInfo, setDebugExifInfo] = useState<Record<
+    string,
+    unknown
+  > | null>(null);
 
   // DEFAULT VALUES
   const defaultValues: ArtworkInput = {
@@ -248,6 +252,15 @@ export function ArtworkForm({
   async function handleImageSelection(file: File) {
     setImageStatusMessage(null);
     setImageStatusVariant("default");
+    setDebugExifInfo({
+      stage: "file-selected",
+      fileMeta: {
+        name: file.name,
+        type: file.type,
+        size: file.size,
+        lastModified: file.lastModified,
+      },
+    });
 
     if (file.size > MAX_IMAGE_FILE_SIZE_BYTES) {
       setImageStatusMessage(
@@ -292,7 +305,21 @@ export function ArtworkForm({
 
     try {
       // Koordinaten aus dem Bild lesen (mit Debug-Info)
-      const extractedCoordinates = await extractCoordinatesFromImage(file);
+      const extractedCoordinates = await extractCoordinatesFromImage(
+        file,
+        (payload) => {
+          setDebugExifInfo((prev) => ({
+            ...(prev ?? {}),
+            fileMeta: {
+              name: file.name,
+              type: file.type,
+              size: file.size,
+              lastModified: file.lastModified,
+            },
+            [payload.step]: payload.data,
+          }));
+        }
+      );
 
       // Bild zu Cloudinary schicken
       const uploadResult = await uploadImageToCloudinary(file);
@@ -313,8 +340,8 @@ export function ArtworkForm({
       });
 
       const hasExtractedCoordinates =
-        typeof extractedCoordinates?.latitude === "number" &&
-        typeof extractedCoordinates?.longitude === "number";
+        Number.isFinite(extractedCoordinates?.latitude) &&
+        Number.isFinite(extractedCoordinates?.longitude);
 
       if (hasExtractedCoordinates) {
         form.setValue("latitude", String(extractedCoordinates.latitude), {
@@ -459,6 +486,16 @@ export function ArtworkForm({
                   statusVariant={imageStatusVariant}
                 />
               </Field>
+              {debugExifInfo ? (
+                <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-3">
+                  <p className="mb-2 text-sm font-semibold text-amber-200">
+                    EXIF Debug
+                  </p>
+                  <pre className="overflow-x-auto whitespace-pre-wrap break-words text-xs text-amber-100">
+                    {JSON.stringify(debugExifInfo, null, 2)}
+                  </pre>
+                </div>
+              ) : null}
 
               <Field>
                 <div className="flex items-center justify-between gap-3">
