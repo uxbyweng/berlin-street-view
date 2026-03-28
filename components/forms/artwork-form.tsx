@@ -296,13 +296,20 @@ export function ArtworkForm({
     setIsUploadingImage(true);
 
     try {
+      // WICHTIG: File-Objekt klonen für jeden Prozess separat
+      // Das verhindert, dass der File-Pointer nach dem EXIF-Read am Ende ist
+      const fileForExif = new File([file], file.name, { type: file.type });
+      const fileForCloudinary = new File([file], file.name, {
+        type: file.type,
+      });
+
       // Koordinaten aus dem Bild lesen (mit Debug-Info)
       const { coordinates: extractedCoordinates, debug } =
-        await extractCoordinatesWithDebug(file);
+        await extractCoordinatesWithDebug(fileForExif);
       setExifDebugInfo(debug);
 
       // Bild zu Cloudinary schicken
-      const uploadResult = await uploadImageToCloudinary(file);
+      const uploadResult = await uploadImageToCloudinary(fileForCloudinary);
 
       // SecureURL speichern
       const secureUrl = uploadResult.secureUrl;

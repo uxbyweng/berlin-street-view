@@ -63,16 +63,51 @@ export async function extractCoordinatesWithDebug(
     if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
       fullExifRaw = await exifr.parse(file);
       const exifObj = fullExifRaw as Record<string, unknown>;
-      latitude = Number(
+
+      // Versuche verschiedene mögliche GPS-Strukturen:
+      // 1. exifObj.latitude / exifObj.longitude (direktE Werte)
+      // 2. exifObj.gps.latitude / exifObj.gps.longitude (nested)
+      // 3. exifObj.GPSLatitude / exifObj.GPSLongitude (uppercase)
+      // 4. Arrays wie [degrees, minutes, seconds]
+
+      let rawLat =
         exifObj?.latitude ??
-          (exifObj?.gps as Record<string, unknown> | undefined)?.latitude ??
-          null
-      );
-      longitude = Number(
+        (exifObj?.gps as Record<string, unknown> | undefined)?.latitude ??
+        exifObj?.GPSLatitude;
+      let rawLng =
         exifObj?.longitude ??
-          (exifObj?.gps as Record<string, unknown> | undefined)?.longitude ??
-          null
-      );
+        (exifObj?.gps as Record<string, unknown> | undefined)?.longitude ??
+        exifObj?.GPSLongitude;
+
+      // Wenn GPS-Daten als Arrays kommen [degrees, minutes, seconds],
+      // konvertiere sie in dezimale Grade
+      if (Array.isArray(rawLat) && rawLat.length >= 2) {
+        const [degrees, minutes, seconds = 0] = rawLat as number[];
+        if (Number.isFinite(degrees)) {
+          latitude = Number(
+            (Math.abs(degrees) + minutes / 60 + (seconds ?? 0) / 3600).toFixed(
+              6
+            )
+          );
+          if (degrees < 0) latitude = -latitude;
+        }
+      } else {
+        latitude = Number(rawLat ?? null);
+      }
+
+      if (Array.isArray(rawLng) && rawLng.length >= 2) {
+        const [degrees, minutes, seconds = 0] = rawLng as number[];
+        if (Number.isFinite(degrees)) {
+          longitude = Number(
+            (Math.abs(degrees) + minutes / 60 + (seconds ?? 0) / 3600).toFixed(
+              6
+            )
+          );
+          if (degrees < 0) longitude = -longitude;
+        }
+      } else {
+        longitude = Number(rawLng ?? null);
+      }
     }
 
     const hasValidCoordinates =
