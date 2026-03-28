@@ -55,6 +55,12 @@ type ArtworkFormProps = {
 };
 
 /* HELPER FUNCTIONS */
+function parseCoordinate(value?: string): number | undefined {
+  if (!value) return undefined;
+
+  const parsedValue = Number(value);
+  return Number.isNaN(parsedValue) ? undefined : parsedValue;
+}
 
 // Formular-Werte in Objekt für Datenbank bündeln
 function buildArtworkPayload(values: ArtworkValues): ArtworkPayload {
@@ -64,8 +70,8 @@ function buildArtworkPayload(values: ArtworkValues): ArtworkPayload {
     description: values.description,
     imageUrl: values.imageUrl || undefined,
     cloudinaryPublicId: values.cloudinaryPublicId || undefined,
-    latitude: values.latitude,
-    longitude: values.longitude,
+    latitude: parseCoordinate(values.latitude),
+    longitude: parseCoordinate(values.longitude),
     tags: values.tags ?? [],
   };
 }
@@ -293,9 +299,6 @@ export function ArtworkForm({
       // Koordinaten aus dem Bild lesen (falls vorhanden)
       const extractedCoordinates = await extractCoordinatesFromImage(file);
 
-      // DEBUG
-      setDebugExif(JSON.stringify(extractedCoordinates));
-
       // Bild zu Cloudinary schicken
       const uploadResult = await uploadImageToCloudinary(file);
 
@@ -320,14 +323,6 @@ export function ArtworkForm({
       const hasExtractedCoordinates =
         Number.isFinite(latitude) && Number.isFinite(longitude);
 
-      setDebugCoords(
-        JSON.stringify({
-          latitude,
-          longitude,
-          hasExtractedCoordinates,
-        })
-      );
-
       if (hasExtractedCoordinates) {
         form.setValue("latitude", String(latitude), {
           shouldValidate: true,
@@ -338,13 +333,6 @@ export function ArtworkForm({
           shouldValidate: true,
           shouldDirty: true,
         });
-
-        setDebugFormValues(
-          JSON.stringify({
-            latitude: form.getValues("latitude"),
-            longitude: form.getValues("longitude"),
-          })
-        );
 
         setImageStatusMessage("Image uploaded and geo coordinates extracted.");
         setImageStatusVariant("success");
