@@ -5,6 +5,8 @@ import { Artwork as ArtworkModel } from "@/lib/models/artwork";
 import type { Artwork } from "@/types/artwork";
 import { Like } from "@/lib/models/like";
 
+const DEFAULT_ARTWORKS_PAGE_SIZE = 15;
+
 type ArtworkDocumentLike = {
   _id: Types.ObjectId;
   title: string;
@@ -18,22 +20,13 @@ type ArtworkDocumentLike = {
   updatedAt?: Date | string;
 };
 
-// Hilfsfunktion
-// wandelt Datumswerte in einen ISO-String um,
-// z. B.: "2026-03-10T12:00:00.000Z"
-// damit bei ungültigen Werten nichts abstürzt sondern nur undefined zurückgegeben wird.
 function toIsoString(value: unknown): string | undefined {
-  // Wenn kein Wert vorhanden, 'undefined' zurückgeben.
   if (value === null || value === undefined) return undefined;
 
-  // Wenn Wert bereits echtes Date-Objekt,
-  // kann direkt toISOString() verwendet werden.
   if (value instanceof Date) {
     return value.toISOString();
   }
 
-  // Wenn Wert String oder Zahl,
-  // versuche daraus ein Date-Objekt zu bauen.
   if (typeof value === "string" || typeof value === "number") {
     const date = new Date(value);
 
@@ -41,8 +34,7 @@ function toIsoString(value: unknown): string | undefined {
       return date.toISOString();
     }
   }
-  // Wenn keine Prüfung funktioniert,
-  // gebe 'undefined' zurück
+
   return undefined;
 }
 
@@ -67,31 +59,47 @@ function serializeArtwork(
   };
 }
 
-// Lade alle Artworks aus Datenbank.
+// Lade paginierte Artworks aus Datenbank.
 // Neueste Einträge nach oben.
-export async function getArtworks(): Promise<Artwork[]> {
-  // 1. Verbindung zur Datenbank sicherstellen.
+export async function getArtworks(
+  page = 1,
+  limit = DEFAULT_ARTWORKS_PAGE_SIZE
+): Promise<Artwork[]> {
   await connectDB();
 
-  // 2. Alle Artworks holen und nach createdAt absteigend sortieren.
-  // .lean() gibt normale JavaScript-Objekte zurück
-  // statt kompletter Mongoose-Dokumente.
-  const artworks = await ArtworkModel.find().sort({ createdAt: -1 }).lean();
+  const safePage = Math.max(1, page);
+  const safeLimit = Math.max(1, limit);
+  const skip = (safePage - 1) * safeLimit;
 
-  const likeCounts = await Like.aggregate([
-    {
-      $group: {
-        _id: "$artworkId",
-        likeCount: { $sum: 1 },
-      },
-    },
-  ]);
+  const artworks = await ArtworkModel.find()
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(safeLimit)
+    .lean();
+
+  const artworkIds = artworks.map((artwork) => artwork._id);
+
+  const likeCounts =
+    artworkIds.length > 0
+      ? await Like.aggregate([
+          {
+            $match: {
+              artworkId: { $in: artworkIds },
+            },
+          },
+          {
+            $group: {
+              _id: "$artworkId",
+              likeCount: { $sum: 1 },
+            },
+          },
+        ])
+      : [];
 
   const likeCountMap = new Map<string, number>(
     likeCounts.map((entry) => [entry._id.toString(), entry.likeCount])
   );
 
-  // Jedes DB-Dokument in gewünschtes Artwork-Format umwandeln.
   return artworks.map((artwork) =>
     serializeArtwork(artwork, likeCountMap.get(artwork._id.toString()) ?? 0)
   );
@@ -132,7 +140,7 @@ export async function getLatestArtworks(
 
   let userLikedArtworkIds = new Set<string>();
 
-  if (userId) {
+  if (userId && Types.ObjectId.isValid(userId)) {
     const userLikes = await Like.find({
       userId,
       artworkId: { $in: artworkIds },
@@ -155,15 +163,20 @@ export async function getLatestArtworks(
 export async function getArtworksForOverview(options?: {
   userId?: string;
   likedOnly?: boolean;
+  page?: number;
+  limit?: number;
 }): Promise<(Artwork & { likeCount: number; isLiked: boolean })[]> {
   await connectDB();
 
   const userId = options?.userId;
   const likedOnly = options?.likedOnly ?? false;
+  const safePage = Math.max(1, options?.page ?? 1);
+  const safeLimit = Math.max(1, options?.limit ?? DEFAULT_ARTWORKS_PAGE_SIZE);
+  const skip = (safePage - 1) * safeLimit;
 
   let userLikedArtworkIds = new Set<string>();
 
-  if (userId) {
+  if (userId && Types.ObjectId.isValid(userId)) {
     const userLikes = await Like.find({ userId })
       .sort({ createdAt: -1 })
       .lean();
@@ -173,7 +186,12 @@ export async function getArtworksForOverview(options?: {
     );
 
     if (likedOnly) {
-      const artworkIds = userLikes.map((like) => like.artworkId);
+      const pagedLikes = userLikes.slice(skip, skip + safeLimit);
+      const artworkIds = pagedLikes.map((like) => like.artworkId);
+
+      if (artworkIds.length === 0) {
+        return [];
+      }
 
       const likedArtworks = await ArtworkModel.find({
         _id: { $in: artworkIds },
@@ -197,26 +215,55 @@ export async function getArtworksForOverview(options?: {
         likeCounts.map((entry) => [entry._id.toString(), entry.likeCount])
       );
 
-      return likedArtworks.map((artwork) =>
-        serializeArtwork(
-          artwork,
-          likeCountMap.get(artwork._id.toString()) ?? 0,
-          true
-        )
+      const likedArtworkMap = new Map(
+        likedArtworks.map((artwork) => [artwork._id.toString(), artwork])
       );
+
+      return artworkIds
+        .map((artworkId) => {
+          const artwork = likedArtworkMap.get(artworkId.toString());
+
+          if (!artwork) return null;
+
+          return serializeArtwork(
+            artwork,
+            likeCountMap.get(artwork._id.toString()) ?? 0,
+            true
+          );
+        })
+        .filter(
+          (
+            artwork
+          ): artwork is Artwork & { likeCount: number; isLiked: boolean } =>
+            artwork !== null
+        );
     }
   }
 
-  const artworks = await ArtworkModel.find().sort({ createdAt: -1 }).lean();
+  const artworks = await ArtworkModel.find()
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(safeLimit)
+    .lean();
 
-  const likeCounts = await Like.aggregate([
-    {
-      $group: {
-        _id: "$artworkId",
-        likeCount: { $sum: 1 },
-      },
-    },
-  ]);
+  const artworkIds = artworks.map((artwork) => artwork._id);
+
+  const likeCounts =
+    artworkIds.length > 0
+      ? await Like.aggregate([
+          {
+            $match: {
+              artworkId: { $in: artworkIds },
+            },
+          },
+          {
+            $group: {
+              _id: "$artworkId",
+              likeCount: { $sum: 1 },
+            },
+          },
+        ])
+      : [];
 
   const likeCountMap = new Map<string, number>(
     likeCounts.map((entry) => [entry._id.toString(), entry.likeCount])
