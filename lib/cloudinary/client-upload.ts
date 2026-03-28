@@ -24,23 +24,24 @@ export async function extractCoordinatesFromImage(
   try {
     // exifr.gps(file) sucht nach Breiten- und Längengraden in den Bilddaten
     const gpsData = await exifr.gps(file);
+    console.log("gpsData from exifr:", gpsData);
 
-    // Wenn Daten gefunden wurden, checken, ob es wirklich Zahlen sind
-    if (
-      gpsData &&
-      typeof gpsData.latitude === "number" &&
-      typeof gpsData.longitude === "number"
-    ) {
-      // Wenn alles passt, geben wir die Koordinaten zurück.
-      // toFixed(6) rundet auf 6 Nachkommastellen für eine saubere Speicherung.
-      return {
-        latitude: Number(gpsData.latitude.toFixed(6)),
-        longitude: Number(gpsData.longitude.toFixed(6)),
-      };
-    }
+    const latitude = Number(gpsData?.latitude);
+    const longitude = Number(gpsData?.longitude);
+
+    const hasValidCoordinates =
+      Number.isFinite(latitude) && Number.isFinite(longitude);
 
     // Wenn keine GPS-Daten vorhanden > "null" zurückgeben.
-    return null;
+    if (!hasValidCoordinates) {
+      return null;
+    }
+    // Wenn alles passt, geben wir die Koordinaten zurück.
+    // toFixed(6) rundet auf 6 Nachkommastellen für eine saubere Speicherung.
+    return {
+      latitude: Number(latitude.toFixed(6)),
+      longitude: Number(longitude.toFixed(6)),
+    };
   } catch (error) {
     // Fehler Logging bei Absturz (z.b. Datei ist defekt)
     console.error("Client EXIF GPS extraction failed:", error);

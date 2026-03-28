@@ -306,17 +306,19 @@ export function ArtworkForm({
         shouldDirty: true,
       });
 
+      const latitude = Number(extractedCoordinates?.latitude);
+      const longitude = Number(extractedCoordinates?.longitude);
+
       const hasExtractedCoordinates =
-        typeof extractedCoordinates?.latitude === "number" &&
-        typeof extractedCoordinates?.longitude === "number";
+        Number.isFinite(latitude) && Number.isFinite(longitude);
 
       if (hasExtractedCoordinates) {
-        form.setValue("latitude", String(extractedCoordinates.latitude), {
+        form.setValue("latitude", String(latitude), {
           shouldValidate: true,
           shouldDirty: true,
         });
 
-        form.setValue("longitude", String(extractedCoordinates.longitude), {
+        form.setValue("longitude", String(longitude), {
           shouldValidate: true,
           shouldDirty: true,
         });
@@ -324,7 +326,7 @@ export function ArtworkForm({
         setImageStatusMessage("Image uploaded and geo coordinates extracted.");
         setImageStatusVariant("success");
         setHasAutoExtractedCoordinates(true);
-        setAreCoordinatesEditable(false); // GPS gefunden? Dann Felder sperren
+        setAreCoordinatesEditable(false);
 
         toast.success("Image uploaded and geo coordinates extracted.", {
           className: "!bg-green-200 !text-green-700 !border-green-500 mt-15",
