@@ -8,9 +8,8 @@ import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { ArtworkImageUpload } from "@/components/forms/artwork-image-upload";
 import {
-  extractCoordinatesWithDebug,
+  extractCoordinatesFromImage,
   uploadImageToCloudinary,
-  type ExifDebugInfo,
 } from "@/lib/cloudinary/client-upload";
 import { MapPicker } from "@/components/map/map-picker";
 import { FormTextField } from "@/components/forms/form-text-field";
@@ -142,9 +141,6 @@ export function ArtworkForm({
   );
   const [hasAutoExtractedCoordinates, setHasAutoExtractedCoordinates] =
     useState(Boolean(initialValues?.latitude && initialValues?.longitude));
-  const [exifDebugInfo, setExifDebugInfo] = useState<ExifDebugInfo | null>(
-    null
-  );
 
   const sanitizedTags: AllowedArtworkTag[] = (initialValues?.tags ?? []).filter(
     (tag): tag is AllowedArtworkTag =>
@@ -252,7 +248,6 @@ export function ArtworkForm({
   async function handleImageSelection(file: File) {
     setImageStatusMessage(null);
     setImageStatusVariant("default");
-    setExifDebugInfo(null);
 
     if (file.size > MAX_IMAGE_FILE_SIZE_BYTES) {
       setImageStatusMessage(
@@ -297,9 +292,7 @@ export function ArtworkForm({
 
     try {
       // Koordinaten aus dem Bild lesen (mit Debug-Info)
-      const { coordinates: extractedCoordinates, debug } =
-        await extractCoordinatesWithDebug(file);
-      setExifDebugInfo(debug);
+      const extractedCoordinates = await extractCoordinatesFromImage(file);
 
       // Bild zu Cloudinary schicken
       const uploadResult = await uploadImageToCloudinary(file);
@@ -319,19 +312,17 @@ export function ArtworkForm({
         shouldDirty: true,
       });
 
-      const latitude = Number(extractedCoordinates?.latitude);
-      const longitude = Number(extractedCoordinates?.longitude);
-
       const hasExtractedCoordinates =
-        Number.isFinite(latitude) && Number.isFinite(longitude);
+        typeof extractedCoordinates?.latitude === "number" &&
+        typeof extractedCoordinates?.longitude === "number";
 
       if (hasExtractedCoordinates) {
-        form.setValue("latitude", String(latitude), {
+        form.setValue("latitude", String(extractedCoordinates.latitude), {
           shouldValidate: true,
           shouldDirty: true,
         });
 
-        form.setValue("longitude", String(longitude), {
+        form.setValue("longitude", String(extractedCoordinates.longitude), {
           shouldValidate: true,
           shouldDirty: true,
         });
@@ -411,7 +402,6 @@ export function ArtworkForm({
     setHasAutoExtractedCoordinates(
       Boolean(initialValues?.latitude && initialValues?.longitude)
     );
-    setExifDebugInfo(null);
   }
 
   // --- (JSX) ---
@@ -468,54 +458,6 @@ export function ArtworkForm({
                   statusMessage={imageStatusMessage}
                   statusVariant={imageStatusVariant}
                 />
-
-                {exifDebugInfo && (
-                  <div className="mt-4 rounded-lg border border-amber-500 bg-amber-950 p-3 text-xs text-amber-100">
-                    <p className="mb-2 font-bold text-amber-300">
-                      🐛 EXIF Debug Info:
-                    </p>
-                    <div className="space-y-1">
-                      <p>
-                        <strong>File:</strong> {exifDebugInfo.fileInfo.name} (
-                        {exifDebugInfo.fileInfo.type},{" "}
-                        {exifDebugInfo.fileInfo.size} bytes)
-                      </p>
-                      <p>
-                        <strong>GPS via exifr.gps():</strong>{" "}
-                        {exifDebugInfo.gpsDataRaw
-                          ? `${JSON.stringify(exifDebugInfo.gpsDataRaw)}`
-                          : "null"}
-                      </p>
-                      <p>
-                        <strong>Full EXIF keys:</strong> [
-                        {exifDebugInfo.gpsSearchResults.allKeys.join(", ")}]
-                      </p>
-                      <p>
-                        <strong>GPS-related keys:</strong> [
-                        {exifDebugInfo.gpsSearchResults.gpsRelatedKeys.join(
-                          ", "
-                        ) || "none"}
-                        ]
-                      </p>
-                      <p>
-                        <strong>Full EXIF via exifr.parse():</strong>{" "}
-                        <pre className="mt-1 overflow-auto rounded bg-black/30 p-2">
-                          {JSON.stringify(exifDebugInfo.fullExifRaw, null, 2)}
-                        </pre>
-                      </p>
-                      <p>
-                        <strong>Extracted:</strong> Lat={exifDebugInfo.latitude}
-                        , Lng=
-                        {exifDebugInfo.longitude}
-                      </p>
-                      {exifDebugInfo.error && (
-                        <p className="text-red-300">
-                          <strong>Error:</strong> {exifDebugInfo.error}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                )}
               </Field>
 
               <Field>

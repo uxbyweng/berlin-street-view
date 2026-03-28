@@ -1,163 +1,16 @@
-// UPLOAD STEUERUNG
-
 import exifr from "exifr"; // importier Bibliothek zum Auslesen von EXIF-Daten
 
 // --- TYP-DEFINITIONEN ---
 export type ExtractedCoordinates = {
-  latitude: number;
-  longitude: number;
-};
-
-export type ExifDebugInfo = {
-  fileInfo: {
-    name: string;
-    type: string;
-    size: number;
-  };
-  gpsDataRaw: unknown;
-  fullExifRaw: unknown;
-  gpsSearchResults: {
-    allKeys: string[];
-    gpsRelatedKeys: string[];
-  };
-  latitude: number | null;
-  longitude: number | null;
-  error?: string;
+  latitude: number; // Breitengrad (Zahl)
+  longitude: number; // Längengrad (Zahl)
 };
 
 type CloudinaryUploadResult = {
-  secureUrl: string;
-  publicId: string;
-  originalFilename?: string;
+  secureUrl: string; // URL des hochgeladenen Bildes
+  publicId: string; // eindeutige ID von Cloudinary für das Bild
+  originalFilename?: string; // Optional: Der ursprüngliche Name der Datei
 };
-
-// --- FUNKTION: KOORDINATEN AUSLESEN MIT DEBUG-INFO ---
-/**
- * Versucht, GPS-Daten aus einer Bilddatei zu extrahieren und gibt Debug-Info zurück.
- */
-export async function extractCoordinatesWithDebug(
-  file: File
-): Promise<{ coordinates: ExtractedCoordinates | null; debug: ExifDebugInfo }> {
-  const fileInfo = {
-    name: file.name,
-    type: file.type,
-    size: file.size,
-  };
-
-  try {
-    let gpsDataRaw: unknown = null;
-    let fullExifRaw: unknown = null;
-    let latitude: number | null = null;
-    let longitude: number | null = null;
-
-    // exifr.gps(file) sucht nach Breiten- und Längengraden in den Bilddaten
-    gpsDataRaw = await exifr.gps(file);
-    latitude = Number(
-      (gpsDataRaw as Record<string, unknown> | null)?.latitude ?? null
-    );
-    longitude = Number(
-      (gpsDataRaw as Record<string, unknown> | null)?.longitude ?? null
-    );
-
-    // Fallback: Wenn exifr.gps() null zurückgibt, versuche exifr.parse()
-    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
-      fullExifRaw = await exifr.parse(file);
-      const exifObj = fullExifRaw as Record<string, unknown>;
-
-      // Versuche verschiedene mögliche GPS-Strukturen:
-      // 1. exifObj.latitude / exifObj.longitude (direktE Werte)
-      // 2. exifObj.gps.latitude / exifObj.gps.longitude (nested)
-      // 3. exifObj.GPSLatitude / exifObj.GPSLongitude (uppercase)
-      // 4. Arrays wie [degrees, minutes, seconds]
-
-      let rawLat =
-        exifObj?.latitude ??
-        (exifObj?.gps as Record<string, unknown> | undefined)?.latitude ??
-        exifObj?.GPSLatitude;
-      let rawLng =
-        exifObj?.longitude ??
-        (exifObj?.gps as Record<string, unknown> | undefined)?.longitude ??
-        exifObj?.GPSLongitude;
-
-      // Wenn GPS-Daten als Arrays kommen [degrees, minutes, seconds],
-      // konvertiere sie in dezimale Grade
-      if (Array.isArray(rawLat) && rawLat.length >= 2) {
-        const [degrees, minutes, seconds = 0] = rawLat as number[];
-        if (Number.isFinite(degrees)) {
-          latitude = Number(
-            (Math.abs(degrees) + minutes / 60 + (seconds ?? 0) / 3600).toFixed(
-              6
-            )
-          );
-          if (degrees < 0) latitude = -latitude;
-        }
-      } else {
-        latitude = Number(rawLat ?? null);
-      }
-
-      if (Array.isArray(rawLng) && rawLng.length >= 2) {
-        const [degrees, minutes, seconds = 0] = rawLng as number[];
-        if (Number.isFinite(degrees)) {
-          longitude = Number(
-            (Math.abs(degrees) + minutes / 60 + (seconds ?? 0) / 3600).toFixed(
-              6
-            )
-          );
-          if (degrees < 0) longitude = -longitude;
-        }
-      } else {
-        longitude = Number(rawLng ?? null);
-      }
-    }
-
-    const hasValidCoordinates =
-      Number.isFinite(latitude) && Number.isFinite(longitude);
-
-    const coordinates = hasValidCoordinates
-      ? {
-          latitude: Number(latitude!.toFixed(6)),
-          longitude: Number(longitude!.toFixed(6)),
-        }
-      : null;
-
-    // GPS-Suche in der vollständigen EXIF-Struktur
-    const allKeys = Object.keys((fullExifRaw as Record<string, unknown>) || {});
-    const gpsRelatedKeys = allKeys.filter((key) =>
-      key.toLowerCase().includes("gps")
-    );
-
-    return {
-      coordinates,
-      debug: {
-        fileInfo,
-        gpsDataRaw,
-        fullExifRaw,
-        gpsSearchResults: {
-          allKeys,
-          gpsRelatedKeys,
-        },
-        latitude: hasValidCoordinates ? latitude : null,
-        longitude: hasValidCoordinates ? longitude : null,
-      },
-    };
-  } catch (error) {
-    return {
-      coordinates: null,
-      debug: {
-        fileInfo,
-        gpsDataRaw: null,
-        fullExifRaw: null,
-        gpsSearchResults: {
-          allKeys: [],
-          gpsRelatedKeys: [],
-        },
-        latitude: null,
-        longitude: null,
-        error: error instanceof Error ? error.message : String(error),
-      },
-    };
-  }
-}
 
 // --- FUNKTION: KOORDINATEN AUSLESEN ---
 /**
@@ -166,8 +19,36 @@ export async function extractCoordinatesWithDebug(
 export async function extractCoordinatesFromImage(
   file: File
 ): Promise<ExtractedCoordinates | null> {
-  const { coordinates } = await extractCoordinatesWithDebug(file);
-  return coordinates;
+  try {
+    // Datei als ArrayBuffer lesen, damit exifr die Rohdaten direkt bekommt.
+    // Auf manchen Mobile-Browsern kann exifr das File-Objekt nicht korrekt
+    // lesen — der ArrayBuffer umgeht dieses Problem.
+    const buffer = await file.arrayBuffer();
+
+    // exifr.gps() sucht nach Breiten- und Längengraden in den Bilddaten
+    const gpsData = await exifr.gps(buffer);
+
+    // Wenn Daten gefunden wurden, checken, ob es wirklich Zahlen sind
+    if (
+      gpsData &&
+      typeof gpsData.latitude === "number" &&
+      typeof gpsData.longitude === "number"
+    ) {
+      // Wenn alles passt, geben wir die Koordinaten zurück.
+      // toFixed(6) rundet auf 6 Nachkommastellen für eine saubere Speicherung.
+      return {
+        latitude: Number(gpsData.latitude.toFixed(6)),
+        longitude: Number(gpsData.longitude.toFixed(6)),
+      };
+    }
+
+    // Wenn keine GPS-Daten vorhanden > "null" zurückgeben.
+    return null;
+  } catch (error) {
+    // Fehler Logging bei Absturz (z.b. Datei ist defekt)
+    console.error("Client EXIF GPS extraction failed:", error);
+    return null;
+  }
 }
 
 // --- FUNKTION: BILD HOCHLADEN ---
