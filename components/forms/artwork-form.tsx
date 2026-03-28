@@ -141,6 +141,11 @@ export function ArtworkForm({
       ALLOWED_TAGS.includes(tag as AllowedArtworkTag)
   );
 
+  // DEBUGGING
+  const [debugExif, setDebugExif] = useState<string>("");
+  const [debugCoords, setDebugCoords] = useState<string>("");
+  const [debugFormValues, setDebugFormValues] = useState<string>("");
+
   // DEFAULT VALUES
   const defaultValues: ArtworkInput = {
     title: initialValues?.title ?? "",
@@ -288,6 +293,9 @@ export function ArtworkForm({
       // Koordinaten aus dem Bild lesen (falls vorhanden)
       const extractedCoordinates = await extractCoordinatesFromImage(file);
 
+      // DEBUG
+      setDebugExif(JSON.stringify(extractedCoordinates));
+
       // Bild zu Cloudinary schicken
       const uploadResult = await uploadImageToCloudinary(file);
 
@@ -312,6 +320,14 @@ export function ArtworkForm({
       const hasExtractedCoordinates =
         Number.isFinite(latitude) && Number.isFinite(longitude);
 
+      setDebugCoords(
+        JSON.stringify({
+          latitude,
+          longitude,
+          hasExtractedCoordinates,
+        })
+      );
+
       if (hasExtractedCoordinates) {
         form.setValue("latitude", String(latitude), {
           shouldValidate: true,
@@ -322,6 +338,13 @@ export function ArtworkForm({
           shouldValidate: true,
           shouldDirty: true,
         });
+
+        setDebugFormValues(
+          JSON.stringify({
+            latitude: form.getValues("latitude"),
+            longitude: form.getValues("longitude"),
+          })
+        );
 
         setImageStatusMessage("Image uploaded and geo coordinates extracted.");
         setImageStatusVariant("success");
@@ -455,6 +478,18 @@ export function ArtworkForm({
                   statusVariant={imageStatusVariant}
                 />
               </Field>
+
+              <div className="rounded-xl border border-yellow-500/30 bg-yellow-500/10 p-3 text-xs text-yellow-100">
+                <p>
+                  <strong>EXIF:</strong> {debugExif || "—"}
+                </p>
+                <p>
+                  <strong>Parsed:</strong> {debugCoords || "—"}
+                </p>
+                <p>
+                  <strong>Form values:</strong> {debugFormValues || "—"}
+                </p>
+              </div>
 
               <Field>
                 <div className="flex items-center justify-between gap-3">
