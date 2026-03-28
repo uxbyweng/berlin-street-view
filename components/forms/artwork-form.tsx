@@ -8,7 +8,6 @@ import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { ArtworkImageUpload } from "@/components/forms/artwork-image-upload";
 import {
-  extractCoordinatesFromImage,
   extractCoordinatesWithDebug,
   uploadImageToCloudinary,
   type ExifDebugInfo,
@@ -490,7 +489,10 @@ export function ArtworkForm({
                       <p>
                         <strong>Full EXIF via exifr.parse():</strong>{" "}
                         {exifDebugInfo.fullExifRaw
-                          ? `GPS: ${JSON.stringify(exifDebugInfo.fullExifRaw.gps || exifDebugInfo.fullExifRaw?.latitude ? { latitude: exifDebugInfo.fullExifRaw.latitude, longitude: exifDebugInfo.fullExifRaw.longitude } : "not found")}`
+                          ? JSON.stringify(exifDebugInfo.fullExifRaw).substring(
+                              0,
+                              200
+                            )
                           : "null"}
                       </p>
                       <p>
