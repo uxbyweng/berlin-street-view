@@ -125,13 +125,30 @@ async function debugExifOnServer(file: File) {
     body: formData,
   });
 
-  const result = await response.json().catch(() => null);
+  const rawText = await response.text();
 
-  if (!response.ok) {
-    throw new Error(result?.error || "Server EXIF debug failed.");
+  let parsed: unknown = null;
+
+  try {
+    parsed = JSON.parse(rawText);
+  } catch {
+    parsed = {
+      success: false,
+      error: "Response was not valid JSON.",
+      rawText,
+      status: response.status,
+    };
   }
 
-  return result;
+  if (!response.ok) {
+    return {
+      success: false,
+      status: response.status,
+      ...(typeof parsed === "object" && parsed !== null ? parsed : { parsed }),
+    };
+  }
+
+  return parsed;
 }
 
 // --- MAIN COMPONENT ---
@@ -342,7 +359,16 @@ export function ArtworkForm({
       // Bild zu Cloudinary schicken
       const uploadResult = await uploadImageToCloudinary(file);
 
-      const serverExifDebug = await debugExifOnServer(file);
+      let serverExifDebug: unknown;
+
+      try {
+        serverExifDebug = await debugExifOnServer(file);
+      } catch (error) {
+        serverExifDebug = {
+          success: false,
+          error: error instanceof Error ? error.message : String(error),
+        };
+      }
 
       setDebugExifInfo((prev) => ({
         ...(prev ?? {}),
