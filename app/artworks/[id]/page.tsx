@@ -4,7 +4,6 @@ import { ArtworkDetail } from "@/components/artworks/artwork-detail";
 import type { Metadata } from "next";
 import { getArtworkById, getArtworkMetadataById } from "@/lib/data/artworks";
 import { auth } from "@/auth";
-import { connectDB } from "@/lib/db/mongodb";
 import { Like } from "@/lib/models/like";
 
 export const dynamic = "force-dynamic";
@@ -33,7 +32,9 @@ export async function generateMetadata({
     artwork.description?.trim() ||
     `View details for ${artwork.title} on STREET LENS.`;
 
-  const image = artwork.imageUrl || "/images/og-default.jpg";
+  const ogImage = artwork.imageUrl?.includes("res.cloudinary.com")
+    ? artwork.imageUrl.replace("/upload/", "/upload/w_1200,h_630,c_fill,g_auto,q_auto,f_auto/")
+    : artwork.imageUrl || "/images/og-default.jpg";
   const url = `/artworks/${artwork._id}`;
 
   return {
@@ -47,7 +48,7 @@ export async function generateMetadata({
       siteName: "STREET LENS",
       images: [
         {
-          url: image,
+          url: ogImage,
           width: 1200,
           height: 630,
           alt: artwork.title || "Artwork preview",
@@ -58,7 +59,7 @@ export async function generateMetadata({
       card: "summary_large_image",
       title,
       description,
-      images: [image],
+      images: [ogImage],
     },
   };
 }
@@ -67,35 +68,76 @@ export default async function ArtworkDetailPage({
   params,
 }: ArtworkDetailPageProps) {
   const { id } = await params;
-  const artwork = await getArtworkById(id);
+
+  // Artwork-Daten und Session parallel laden
+  const [artwork, session] = await Promise.all([
+    getArtworkById(id),
+    auth(),
+  ]);
 
   if (!artwork) {
     notFound();
   }
 
-  const session = await auth();
   const userId = session?.user?.id ?? null;
 
-  await connectDB();
-
-  const likeCount = await Like.countDocuments({ artworkId: id });
-
-  const initialLiked =
+  // Like-Daten parallel laden (connectDB ist bereits durch getArtworkById passiert)
+  const [likeCount, likeExists] = await Promise.all([
+    Like.countDocuments({ artworkId: id }),
     userId && mongoose.Types.ObjectId.isValid(userId)
-      ? Boolean(
-          await Like.exists({
-            artworkId: id,
-            userId,
-          })
-        )
-      : false;
+      ? Like.exists({ artworkId: id, userId })
+      : null,
+  ]);
+
+  const initialLiked = Boolean(likeExists);
+
+  const baseUrl =
+    process.env.NEXT_PUBLIC_APP_URL ?? "https://street-lens.vercel.app";
+
+  const description = artwork.description
+    ? artwork.description.slice(0, 300)
+    : undefined;
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "VisualArtwork",
+    name: artwork.title,
+    artist: {
+      "@type": "Person",
+      name: artwork.artist,
+    },
+    description,
+    image: artwork.imageUrl || undefined,
+    url: `${baseUrl}/artworks/${artwork._id}`,
+    material: artwork.tags?.length ? artwork.tags.join(", ") : undefined,
+    artform: "Street Art",
+    ...(artwork.latitude != null && artwork.longitude != null
+      ? {
+          contentLocation: {
+            "@type": "Place",
+            name: "Berlin",
+            geo: {
+              "@type": "GeoCoordinates",
+              latitude: artwork.latitude,
+              longitude: artwork.longitude,
+            },
+          },
+        }
+      : {}),
+  };
 
   return (
-    <ArtworkDetail
-      artwork={artwork}
-      initialLikeCount={likeCount}
-      initialLiked={initialLiked}
-      isAuthenticated={Boolean(userId)}
-    />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <ArtworkDetail
+        artwork={artwork}
+        initialLikeCount={likeCount}
+        initialLiked={initialLiked}
+        isAuthenticated={Boolean(userId)}
+      />
+    </>
   );
 }

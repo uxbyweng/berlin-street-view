@@ -5,6 +5,7 @@ import Link from "next/link";
 import { IconMapPinFilled } from "@tabler/icons-react";
 import { LikeToggle } from "@/components/artworks/like-toggle";
 import { Card } from "@/components/ui/card";
+import { getCloudinaryImageUrl } from "@/lib/cloudinary/image-url";
 import type { Artwork } from "@/types/artwork";
 
 type ArtworkCardProps = {
@@ -36,7 +37,7 @@ export function ArtworkCard({
           className="flex h-full flex-col focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
         >
           <Image
-            src={artwork.imageUrl ?? "/images/artwork-placeholder.jpg"}
+            src={getCloudinaryImageUrl(artwork.imageUrl, "w_500,q_auto,f_auto", "/images/artwork-placeholder.jpg")}
             alt={`${artwork.title}${artwork.artist ? ` - ${artwork.artist}` : ""}`}
             width={800}
             height={450}
@@ -87,8 +88,8 @@ export function ArtworkCard({
                 <div className="ml-3 inline-flex min-w-0 items-center gap-1">
                   <IconMapPinFilled className="size-3.5 shrink-0" />
                   <span className="truncate">
-                    {artwork.latitude.toFixed(4)},{" "}
-                    {artwork.longitude.toFixed(4)}
+                    {artwork.latitude!.toFixed(4)},{" "}
+                    {artwork.longitude!.toFixed(4)}
                   </span>
                 </div>
               ) : null}

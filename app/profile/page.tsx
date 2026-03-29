@@ -47,12 +47,14 @@ export default async function ProfilePage() {
       return {
         _id: artwork._id.toString(),
         title: artwork.title,
-        artist: artwork.artist,
-        imageUrl: artwork.imageUrl,
+        artist: artwork.artist ?? undefined,
+        imageUrl: artwork.imageUrl ?? "",
         createdAt: like.createdAt.toString(),
       };
     })
-    .filter(Boolean);
+    .filter(
+      (artwork): artwork is NonNullable<typeof artwork> => artwork !== null
+    );
 
   return (
     <>
