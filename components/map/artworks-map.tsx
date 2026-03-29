@@ -19,6 +19,7 @@ import { useState } from "react";
 
 type ArtworksMapProps = {
   artworks: (Artwork & { likeCount?: number; isLiked?: boolean })[];
+  isAuthenticated?: boolean;
   showControls?: boolean;
   className?: string;
 };
@@ -46,6 +47,7 @@ function getInitialCenter(): [number, number] {
 
 export function ArtworksMap({
   artworks,
+  isAuthenticated,
   showControls = true,
   className,
 }: ArtworksMapProps) {
@@ -146,6 +148,7 @@ export function ArtworksMap({
                         artworkId={artwork._id}
                         initialLiked={Boolean(artwork.isLiked)}
                         initialLikeCount={artwork.likeCount ?? 0}
+                        isAuthenticated={isAuthenticated}
                         onClick={(event) => {
                           event.preventDefault();
                           event.stopPropagation();

@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArtworkList } from "@/components/artworks/artwork-list";
 import { Button } from "@/components/ui/button";
 import type { Artwork } from "@/types/artwork";
+import { isLocallyLiked } from "@/lib/likes/local-storage";
 
 type ArtworkListItem = Artwork & {
   likeCount?: number;
@@ -12,6 +13,7 @@ type ArtworkListItem = Artwork & {
 
 type ArtworkListLoadMoreProps = {
   initialArtworks: ArtworkListItem[];
+  isAuthenticated?: boolean;
   isLikedFilterActive?: boolean;
   initialPage?: number;
   pageSize?: number;
@@ -19,14 +21,27 @@ type ArtworkListLoadMoreProps = {
 
 export function ArtworkListLoadMore({
   initialArtworks,
+  isAuthenticated,
   isLikedFilterActive = false,
   initialPage = 1,
   pageSize = 15,
 }: ArtworkListLoadMoreProps) {
+  // Client-seitige Filterung nach localStorage-Likes für nicht eingeloggte User
+  const isLocalLikedFilter = isLikedFilterActive && !isAuthenticated;
+
   const [artworks, setArtworks] = useState<ArtworkListItem[]>(initialArtworks);
   const [page, setPage] = useState(initialPage);
   const [isLoading, setIsLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(initialArtworks.length === pageSize);
+  const [hasMore, setHasMore] = useState(
+    !isLocalLikedFilter && initialArtworks.length === pageSize
+  );
+
+  // Lokale Likes filtern (erst nach Mount, da localStorage auf dem Server nicht verfügbar ist)
+  useEffect(() => {
+    if (isLocalLikedFilter) {
+      setArtworks(initialArtworks.filter((a) => isLocallyLiked(a._id)));
+    }
+  }, [isLocalLikedFilter, initialArtworks]);
 
   function handleArtworkRemoved(artworkId: string) {
     setArtworks((current) =>
@@ -80,6 +95,7 @@ export function ArtworkListLoadMore({
     <div className="space-y-8">
       <ArtworkList
         artworks={artworks}
+        isAuthenticated={isAuthenticated}
         isLikedFilterActive={isLikedFilterActive}
         onArtworkRemoved={handleArtworkRemoved}
       />

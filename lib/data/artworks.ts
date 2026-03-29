@@ -172,8 +172,8 @@ export async function getArtworksForOverview(options?: {
   const userId = options?.userId;
   const likedOnly = options?.likedOnly ?? false;
   const safePage = Math.max(1, options?.page ?? 1);
-  const safeLimit = Math.max(1, options?.limit ?? DEFAULT_ARTWORKS_PAGE_SIZE);
-  const skip = (safePage - 1) * safeLimit;
+  const safeLimit = Math.max(0, options?.limit ?? DEFAULT_ARTWORKS_PAGE_SIZE);
+  const skip = safeLimit > 0 ? (safePage - 1) * safeLimit : 0;
 
   let userLikedArtworkIds = new Set<string>();
 
@@ -187,7 +187,9 @@ export async function getArtworksForOverview(options?: {
     );
 
     if (likedOnly) {
-      const pagedLikes = userLikes.slice(skip, skip + safeLimit);
+      const pagedLikes = safeLimit > 0
+        ? userLikes.slice(skip, skip + safeLimit)
+        : userLikes;
       const artworkIds = pagedLikes.map((like) => like.artworkId);
 
       if (artworkIds.length === 0) {

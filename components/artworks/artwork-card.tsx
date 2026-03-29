@@ -15,6 +15,7 @@ type ArtworkCardProps = {
   };
   href: string;
   index: number;
+  isAuthenticated?: boolean;
   isLikedFilterActive?: boolean;
   onArtworkRemoved?: (artworkId: string) => void;
 };
@@ -23,6 +24,7 @@ export function ArtworkCard({
   artwork,
   href,
   index,
+  isAuthenticated,
   isLikedFilterActive = false,
   onArtworkRemoved,
 }: ArtworkCardProps) {
@@ -72,6 +74,7 @@ export function ArtworkCard({
                 artworkId={artwork._id}
                 initialLiked={Boolean(artwork.isLiked)}
                 initialLikeCount={artwork.likeCount ?? 0}
+                isAuthenticated={isAuthenticated}
                 refreshOnSuccess={isLikedFilterActive}
                 onToggleSuccess={(nextLiked) => {
                   if (isLikedFilterActive && !nextLiked) {

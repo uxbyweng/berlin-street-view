@@ -2,10 +2,15 @@
 
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IconHeart, IconHeartFilled } from "@tabler/icons-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import {
+  isLocallyLiked,
+  addLocalLike,
+  removeLocalLike,
+} from "@/lib/likes/local-storage";
 
 type LikeToggleProps = {
   artworkId: string;
@@ -41,11 +46,30 @@ export function LikeToggle({
   const [isPending, setIsPending] = useState(false);
   const router = useRouter();
 
+  // Lokale Likes aus localStorage laden (nur für nicht eingeloggte User)
+  useEffect(() => {
+    if (!isAuthenticated && isLocallyLiked(artworkId)) {
+      setLiked(true);
+      setLikeCount(initialLikeCount + 1);
+    }
+  }, [isAuthenticated, artworkId, initialLikeCount]);
+
   async function handleLikeClick(event: React.MouseEvent<HTMLButtonElement>) {
     onClick?.(event);
 
+    // Nicht eingeloggt → Like lokal im Browser speichern
     if (!isAuthenticated) {
-      toast.error("Log in to like this artwork.");
+      const nextLiked = !liked;
+      setLiked(nextLiked);
+      setLikeCount(initialLikeCount + (nextLiked ? 1 : 0));
+
+      if (nextLiked) {
+        addLocalLike(artworkId);
+      } else {
+        removeLocalLike(artworkId);
+      }
+
+      onToggleSuccess?.(nextLiked);
       return;
     }
 
@@ -83,13 +107,7 @@ export function LikeToggle({
       onClick={handleLikeClick}
       disabled={isPending}
       aria-pressed={liked}
-      aria-label={
-        isAuthenticated
-          ? liked
-            ? "Remove like"
-            : "Like artwork"
-          : "Log in to like this artwork"
-      }
+      aria-label={liked ? "Remove like" : "Like artwork"}
       className={className}
     >
       {liked ? (
