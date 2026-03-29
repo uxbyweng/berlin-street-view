@@ -69,8 +69,8 @@ export async function getArtworks(
   await connectDB();
 
   const safePage = Math.max(1, page);
-  const safeLimit = Math.max(1, limit);
-  const skip = (safePage - 1) * safeLimit;
+  const safeLimit = Math.max(0, limit);
+  const skip = safeLimit > 0 ? (safePage - 1) * safeLimit : 0;
 
   const artworks = await ArtworkModel.find()
     .sort({ createdAt: -1 })

@@ -108,10 +108,6 @@ export function MapPicker({
   showControls = true,
   className,
   scrollZoom,
-  dragPan,
-  dragRotate,
-  doubleClickZoom,
-  touchZoomRotate,
   keyboard,
 }: MapPickerProps) {
   const lat = latitude ?? DEFAULT_LOCATION.lat;
@@ -127,10 +123,6 @@ export function MapPicker({
         }}
         styles={MAP_STYLES}
         scrollZoom={scrollZoom}
-        dragPan={dragPan}
-        dragRotate={dragRotate}
-        doubleClickZoom={doubleClickZoom}
-        touchZoomRotate={touchZoomRotate}
         keyboard={keyboard}
       >
         {showControls ? (
