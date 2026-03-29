@@ -10,9 +10,10 @@ const DEFAULT_ARTWORKS_PAGE_SIZE = 15;
 type ArtworkDocumentLike = {
   _id: Types.ObjectId;
   title: string;
-  artist?: string;
-  description?: string;
-  imageUrl?: string;
+  artist?: string | null;
+  description?: string | null;
+  imageUrl?: string | null;
+  cloudinaryPublicId?: string | null;
   latitude?: number | null;
   longitude?: number | null;
   tags?: string[];
@@ -49,8 +50,8 @@ function serializeArtwork(
     artist: doc.artist ?? "",
     description: doc.description ?? "",
     imageUrl: doc.imageUrl ?? "",
-    latitude: doc.latitude ?? null,
-    longitude: doc.longitude ?? null,
+    latitude: doc.latitude ?? undefined,
+    longitude: doc.longitude ?? undefined,
     tags: doc.tags ?? [],
     createdAt: toIsoString(doc.createdAt),
     updatedAt: toIsoString(doc.updatedAt),
@@ -320,9 +321,9 @@ export const getArtworkMetadataById = cache(
     return {
       _id: artwork._id.toString(),
       title: artwork.title,
-      artist: artwork.artist,
-      description: artwork.description,
-      imageUrl: artwork.imageUrl,
+      artist: artwork.artist ?? undefined,
+      description: artwork.description ?? "",
+      imageUrl: artwork.imageUrl ?? undefined,
     };
   }
 );

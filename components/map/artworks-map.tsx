@@ -101,6 +101,8 @@ export function ArtworksMap({
         ) : null}
 
         {artworks.map((artwork) => {
+          if (artwork.latitude == null || artwork.longitude == null) return null;
+
           return (
             <MapMarker
               key={artwork._id}

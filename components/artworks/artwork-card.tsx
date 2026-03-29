@@ -87,8 +87,8 @@ export function ArtworkCard({
                 <div className="ml-3 inline-flex min-w-0 items-center gap-1">
                   <IconMapPinFilled className="size-3.5 shrink-0" />
                   <span className="truncate">
-                    {artwork.latitude.toFixed(4)},{" "}
-                    {artwork.longitude.toFixed(4)}
+                    {artwork.latitude!.toFixed(4)},{" "}
+                    {artwork.longitude!.toFixed(4)}
                   </span>
                 </div>
               ) : null}

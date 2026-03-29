@@ -83,13 +83,13 @@ const providers = [
 
               return {
                 id: previewUser._id.toString(),
-                name: previewUser.name,
-                email: previewUser.email,
-                image: previewUser.image,
-                provider: previewUser.provider,
+                name: previewUser.name ?? null,
+                email: previewUser.email ?? null,
+                image: previewUser.image ?? null,
+                provider: previewUser.provider as "credentials",
                 providerAccountId: previewUser.providerAccountId,
-                role: previewUser.role,
-                username: previewUser.username,
+                role: previewUser.role as "admin" | "standard",
+                username: previewUser.username ?? "",
               };
             } catch (error) {
               console.error("Credentials authorize error:", error);
