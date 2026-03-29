@@ -33,7 +33,9 @@ export async function generateMetadata({
     artwork.description?.trim() ||
     `View details for ${artwork.title} on STREET LENS.`;
 
-  const image = artwork.imageUrl || "/images/og-default.jpg";
+  const ogImage = artwork.imageUrl?.includes("res.cloudinary.com")
+    ? artwork.imageUrl.replace("/upload/", "/upload/w_1200,h_630,c_fill,g_auto,q_auto,f_auto/")
+    : artwork.imageUrl || "/images/og-default.jpg";
   const url = `/artworks/${artwork._id}`;
 
   return {
@@ -47,7 +49,7 @@ export async function generateMetadata({
       siteName: "STREET LENS",
       images: [
         {
-          url: image,
+          url: ogImage,
           width: 1200,
           height: 630,
           alt: artwork.title || "Artwork preview",
@@ -58,7 +60,7 @@ export async function generateMetadata({
       card: "summary_large_image",
       title,
       description,
-      images: [image],
+      images: [ogImage],
     },
   };
 }
