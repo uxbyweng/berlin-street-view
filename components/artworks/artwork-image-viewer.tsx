@@ -6,6 +6,7 @@ import { IconMaximize, IconX } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import { cn } from "@/lib/utils";
+import { getCloudinaryImageUrl } from "@/lib/cloudinary/image-url";
 
 type ArtworkImageViewerProps = {
   src: string;
@@ -114,6 +115,7 @@ export function ArtworkImageViewer({
   alt,
   className,
 }: ArtworkImageViewerProps) {
+  const detailSrc = getCloudinaryImageUrl(src, "w_2400,q_auto,f_auto");
   const [isFullscreenOpen, setIsFullscreenOpen] = useState(false);
 
   const openFullscreen = useCallback(() => {
@@ -128,7 +130,7 @@ export function ArtworkImageViewer({
     <>
       <div className={cn("relative", className)}>
         <Image
-          src={src}
+          src={detailSrc}
           alt={alt}
           width={1200}
           height={675}
