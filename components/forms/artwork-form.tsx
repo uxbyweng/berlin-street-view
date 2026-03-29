@@ -554,11 +554,7 @@ export function ArtworkForm({
                   latitude={watchedLatitude}
                   longitude={watchedLongitude}
                   disabled={!areCoordinatesEditable}
-                  scrollZoom={!areCoordinatesEditable}
-                  dragPan={!areCoordinatesEditable}
-                  dragRotate={!areCoordinatesEditable}
-                  doubleClickZoom={!areCoordinatesEditable}
-                  touchZoomRotate={!areCoordinatesEditable}
+                  scrollZoom={areCoordinatesEditable}
                   keyboard={!areCoordinatesEditable}
                   onChange={({ lat, lng }) => {
                     form.setValue("latitude", lat.toFixed(6), {

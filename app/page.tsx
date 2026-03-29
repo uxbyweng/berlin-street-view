@@ -24,7 +24,7 @@ export default async function HomePage() {
             Newest Artworks
           </h2>
         </div>
-        <ArtworkList artworks={latestArtworks} />
+        <ArtworkList artworks={latestArtworks} isAuthenticated={Boolean(session?.user)} />
         <Button asChild className="w-full md:w-auto mt-8 lg:mt-10">
           <Link
             href="/artworks"

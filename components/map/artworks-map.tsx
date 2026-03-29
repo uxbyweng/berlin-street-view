@@ -12,12 +12,14 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import { LikeToggle } from "@/components/artworks/like-toggle";
+import { getCloudinaryImageUrl } from "@/lib/cloudinary/image-url";
 import type { Artwork } from "@/types/artwork";
 import { getStoredUserLocation } from "@/lib/location/storage";
 import { useState } from "react";
 
 type ArtworksMapProps = {
   artworks: (Artwork & { likeCount?: number; isLiked?: boolean })[];
+  isAuthenticated?: boolean;
   showControls?: boolean;
   className?: string;
 };
@@ -45,6 +47,7 @@ function getInitialCenter(): [number, number] {
 
 export function ArtworksMap({
   artworks,
+  isAuthenticated,
   showControls = true,
   className,
 }: ArtworksMapProps) {
@@ -145,6 +148,7 @@ export function ArtworksMap({
                         artworkId={artwork._id}
                         initialLiked={Boolean(artwork.isLiked)}
                         initialLikeCount={artwork.likeCount ?? 0}
+                        isAuthenticated={isAuthenticated}
                         onClick={(event) => {
                           event.preventDefault();
                           event.stopPropagation();
@@ -157,19 +161,16 @@ export function ArtworksMap({
                     </div>
                   </div>
 
-                  <div className="relative aspect-video overflow-hidden rounded-md bg-muted">
-                    <Link href={`/artworks/${artwork._id}`}>
-                      <Image
-                        src={
-                          artwork.imageUrl ?? "/images/artwork-placeholder.jpg"
-                        }
-                        alt={artwork.title}
-                        fill
-                        sizes="224px"
-                        className="object-cover"
-                      />
-                    </Link>
-                  </div>
+                  <Link href={`/artworks/${artwork._id}`} className="relative block aspect-video overflow-hidden rounded-md bg-muted">
+                    <Image
+                      src={getCloudinaryImageUrl(artwork.imageUrl, "w_500,q_auto,f_auto", "/images/artwork-placeholder.jpg")}
+                      alt={artwork.title}
+                      fill
+                      sizes="224px"
+                      unoptimized
+                      className="object-cover"
+                    />
+                  </Link>
                 </div>
               </MarkerPopup>
             </MapMarker>
