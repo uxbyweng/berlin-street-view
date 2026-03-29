@@ -37,7 +37,11 @@ export function ArtworkCard({
           className="flex h-full flex-col focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
         >
           <Image
-            src={getCloudinaryImageUrl(artwork.imageUrl, "w_500,q_auto,f_auto", "/images/artwork-placeholder.jpg")}
+            src={getCloudinaryImageUrl(
+              artwork.imageUrl,
+              "w_500,q_auto,f_auto",
+              "/images/artwork-placeholder.jpg"
+            )}
             alt={`${artwork.title}${artwork.artist ? ` - ${artwork.artist}` : ""}`}
             width={800}
             height={450}
@@ -45,7 +49,7 @@ export function ArtworkCard({
             preload={shouldPreload}
             className="aspect-video w-full object-cover"
           />
-          <div className="absolute inset-0 bg-linear-to-t from-black/85 via-sky-900/55 to-transparent" />
+          <div className="absolute inset-0 bg-linear-to-t from-black/85 via-sky-900/40 to-transparent" />
           <div className="absolute inset-x-0 bottom-0 flex h-full flex-col justify-end p-1">
             <div className="mb-3">
               {artwork.artist ? (

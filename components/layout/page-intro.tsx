@@ -41,7 +41,7 @@ export function PageIntro({
             </>
           ) : (
             <div
-              className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+              className="absolute inset-0 bg-cover bg-[20%]]bg-no-repeat"
               style={{ backgroundImage: `url('${bgImage}')` }}
             />
           )}

@@ -2,7 +2,10 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { IconPlus } from "@tabler/icons-react";
 import { auth } from "@/auth";
-import { getArtworksForOverview, getRandomArtworkImageUrl } from "@/lib/data/artworks";
+import {
+  getArtworksForOverview,
+  getRandomArtworkImageUrl,
+} from "@/lib/data/artworks";
 import { getCloudinaryImageUrl } from "@/lib/cloudinary/image-url";
 import { PageIntro } from "@/components/layout/page-intro";
 import { ArtworkListLoadMore } from "@/components/artworks/artwork-list-load-more";
