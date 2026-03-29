@@ -70,6 +70,7 @@ export function ArtworkImageUpload({
               src={imagePreviewUrl}
               alt="Artwork preview"
               fill
+              unoptimized
               className="object-cover"
             />
 
