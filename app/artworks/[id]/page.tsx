@@ -90,12 +90,46 @@ export default async function ArtworkDetailPage({
         )
       : false;
 
+  const baseUrl =
+    process.env.NEXT_PUBLIC_APP_URL ?? "https://street-lens.vercel.app";
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "VisualArtwork",
+    name: artwork.title,
+    creator: {
+      "@type": "Person",
+      name: artwork.artist,
+    },
+    description: artwork.description || undefined,
+    image: artwork.imageUrl || undefined,
+    url: `${baseUrl}/artworks/${artwork._id}`,
+    ...(artwork.latitude != null && artwork.longitude != null
+      ? {
+          contentLocation: {
+            "@type": "Place",
+            geo: {
+              "@type": "GeoCoordinates",
+              latitude: artwork.latitude,
+              longitude: artwork.longitude,
+            },
+          },
+        }
+      : {}),
+  };
+
   return (
-    <ArtworkDetail
-      artwork={artwork}
-      initialLikeCount={likeCount}
-      initialLiked={initialLiked}
-      isAuthenticated={Boolean(userId)}
-    />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <ArtworkDetail
+        artwork={artwork}
+        initialLikeCount={likeCount}
+        initialLiked={initialLiked}
+        isAuthenticated={Boolean(userId)}
+      />
+    </>
   );
 }
