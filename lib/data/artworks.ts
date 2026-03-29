@@ -297,6 +297,23 @@ export const getArtworkById = cache(
   }
 );
 
+// Zufälliges Artwork-Bild für Header-Hintergründe.
+// Bewusst nicht in cache() gewrappt, damit bei jedem Aufruf ein neues Bild kommt.
+export async function getRandomArtworkImageUrl(): Promise<string | null> {
+  await connectDB();
+
+  const count = await ArtworkModel.countDocuments({ imageUrl: { $ne: "" } });
+
+  if (count === 0) return null;
+
+  const artwork = await ArtworkModel.findOne({ imageUrl: { $ne: "" } })
+    .skip(Math.floor(Math.random() * count))
+    .select("imageUrl")
+    .lean();
+
+  return artwork?.imageUrl ?? null;
+}
+
 export const getArtworkMetadataById = cache(
   async (
     id: string

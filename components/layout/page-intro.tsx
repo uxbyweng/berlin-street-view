@@ -6,6 +6,7 @@ type PageIntroProps = {
   title: string;
   subtitle: string;
   bgImage?: string;
+  bgImageMobile?: string;
   action?: {
     label: string;
     href: string;
@@ -18,6 +19,7 @@ export function PageIntro({
   title,
   subtitle,
   bgImage,
+  bgImageMobile,
   action,
   className,
   contentClassName,
@@ -26,10 +28,23 @@ export function PageIntro({
     <section className={cn("relative overflow-hidden rounded-2xl", className)}>
       {bgImage ? (
         <>
-          <div
-            className="absolute inset-0 bg-cover bg-top bg-no-repeat"
-            style={{ backgroundImage: `url('${bgImage}')` }}
-          />
+          {bgImageMobile ? (
+            <>
+              <div
+                className="absolute inset-0 bg-cover bg-center bg-no-repeat md:hidden"
+                style={{ backgroundImage: `url('${bgImageMobile}')` }}
+              />
+              <div
+                className="absolute inset-0 hidden bg-cover bg-center bg-no-repeat md:block"
+                style={{ backgroundImage: `url('${bgImage}')` }}
+              />
+            </>
+          ) : (
+            <div
+              className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+              style={{ backgroundImage: `url('${bgImage}')` }}
+            />
+          )}
           <div className="absolute inset-0 bg-linear-to-t from-[#000514]/99 md:from-[#000514]/80 to-[#000514]/60" />
         </>
       ) : null}
