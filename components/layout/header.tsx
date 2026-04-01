@@ -20,7 +20,7 @@ export default function Header() {
       <div className="mx-auto flex min-h-14 max-w-6xl items-center justify-between px-4 lg:px-3">
         <Link href="/" aria-label="Go to Homepage" className="z-60 shrink-0">
           <Image
-            src="/images/logo-bln-street-view.png"
+            src="/images/logo-berlin-street-view.png"
             width={330}
             height={40}
             alt="BLN STREET VIEW"
