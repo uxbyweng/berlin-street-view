@@ -37,7 +37,6 @@ The goal of this project is to build a clean, functional, and deployable full-st
 - Interactive map integration with MapLibre and mapcn
 - Reusable, mobile-first component architecture
 
-
 ## Tech Stack
 
 ### Frontend
@@ -71,17 +70,16 @@ The goal of this project is to build a clean, functional, and deployable full-st
 ### Deployment
 - Vercel
 
-
 ## Authentication & Authorization
 - Public read access for artworks
 - Admin-only create, edit, and delete permissions
 - GitHub and Google OAuth via Auth.js
 - Preview credentials login for Vercel preview deployments
 
-
 ## Data Model
 
 ### Artwork
+
 - `_id`
 - `title`
 - `artist`
@@ -96,6 +94,7 @@ The goal of this project is to build a clean, functional, and deployable full-st
 - `updatedAt`
 
 ### User:
+
 - `_id`
 - `provider`
 - `providerAccountId`
@@ -108,6 +107,7 @@ The goal of this project is to build a clean, functional, and deployable full-st
 - `username`
 
 ### Like:
+
 - `_id`
 - `artworkId`
 - `userId`
@@ -173,7 +173,7 @@ npm install
 
 ### 3. Create environment variables
 
-Create a  `.env.local` file in the project root.
+Create a `.env.local` file in the project root.
 
 Use `env.example` as the source of truth for all required variables.
 
@@ -214,7 +214,6 @@ npm run dev
 
 Open `http://localhost:3000` in the browser.
 
-
 ## Roadmap
 
 - [x] Project setup
@@ -234,7 +233,6 @@ Open `http://localhost:3000` in the browser.
 ## Deployment
 
 The project is deployed on Vercel. Environment variables are configured in Vercel for production and preview deployments. A preview login flow is included to simplify testing in preview environments.
-
 
 ## Notes
 

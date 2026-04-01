@@ -30,7 +30,7 @@ export async function generateMetadata({
   const title = `${artwork.title} by ${artwork.artist}`;
   const description =
     artwork.description?.trim() ||
-    `View details for ${artwork.title} on STREET LENS.`;
+    `View details for ${artwork.title} on BERLIN STREET VIEW.`;
 
   const ogImage = artwork.imageUrl?.includes("res.cloudinary.com")
     ? artwork.imageUrl.replace(
@@ -48,7 +48,7 @@ export async function generateMetadata({
       description,
       type: "article",
       url,
-      siteName: "STREET LENS",
+      siteName: "BERLIN STREET VIEW",
       images: [
         {
           url: ogImage,
