@@ -1,6 +1,6 @@
-# STREET LENS
+# BERLIN STREET VIEW
 
-STREET LENS is a mobile-first full-stack web application for discovering, saving, and managing street art in Berlin in a visual, location-based way. Users can browse artworks, view details, explore locations on a map, and save favorites. Admin users can create, edit, and delete artworks, including image upload with automatic EXIF GPS extraction and Cloudinary asset management.
+BERLIN STREET VIEW is a mobile-first full-stack web application for discovering, saving, and managing street art in Berlin in a visual, location-based way. Users can browse artworks, view details, explore locations on a map, and save favorites. Admin users can create, edit, and delete artworks, including image upload with automatic EXIF GPS extraction and Cloudinary asset management.
 
 The project started with a strong CRUD-first scope and evolved into a richer full-stack application with authentication, image upload, geo extraction, and interactive map features.
 
@@ -37,7 +37,6 @@ The goal of this capstone project is to build a clean, functional, and deployabl
 - Interactive map integration with MapLibre and mapcn
 - Reusable, mobile-first component architecture
 
-
 ## Tech Stack
 
 ### Runtime / Language
@@ -61,7 +60,6 @@ The goal of this capstone project is to build a clean, functional, and deployabl
 - Mongoose 9.2.x
 - Next.js Route Handlers (`app/api/...`) for CRUD and uploads
 
-
 ### Media Upload
 
 - Direct Cloudinary browser upload
@@ -74,11 +72,9 @@ The goal of this capstone project is to build a clean, functional, and deployabl
 - mapcn
 - MapLibre GL
 
-
 ### Deployment
 
 - Vercel
-
 
 ## Authentication & Authorization
 
@@ -87,10 +83,10 @@ The goal of this capstone project is to build a clean, functional, and deployabl
 - GitHub and Google OAuth via Auth.js
 - Preview credentials login for Vercel preview deployments
 
-
 ## Data Model
 
 ### Artwork
+
 - `_id`
 - `title`
 - `artist`
@@ -105,6 +101,7 @@ The goal of this capstone project is to build a clean, functional, and deployabl
 - `updatedAt`
 
 ### User:
+
 - `_id`
 - `provider`
 - `providerAccountId`
@@ -117,6 +114,7 @@ The goal of this capstone project is to build a clean, functional, and deployabl
 - `username`
 
 ### Like:
+
 - `_id`
 - `artworkId`
 - `userId`
@@ -182,7 +180,7 @@ npm install
 
 ### 3. Create environment variables
 
-Create a  `.env.local` file in the project root.
+Create a `.env.local` file in the project root.
 
 Use `env.example` as the source of truth for all required variables.
 
@@ -217,7 +215,6 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 
 If you want to test preview authentication locally or in preview deployments, also add the preview credential variables defined in `env.example`.
 
-
 ### 4. Start development server
 
 ```bash
@@ -225,7 +222,6 @@ npm run dev
 ```
 
 Open `http://localhost:3000` in the browser.
-
 
 ## Roadmap
 
@@ -247,7 +243,6 @@ Open `http://localhost:3000` in the browser.
 ## Deployment
 
 The project is deployed on Vercel. Environment variables are configured in Vercel for production and preview deployments. A preview login flow is included to simplify testing in preview environments.
-
 
 ## Notes
 
