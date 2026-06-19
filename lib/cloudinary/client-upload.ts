@@ -98,7 +98,12 @@ export async function extractCoordinatesFromImage(
       }
     }
 
-    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+    if (
+      latitude === undefined ||
+      longitude === undefined ||
+      !Number.isFinite(latitude) ||
+      !Number.isFinite(longitude)
+    ) {
       onDebug?.({
         step: "final-result",
         data: { latitude: null, longitude: null },
