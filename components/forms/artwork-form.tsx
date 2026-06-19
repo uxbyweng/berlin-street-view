@@ -394,11 +394,11 @@ export function ArtworkForm({
         shouldDirty: true,
       });
 
-      const hasExtractedCoordinates =
-        Number.isFinite(extractedCoordinates?.latitude) &&
-        Number.isFinite(extractedCoordinates?.longitude);
-
-      if (hasExtractedCoordinates) {
+      if (
+        extractedCoordinates !== null &&
+        Number.isFinite(extractedCoordinates.latitude) &&
+        Number.isFinite(extractedCoordinates.longitude)
+      ) {
         form.setValue("latitude", String(extractedCoordinates.latitude), {
           shouldValidate: true,
           shouldDirty: true,
